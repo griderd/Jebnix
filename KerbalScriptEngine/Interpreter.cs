@@ -16,7 +16,7 @@ namespace KerbalScriptEngine
         public Interpreter()
         {
             processes = new List<ScriptProcess>();
-            globalVariables = new Dictionary<string, object>();
+            globalVariables = new Dictionary<string, Value>();
             currentProcess = 0;
         }
 
