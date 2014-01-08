@@ -55,7 +55,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ScriptExecutor.cs" />
     <Compile Include="ErrorBuilder.cs" />
+    <Compile Include="ExecutionFrame.cs" />
     <Compile Include="ExecutionState.cs" />
     <Compile Include="Interpreter.cs" />
     <Compile Include="LineInfo.cs" />
