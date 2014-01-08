@@ -40,7 +40,7 @@ namespace KerbalScriptEngine
         /// <summary>
         /// Process the script is running on.
         /// </summary>
-        public ScriptProcess Process { get; private set; }
+        public ScriptProcess Process { get; set; }
 
         /// <summary>
         /// Instantiates the LineInfo structure.
