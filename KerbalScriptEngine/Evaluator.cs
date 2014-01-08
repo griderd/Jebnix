@@ -23,7 +23,7 @@ namespace KerbalScriptEngine
                     operation = a.StringValue;
                     unary = true;
                 }
-                else if (operators.Contains(rpn.Peek().StringValue))
+                else if (ReservedWords.Operators.Contains(rpn.Peek().StringValue))
                     operation = rpn.Pop().StringValue;
                 else
                 {
