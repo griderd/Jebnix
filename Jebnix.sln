@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JebnixDebugger", "kOSDebugg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JebnixConsoleDebugger", "JebnixConsoleDebugger\JebnixConsoleDebugger.csproj", "{0942D5DF-CA69-4BE0-A58E-DF506155A370}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KerbalScriptEngine", "KerbalScriptEngine\KerbalScriptEngine.csproj", "{45E8DD3D-0621-49D3-A09F-0203E8802105}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KerboScriptEngine", "KerbalScriptEngine\KerboScriptEngine.csproj", "{45E8DD3D-0621-49D3-A09F-0203E8802105}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

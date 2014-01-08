@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KerboScriptEngine.InternalTypes;
 
-namespace KerbalScriptEngine
+namespace KerboScriptEngine
 {
     public struct Value
     {
@@ -13,13 +14,15 @@ namespace KerbalScriptEngine
         int i_value;
         double f_value;
         bool b_value;
+        OrderedPair op_value;
 
         public enum ValueTypes : int
         {
             String,
             Integer,
             Float,
-            Boolean
+            Boolean,
+            OrderedPair
         }
 
         public static Value NullValue
@@ -94,6 +97,17 @@ namespace KerbalScriptEngine
             }
         }
 
+        public OrderedPair OrderedPairValue
+        {
+            get
+            {
+                if (!IsNull)
+                    return op_value;
+                else
+                    return new OrderedPair();
+            }
+        }
+
         public Value(string value)
             : this()
         {
@@ -126,6 +140,7 @@ namespace KerbalScriptEngine
             if (!int.TryParse(value, out i_value)) i_value = 0;
             if (!double.TryParse(value, out f_value)) f_value = double.NaN;
             if (!bool.TryParse(value, out b_value)) b_value = false;
+            if (!OrderedPair.TryParse(value, out op_value)) op_value = new OrderedPair();
         }
 
         public void SetValue(int value)
@@ -136,6 +151,7 @@ namespace KerbalScriptEngine
             s_value = value.ToString();
             f_value = (double)i_value;
             b_value = i_value != 0;
+            op_value = new OrderedPair(value, 0);
         }
 
         public void SetValue(double value)
@@ -146,6 +162,7 @@ namespace KerbalScriptEngine
             i_value = (int)value;
             b_value = i_value != 0;
             s_value = value.ToString();
+            op_value = new OrderedPair(i_value, 0);
         }
 
         public void SetValue(bool value)
@@ -156,6 +173,18 @@ namespace KerbalScriptEngine
             s_value = value.ToString();
             i_value = value ? 1 : 0;
             f_value = (double)i_value;
+            op_value = new OrderedPair(i_value, 0);
+        }
+
+        public void SetValue(OrderedPair value)
+        {
+            IsNull = false;
+            Type = ValueTypes.OrderedPair;
+            op_value = value;
+            i_value = value.X;
+            f_value = (double)value.X;
+            b_value = value.X == 0 ? false : true;
+            s_value = value.ToString();
         }
 
         public void CastToType(ValueTypes t)
@@ -176,6 +205,10 @@ namespace KerbalScriptEngine
                     
                 case ValueTypes.String:
                     SetValue(StringValue);
+                    break;
+
+                case ValueTypes.OrderedPair:
+                    SetValue(OrderedPairValue);
                     break;
             }
         }

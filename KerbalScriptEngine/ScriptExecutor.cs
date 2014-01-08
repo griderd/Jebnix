@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KerbalScriptEngine
+namespace KerboScriptEngine
 {
     partial class ScriptProcess
     {
@@ -50,6 +50,7 @@ namespace KerbalScriptEngine
             {
                 case "set":
                     {
+                        CanAddParameters = false;
                         GetNextToken();
                         bool local = (token == "local");
                         if (local) GetNextToken();
@@ -120,6 +121,18 @@ namespace KerbalScriptEngine
                         }
                     }
                     break;
+
+                case "print":
+                    {
+                        StringBuilder s = new StringBuilder();
+                        GetNextToken();
+                        if ((token == "at") | (token == "."))
+                            ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "No expression provided. Cannot PRINT,", ref errors);
+                        while ((token != "at") & (token != "."))
+                        {
+                            s.Append(token);
+                        }
+                    }
             }
 
 

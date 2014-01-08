@@ -8,8 +8,8 @@
     <ProjectGuid>{45E8DD3D-0621-49D3-A09F-0203E8802105}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>KerbalScriptEngine</RootNamespace>
-    <AssemblyName>KerbalScriptEngine</AssemblyName>
+    <RootNamespace>KerboScriptEngine</RootNamespace>
+    <AssemblyName>KerboScriptEngine</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PublishUrl>publish\</PublishUrl>
@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InternalTypes\OrderedPair.cs" />
     <Compile Include="ScriptExecutor.cs" />
     <Compile Include="ErrorBuilder.cs" />
     <Compile Include="ExecutionFrame.cs" />

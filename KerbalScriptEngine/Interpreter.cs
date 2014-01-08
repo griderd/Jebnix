@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace KerbalScriptEngine
+namespace KerboScriptEngine
 {
     public class Interpreter
     {
