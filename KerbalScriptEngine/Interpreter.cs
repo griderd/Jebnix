@@ -68,20 +68,31 @@ namespace KerbalScriptEngine
                 globalVariables.Add(name, val);
         }
 
-        public bool MakeThread(string file)
+        public bool CreateProcess(string file)
         {
             if (File.Exists(file))
             {
-                processes.Add(new ScriptProcess(File.ReadAllLines(file), this));
+                processes.Add(new ScriptProcess(ConvertToLineInfo(File.ReadAllLines(file), file), this));
                 return true;
             }
             return false;
         }
 
-        public bool MakeThread(string[] lines)
+        public bool CreateProcess(string[] lines, string filename)
         {
-            processes.Add(new ScriptProcess(lines, this));
+            processes.Add(new ScriptProcess(ConvertToLineInfo(lines, filename), this));
             return true;
+        }
+
+        private LineInfo[] ConvertToLineInfo(string[] lines, string filename)
+        {
+            List<LineInfo> l = new List<LineInfo>();
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                l.Add(new LineInfo(lines[i], filename, i + 1, 0, null));
+            }
+            return l.ToArray();
         }
 
         public void MemoryDump()
