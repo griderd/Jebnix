@@ -8,5 +8,6 @@ namespace Jebnix
         void ExecuteProcess();
         bool HasVariable(string name);
         void MemoryDump();
+        string GetInterpreterVersion();
     }
 }

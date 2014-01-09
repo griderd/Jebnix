@@ -25,6 +25,8 @@ namespace Jebnix
         Timer clock;
         Timer cursorBlink;
 
+        IInterpreter interpreter;
+
         public event EventHandler ScreenRefresh;
         public event EventHandler CursorChanged;
 
@@ -63,8 +65,9 @@ namespace Jebnix
         /// Instantiates a virtual machine with the given interval between clock cycles.
         /// </summary>
         /// <param name="clockInterval">Interval between clock cycles in milliseconds.</param>
-        public VirtualMachine(double clockInterval)
+        public VirtualMachine(double clockInterval, IInterpreter interpreter)
         {
+            this.interpreter = interpreter;
             clock = new Timer(clockInterval);
             
             cursorBlink = new Timer(500);
@@ -107,6 +110,7 @@ namespace Jebnix
             IsRunning = true;
             System.Version v =  Assembly.GetExecutingAssembly().GetName().Version;
             stdio.PrintLine("Jebnix v" + v.ToString(3) + " Build " + v.Revision, true);
+            stdio.PrintLine("Running " + interpreter.GetInterpreterVersion());
 #if DEBUG
             stdio.PrintLine("DEBUG VERSION\n", true);
 #endif
