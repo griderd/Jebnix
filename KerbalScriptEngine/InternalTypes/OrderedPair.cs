@@ -8,7 +8,7 @@ namespace KerboScriptEngine.InternalTypes
     /// <summary>
     /// Represents a pair of coordinates on the screen.
     /// </summary>
-    struct OrderedPair
+    public struct OrderedPair
     {
         /// <summary>
         /// X coordinate
