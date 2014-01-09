@@ -25,6 +25,23 @@ namespace KerboScriptEngine
             }
         }
 
+        void NewScope(ExecutionState.Status status)
+        {
+            CurrentState.scopeStack.Push(new Dictionary<string, Value>());
+            CurrentState.statusStack.Push(status);
+        }
+
+        bool ExitScope()
+        {
+            if (CurrentState.scopeStack.Count > 1)
+            {
+                CurrentState.scopeStack.Pop();
+                CurrentState.statusStack.Pop();
+                return true;
+            }
+            return false;
+        }
+
         Stack<Value> argumentStack;
 
         bool CanAddParameters { get; set; }
