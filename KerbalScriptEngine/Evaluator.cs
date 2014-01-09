@@ -7,6 +7,11 @@ namespace KerboScriptEngine
 {
     class Evaluator
     {
+        public static Value Evaluate(string expression, LineInfo source, out string[] errors)
+        {
+            return Evaluate(new LineInfo(expression, source.Filename, source.LineNumber, source.ColumnOffset, source.Process), out errors);
+        }
+
         public static Value Evaluate(LineInfo line, out string[] errors)
         {
             Stack<Value> rpn = ConvertToRPN(line.Tokens);
