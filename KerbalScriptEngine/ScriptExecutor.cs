@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jebnix.stdlib;
 
 namespace KerboScriptEngine
 {
@@ -124,15 +125,65 @@ namespace KerboScriptEngine
 
                 case "print":
                     {
+                        string[] ex;
                         StringBuilder s = new StringBuilder();
                         GetNextToken();
                         if ((token == "at") | (token == "."))
-                            ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "No expression provided. Cannot PRINT,", ref errors);
+                        {
+                            ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "No expression provided. Cannot PRINT.", ref errors);
+                            break;
+                        }
                         while ((token != "at") & (token != "."))
                         {
                             s.Append(token);
+                            GetNextToken();
                         }
+                        
+                        // Evaluate expression
+                        Value output = Evaluator.Evaluate(new LineInfo(s.ToString(), line.Filename, line.LineNumber, line.ColumnOffset, line.Process), out ex);
+                        s.Clear();
+                        errors.AddRange(ex);
+                        if (ex.Length > 0)
+                            break;
+
+                        if (token == "at")
+                        {
+                            GetNextToken();
+                            if (token == ".")
+                            {
+                                ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "No ordered pair provided. Cannot PRINT.", ref errors);
+                                break;
+                            }
+                            while (token != ".")
+                            {
+                                s.Append(token);
+                                GetNextToken();
+                            }
+                            Value location = Evaluator.Evaluate(new LineInfo(s.ToString(), line.Filename, line.LineNumber, line.ColumnOffset, line.Process), out ex);
+                            errors.AddRange(ex);
+                            if (ex.Length > 0)
+                                break;
+
+                            // TODO: print to output
+                        }
+                        else
+                        {
+                            stdio.PrintLine(output.StringValue, true);        
+                        }
+                        break;
                     }
+
+                case "clearscreen":
+                    GetNextToken();
+                    if (token == ".")
+                    {
+                        stdio.ClearScreen();
+                    }
+                    else
+                    {
+                        ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "'.' expected.", ref errors);
+                    }
+                    break;
             }
 
 
