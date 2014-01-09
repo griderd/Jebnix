@@ -47,6 +47,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\KerbalScriptEngine\KerboScriptEngine.csproj">
+      <Project>{45E8DD3D-0621-49D3-A09F-0203E8802105}</Project>
+      <Name>KerboScriptEngine</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kOSReplacement\Jebnix.csproj">
       <Project>{B824FA3B-6E60-4ACE-856A-02867651441B}</Project>
       <Name>Jebnix</Name>
