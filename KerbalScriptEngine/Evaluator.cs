@@ -17,6 +17,20 @@ namespace KerboScriptEngine
                 string operation;
                 bool unary = false;
                 Value b = rpn.Pop();
+                string bname = "";
+                string aname = "";
+
+                if (b.Type == Value.ValueTypes.Pointer)
+                {
+                    bname = b.StringValue;
+                    if (!line.Process.TryGetVariable(b.StringValue, out b))
+                    {
+                        ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.RuntimeError, "Variable \"" + b.StringValue + "\" undeclared.", ref err);
+                        errors = err.ToArray();
+                        return Value.NullValue;
+                    }
+                }
+
                 Value a = rpn.Pop();
                 if (ReservedWords.Operators.Contains(a.StringValue))
                 {
@@ -24,12 +38,28 @@ namespace KerboScriptEngine
                     unary = true;
                 }
                 else if (ReservedWords.Operators.Contains(rpn.Peek().StringValue))
+                {
                     operation = rpn.Pop().StringValue;
+
+                    if (a.Type == Value.ValueTypes.Pointer)
+                    {
+                        aname = a.StringValue;
+                        if (!line.Process.TryGetVariable(a.StringValue, out a))
+                        {
+                            ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.RuntimeError, "Variable \"" + a.StringValue + "\" undeclared.", ref err);
+                            errors = err.ToArray();
+                            return Value.NullValue;
+                        }
+                    }
+                }
                 else
                 {
                     ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "Invalid number of operands.", ref err);
                     break;
                 }
+
+                if (a.IsNull) ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.RuntimeError, "NullReferenceException. Operand \"" + aname + "\" is NULL.", ref err);
+                if (b.IsNull) ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.RuntimeError, "NullReferenceException. Operand \"" + bname + "\" is NULL.", ref err);
 
                 Value c;
 
