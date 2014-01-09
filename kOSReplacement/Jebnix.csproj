@@ -64,6 +64,7 @@
     <Compile Include="Computer.cs" />
     <Compile Include="DebugLogger.cs" />
     <Compile Include="Exceptions\JebnixClassNotInitializedException.cs" />
+    <Compile Include="IInterpreter.cs" />
     <Compile Include="Processor.cs" />
     <Compile Include="QueueStack.cs" />
     <Compile Include="Settings.cs" />
