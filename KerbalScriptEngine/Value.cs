@@ -22,7 +22,8 @@ namespace KerboScriptEngine
             Integer,
             Float,
             Boolean,
-            OrderedPair
+            OrderedPair,
+            Pointer
         }
 
         public static Value NullValue
@@ -35,7 +36,22 @@ namespace KerboScriptEngine
             }
         }
 
-        ValueTypes Type { get; set; }
+        public ValueTypes Type { get; private set; }
+
+        public string PointerValue
+        {
+            get
+            {
+                if (!IsNull)
+                    return s_value;
+                else
+                    return null;
+            }
+            set
+            {
+                SetValue(value);
+            }
+        }
 
         public string StringValue
         {
@@ -132,10 +148,16 @@ namespace KerboScriptEngine
             SetValue(value);
         }
 
-        public void SetValue(string value)
+        public Value(OrderedPair value)
+            : this()
+        {
+            SetValue(value);
+        }
+
+        public void SetValue(string value, bool isPointer = false)
         {
             IsNull = false;
-            Type = ValueTypes.String;
+            Type = isPointer ? ValueTypes.Pointer : ValueTypes.String;
             s_value = value;
             if (!int.TryParse(value, out i_value)) i_value = 0;
             if (!double.TryParse(value, out f_value)) f_value = double.NaN;
@@ -226,6 +248,8 @@ namespace KerboScriptEngine
                 return new Value(a.IntegerValue == b.IntegerValue);
             else if ((a.Type == ValueTypes.Boolean) | (b.Type == ValueTypes.Boolean))
                 return new Value(a.BooleanValue == b.BooleanValue);
+            else if ((a.Type == ValueTypes.OrderedPair) | (b.Type == ValueTypes.OrderedPair))
+                return new Value((a.OrderedPairValue.X == b.OrderedPairValue.X) & (a.OrderedPairValue.Y == b.OrderedPairValue.Y));  
             else
                 return new Value();
         }
@@ -249,6 +273,8 @@ namespace KerboScriptEngine
                 return new Value(a.IntegerValue + b.IntegerValue);
             else if ((a.Type == ValueTypes.Boolean) | (b.Type == ValueTypes.Boolean))
                 return new Value((a.IntegerValue + b.IntegerValue) != 0 ? true : false);
+            else if ((a.Type == ValueTypes.OrderedPair) | (b.Type == ValueTypes.OrderedPair))
+                return new Value(new OrderedPair(a.OrderedPairValue.X + b.OrderedPairValue.X, a.OrderedPairValue.Y + b.OrderedPairValue.Y));
             else
                 return new Value();
         }
@@ -265,6 +291,8 @@ namespace KerboScriptEngine
                 return new Value(a.IntegerValue - b.IntegerValue);
             else if ((a.Type == ValueTypes.Boolean) | (b.Type == ValueTypes.Boolean))
                 return new Value((a.IntegerValue - b.IntegerValue) != 0 ? true : false);
+            else if ((a.Type == ValueTypes.OrderedPair) | (b.Type == ValueTypes.OrderedPair))
+                return new Value(new OrderedPair(a.OrderedPairValue.X - b.OrderedPairValue.X, a.OrderedPairValue.Y - b.OrderedPairValue.Y));
             else
                 return new Value();
         }
@@ -281,6 +309,8 @@ namespace KerboScriptEngine
                 return new Value(a.IntegerValue * b.IntegerValue);
             else if ((a.Type == ValueTypes.Boolean) | (b.Type == ValueTypes.Boolean))
                 return new Value((a.IntegerValue * b.IntegerValue) != 0 ? true : false);
+            else if ((a.Type == ValueTypes.OrderedPair) | (b.Type == ValueTypes.OrderedPair))
+                return new Value(new OrderedPair(a.OrderedPairValue.X * b.OrderedPairValue.X, a.OrderedPairValue.Y * b.OrderedPairValue.Y));
             else
                 return new Value();
         }
@@ -308,6 +338,12 @@ namespace KerboScriptEngine
                 if (b.IntegerValue == 0)
                     throw new DivideByZeroException();
                 return new Value((a.IntegerValue / b.IntegerValue) != 0 ? true : false);
+            }
+            else if ((a.Type == ValueTypes.OrderedPair) | (b.Type == ValueTypes.OrderedPair))
+            {
+                if ((b.OrderedPairValue.Y == 0) | (b.OrderedPairValue.X == 0))
+                    throw new DivideByZeroException();
+                return new Value(new OrderedPair(a.OrderedPairValue.X / b.OrderedPairValue.X, a.OrderedPairValue.Y / b.OrderedPairValue.Y));
             }
             else
                 return new Value();
@@ -337,6 +373,12 @@ namespace KerboScriptEngine
                     throw new DivideByZeroException();
                 return new Value((a.IntegerValue % b.IntegerValue) != 0 ? true : false);
             }
+            else if ((a.Type == ValueTypes.OrderedPair) | (b.Type == ValueTypes.OrderedPair))
+            {
+                if ((b.OrderedPairValue.X == 0) | (b.OrderedPairValue.Y == 0))
+                    throw new DivideByZeroException();
+                return new Value(new OrderedPair(a.OrderedPairValue.X % b.OrderedPairValue.X, a.OrderedPairValue.Y % b.OrderedPairValue.Y));
+            }
             else
                 return new Value();
         }
@@ -353,6 +395,9 @@ namespace KerboScriptEngine
                 return new Value((int)Math.Pow(x.FloatValue, power.FloatValue));
             else if ((x.Type == ValueTypes.Boolean) | (power.Type == ValueTypes.Boolean))
                 return new Value(((int)Math.Pow(x.FloatValue, power.FloatValue)) != 0 ? true : false);
+            else if ((x.Type == ValueTypes.OrderedPair) | (power.Type == ValueTypes.OrderedPair))
+                return new Value(new OrderedPair((int)Math.Pow(x.OrderedPairValue.X, power.OrderedPairValue.X),
+                    (int)Math.Pow(x.OrderedPairValue.Y, power.OrderedPairValue.Y)));
             else
                 return new Value();
         }
@@ -369,6 +414,8 @@ namespace KerboScriptEngine
                 return new Value(a.BooleanValue & b.BooleanValue);
             else if ((a.Type == ValueTypes.Float) | (b.Type == ValueTypes.Float))
                 throw new InvalidOperationException("Cannot perform bitwise or logical AND with a floating-point value.");
+            else if ((a.Type == ValueTypes.OrderedPair) | (b.Type == ValueTypes.OrderedPair))
+                return new Value(new OrderedPair(a.OrderedPairValue.X & b.OrderedPairValue.X, a.OrderedPairValue.Y & b.OrderedPairValue.Y));
             else
                 return new Value();
         }
@@ -385,6 +432,8 @@ namespace KerboScriptEngine
                 return new Value(a.BooleanValue | b.BooleanValue);
             else if ((a.Type == ValueTypes.Float) | (b.Type == ValueTypes.Float))
                 throw new InvalidOperationException("Cannot perform bitwise or logical AND with a floating-point value.");
+            else if ((a.Type == ValueTypes.OrderedPair) | (b.Type == ValueTypes.OrderedPair))
+                return new Value(new OrderedPair(a.OrderedPairValue.X | b.OrderedPairValue.X, a.OrderedPairValue.Y | b.OrderedPairValue.Y));
             else
                 return new Value();
         }
@@ -411,6 +460,8 @@ namespace KerboScriptEngine
                 return new Value(x.IntegerValue * -1);
             else if (x.Type == ValueTypes.Boolean)
                 return new Value((x.IntegerValue * -1) != 0 ? true : false);
+            else if (x.Type == ValueTypes.OrderedPair)
+                return new Value(new OrderedPair(x.OrderedPairValue.X * -1, x.OrderedPairValue.Y * -1));
             else
                 return new Value();
         }
@@ -427,6 +478,8 @@ namespace KerboScriptEngine
                 return new Value(~x.IntegerValue);
             else if (x.Type == ValueTypes.Boolean)
                 return new Value((~x.IntegerValue) != 0 ? true : false);
+            else if (x.Type == ValueTypes.OrderedPair)
+                return new Value(new OrderedPair(~x.OrderedPairValue.X, ~x.OrderedPairValue.Y));
             else
                 return new Value();
         }
@@ -457,6 +510,8 @@ namespace KerboScriptEngine
                 return new Value(x.IntegerValue + 1);
             else if (x.Type == ValueTypes.Boolean)
                 return new Value((x.IntegerValue + 1) != 0 ? true : false);
+            else if (x.Type == ValueTypes.OrderedPair)
+                return new Value(new OrderedPair(x.OrderedPairValue.X + 1, x.OrderedPairValue.Y + 1));
             else
                 return new Value();
         }
@@ -473,10 +528,22 @@ namespace KerboScriptEngine
                 return new Value(x.IntegerValue - 1);
             else if (x.Type == ValueTypes.Boolean)
                 return new Value((x.IntegerValue - 1) != 0 ? true : false);
+            else if (x.Type == ValueTypes.OrderedPair)
+                return new Value(new OrderedPair(x.OrderedPairValue.X - 1, x.OrderedPairValue.Y - 1));
             else
                 return new Value();
         }
 
         #endregion
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
     }
 }
