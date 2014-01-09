@@ -6,7 +6,7 @@ using System.IO;
 
 namespace KerboScriptEngine
 {
-    public class Interpreter
+    public class Interpreter : Jebnix.IInterpreter
     {
         List<ScriptProcess> processes;
         int currentProcess;
@@ -20,7 +20,7 @@ namespace KerboScriptEngine
             currentProcess = 0;
         }
 
-        public void ExecuteThread()
+        public void ExecuteProcess()
         {
             if (processes.Count < currentProcess)
             {
