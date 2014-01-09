@@ -25,6 +25,11 @@ namespace KerboScriptEngine
             int i = tokenIndex;
             token = line.Tokens[i];
 
+            Action<ErrorBuilder.ErrorType, string> ThrowError = delegate(ErrorBuilder.ErrorType t, string message)
+            {
+                ErrorBuilder.BuildError(line, t, message, ref errors);
+            };
+
             Action GetNextLine = delegate()
             {
                 lineIndex++;
@@ -47,8 +52,68 @@ namespace KerboScriptEngine
                 //ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "Line ended unexpectedly. Are you missing a '.'?", ref errors);
             };
 
+            Func<string[], string> GetNextExpression = delegate(string[] expressionTerminators)
+            {
+                StringBuilder s = new StringBuilder();
+
+                GetNextToken();
+                if (expressionTerminators.Contains(token))
+                    return "";
+                else
+                {
+                    while (!expressionTerminators.Contains(token))
+                    {
+                        s.Append(token);
+                        GetNextToken();
+                    }
+
+                    return s.ToString();
+                }
+            };
+
+            Action AdvanceToEndOfScope = delegate()
+            {
+                Stack<object> scope = new Stack<object>();
+
+                if (token == "{")
+                {
+                    scope.Push(null);
+
+                    while (scope.Count > 0)
+                    {
+                        GetNextToken();
+                        if (token == "{")
+                            scope.Push(null);
+                        else if (token == "}")
+                        {
+                            if (scope.Count > 0)
+                                scope.Pop();
+                            else
+                            {
+                                ThrowError(ErrorBuilder.ErrorType.SyntaxError, "'}' without matching '{'.");
+                                break;
+                            }
+                        }
+                    }
+                    GetNextToken();
+                }
+            };
+
             switch (token)
             {
+                case "{":
+                    {
+                        NewScope(ExecutionState.Status.GenericBlock);
+                        break;
+                    }
+
+                case "}":
+                    {
+                        if (!ExitScope())
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "'}' without matching '{'.");
+                        break;
+                    }
+
                 case "set":
                     {
                         CanAddParameters = false;
@@ -61,16 +126,9 @@ namespace KerboScriptEngine
                             GetNextToken();
                             if (token == "to" | token == "=")
                             {
-                                StringBuilder s = new StringBuilder();
-                                GetNextToken();
-                                while (token != ".")
-                                {
-                                    s.Append(token);
-                                    s.Append(" ");
-                                    GetNextToken();
-                                }
+                                string expression = GetNextExpression(new string[] { "." });
                                 string[] ex;
-                                Value var = Evaluator.Evaluate(new LineInfo(s.ToString(), line.Filename, line.LineNumber, line.ColumnOffset, this), out ex);
+                                Value var = Evaluator.Evaluate(expression, line, out ex);
                                 errors.AddRange(ex);
 
                                 if (ex.Length == 0)
@@ -111,14 +169,14 @@ namespace KerboScriptEngine
                                 if ((!CurrentState.parameters.ContainsKey(token)) & (CanAddParameters))
                                     CurrentState.parameters.Add(token, var);
                                 else if (!CanAddParameters)
-                                    ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "Parameters must be added ahead of any other code.", ref errors);
+                                    ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Parameters must be added ahead of any other code.");
                                 else
-                                    ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "Parameter with the name \"" + token + "\" already exists.", ref errors);
+                                    ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Parameter with name \"" + token + "\" already exists.");
                             }
                         }
                         else
                         {
-                            ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "Identifier cannot be reserved word.", ref errors);
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Identifier cannot be reserved word.");
                         }
                     }
                     break;
@@ -126,40 +184,28 @@ namespace KerboScriptEngine
                 case "print":
                     {
                         string[] ex;
-                        StringBuilder s = new StringBuilder();
-                        GetNextToken();
-                        if ((token == "at") | (token == "."))
+                        string s = GetNextExpression(new string[] { "at", "." });
+                        if (s == "")
                         {
-                            ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "No expression provided. Cannot PRINT.", ref errors);
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "No expression provided. Cannot run PRINT.");
                             break;
-                        }
-                        while ((token != "at") & (token != "."))
-                        {
-                            s.Append(token);
-                            GetNextToken();
                         }
                         
                         // Evaluate expression
-                        Value output = Evaluator.Evaluate(new LineInfo(s.ToString(), line.Filename, line.LineNumber, line.ColumnOffset, line.Process), out ex);
-                        s.Clear();
+                        Value output = Evaluator.Evaluate(s, line, out ex);
                         errors.AddRange(ex);
                         if (ex.Length > 0)
                             break;
 
                         if (token == "at")
                         {
-                            GetNextToken();
-                            if (token == ".")
+                            s = GetNextExpression(new string[] { "." });
+                            if (s == "")
                             {
-                                ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "No ordered pair provided. Cannot PRINT.", ref errors);
+                                ThrowError(ErrorBuilder.ErrorType.SyntaxError, "No ordered pair provided. Cannot run PRINT.");
                                 break;
                             }
-                            while (token != ".")
-                            {
-                                s.Append(token);
-                                GetNextToken();
-                            }
-                            Value location = Evaluator.Evaluate(new LineInfo(s.ToString(), line.Filename, line.LineNumber, line.ColumnOffset, line.Process), out ex);
+                            Value location = Evaluator.Evaluate(s, line, out ex);
                             errors.AddRange(ex);
                             if (ex.Length > 0)
                                 break;
@@ -181,9 +227,46 @@ namespace KerboScriptEngine
                     }
                     else
                     {
-                        ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "'.' expected.", ref errors);
+                        ThrowError(ErrorBuilder.ErrorType.SyntaxError, "'.' expected.");
                     }
                     break;
+
+                case "if":
+                    {
+                        string s = GetNextExpression(new string[] { "{" });
+                        if (s == "")
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Expression expected.");
+                            break;
+                        }
+                        else
+                        {
+                            string[] ex;
+                            Value v = Evaluator.Evaluate(s, line, out ex);
+                            errors.AddRange(ex);
+                            if (ex.Length > 0)
+                                break;
+
+                            if (v.BooleanValue)
+                            {
+                                NewScope(ExecutionState.Status.IfStatement);
+                            }
+                            else
+                            {
+                                AdvanceToEndOfScope();
+                                if (token == "else")
+                                {
+                                    GetNextToken();
+                                    if (token == "{")
+                                        NewScope(ExecutionState.Status.ElseStatement);
+                                    else
+                                        ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Else requires \"{...}\" block.");
+                                }
+                            }
+                        }
+                    }
+                    break;
+
             }
 
 
