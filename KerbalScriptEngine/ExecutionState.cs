@@ -12,12 +12,13 @@ namespace KerboScriptEngine
     {
         public enum Status
         {
-            Normal,
+            FileLevel,
             IfStatement,
             ElseStatement,
             UntilLoop,
             WhileLoop,
-            WhenBlock
+            WhenBlock,
+            GenericBlock
         }
 
         /// <summary>
