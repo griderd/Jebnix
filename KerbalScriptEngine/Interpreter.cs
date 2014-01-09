@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Reflection;
 
 namespace KerboScriptEngine
 {
@@ -18,6 +19,12 @@ namespace KerboScriptEngine
             processes = new List<ScriptProcess>();
             globalVariables = new Dictionary<string, Value>();
             currentProcess = 0;
+        }
+
+        public string GetInterpreterVersion()
+        {
+            System.Version v =  Assembly.GetExecutingAssembly().GetName().Version;
+            return "KerboScript++ Interpreter v" + v.Major + "." + v.Minor + "." + v.Revision + " Build " + v.Build;
         }
 
         public void ExecuteProcess()
