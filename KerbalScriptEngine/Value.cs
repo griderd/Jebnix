@@ -36,6 +36,40 @@ namespace KerboScriptEngine
             return new Value(IsNull(obj));
         }
 
+        public override string ToString()
+        {
+            Value x = Copy();
+            x.CastToType(ValueTypes.String);
+            return x.StringValue;
+        }
+
+        public Value Copy()
+        {
+            switch (Type)
+            {
+                case ValueTypes.Boolean:
+                    return new Value(BooleanValue);
+                     
+                case ValueTypes.Float:
+                    return new Value(FloatValue);
+
+                case ValueTypes.Integer:
+                    return new Value(IntegerValue);
+
+                case ValueTypes.OrderedPair:
+                    return new Value(OrderedPairValue);
+
+                case ValueTypes.Pointer:
+                    return null;
+
+                case ValueTypes.String:
+                    return new Value(StringValue);
+
+                default:
+                    return null;
+            }
+        }
+
         public string PointerValue
         {
             get
