@@ -493,6 +493,30 @@ namespace KerboScriptEngine
 
         #endregion
 
+        #region Casting
+
+        public static implicit operator Value(double x)
+        {
+            return new Value(x);
+        }
+
+        public static implicit operator Value(int x)
+        {
+            return new Value(x);
+        }
+
+        public static implicit operator Value(string x)
+        {
+            return new Value(x);
+        }
+
+        public static implicit operator Value(bool x)
+        {
+            return new Value(x);
+        }
+
+        #endregion
+
         public override int GetHashCode()
         {
             return base.GetHashCode();
