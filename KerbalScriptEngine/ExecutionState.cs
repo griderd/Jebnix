@@ -42,6 +42,11 @@ namespace KerboScriptEngine
         public Stack<Dictionary<string, Value>> scopeStack;
 
         /// <summary>
+        /// 
+        /// </summary>
+        public Dictionary<string, string> lockedVariables;
+
+        /// <summary>
         /// Stack of internal call frames.
         /// </summary>
         public Stack<ExecutionFrame> executionStack;

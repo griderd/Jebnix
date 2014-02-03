@@ -151,6 +151,39 @@ namespace KerboScriptEngine
                     }
                     break;
 
+                case "lock":
+                    {
+                        CanAddParameters = false;
+                        GetNextToken();
+                        if (!ReservedWords.IsReserved(token))
+                        {
+                            string name = token;
+                            GetNextToken();
+                            if (token == "to" | token == "=")
+                            {
+                                string expression = GetNextExpression(new string[] { "." });
+
+                                if (CurrentState.lockedVariables.ContainsKey(name))
+                                {
+                                    CurrentState.lockedVariables[name] = expression;
+                                }
+                                else
+                                {
+                                    CurrentState.lockedVariables.Add(name, expression);
+                                }
+                            }
+                            else
+                            {
+                                ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "Expected keyword 'TO' or '='.", ref errors);
+                            }
+                        }
+                        else
+                        {
+                            ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "Identifier cannot be reserved word.", ref errors);
+                        }
+                    }
+                    break;
+
                 case "declare":
                     {
                         GetNextToken();
@@ -161,7 +194,7 @@ namespace KerboScriptEngine
                         GetNextToken();
                         if (!ReservedWords.IsReserved(token))
                         {
-                            Value var = Value.NullValue;
+                            Value var = null;
                             if (local)
                                 SetVariable(token, var);
                             else if (parameter)
@@ -267,6 +300,35 @@ namespace KerboScriptEngine
                     }
                     break;
 
+                case "unlock":
+                    {
+                        GetNextToken();
+                        string name = token;
+                        GetNextToken();
+                        if (token == ".")
+                        {
+                            if (!ReservedWords.IsReserved(name))
+                            {
+                                if (CurrentState.lockedVariables.ContainsKey(name))
+                                {
+                                    CurrentState.lockedVariables.Remove(name);
+                                }
+                                else
+                                {
+                                    //ThrowError(ErrorBuilder.ErrorType.RuntimeError, "Variable \"" + name + "\" not locked.");
+                                }
+                            }
+                            else
+                            {
+                                ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Variable name \"" + name + "\" is a reserved word.");
+                            }
+                        }
+                        else
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "'.' expected.");
+                        }
+                    }
+                    break;
             }
 
 

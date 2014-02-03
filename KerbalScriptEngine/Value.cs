@@ -6,10 +6,8 @@ using KerboScriptEngine.InternalTypes;
 
 namespace KerboScriptEngine
 {
-    public struct Value
+    public class Value
     {
-        public bool IsNull { get; private set; }
-
         string s_value;
         int i_value;
         double f_value;
@@ -26,26 +24,23 @@ namespace KerboScriptEngine
             Pointer
         }
 
-        public static Value NullValue
+        public ValueTypes Type { get; private set; }
+
+        public static bool IsNull(Value obj)
         {
-            get
-            {
-                Value v = new Value();
-                v.IsNull = true;
-                return v;
-            }
+            return object.ReferenceEquals(obj, null);
         }
 
-        public ValueTypes Type { get; private set; }
+        public static Value IsNull_Property(Value obj)
+        {
+            return new Value(IsNull(obj));
+        }
 
         public string PointerValue
         {
             get
             {
-                if (!IsNull)
-                    return s_value;
-                else
-                    return null;
+                return s_value;
             }
             set
             {
@@ -57,10 +52,7 @@ namespace KerboScriptEngine
         {
             get 
             {
-                if (!IsNull)
-                    return s_value;
-                else
-                    return null;
+                return s_value;
             }
             set 
             { 
@@ -72,10 +64,7 @@ namespace KerboScriptEngine
         {
             get 
             {
-                if (!IsNull)
-                    return i_value;
-                else
-                    return 0;
+                return i_value;
             }
             set 
             { 
@@ -87,10 +76,7 @@ namespace KerboScriptEngine
         {
             get 
             {
-                if (!IsNull)
-                    return f_value;
-                else
-                    return double.NaN;
+                return f_value;
             }
             set 
             { 
@@ -102,10 +88,7 @@ namespace KerboScriptEngine
         {
             get 
             {
-                if (!IsNull)
-                    return b_value;
-                else
-                    return false;
+                return b_value;
             }
             set
             {
@@ -117,46 +100,42 @@ namespace KerboScriptEngine
         {
             get
             {
-                if (!IsNull)
-                    return op_value;
-                else
-                    return new OrderedPair();
+                return op_value;
             }
         }
 
+        public Value()
+        {
+            SetValue(0);
+        }
+
         public Value(string value)
-            : this()
         {
             SetValue(value);
         }
 
         public Value(int value)
-            : this()
         {
             SetValue(value);
         }
 
         public Value(double value)
-            : this()
         {
             SetValue(value);
         }
 
         public Value(bool value)
-            : this()
         {
             SetValue(value);
         }
 
         public Value(OrderedPair value)
-            : this()
         {
             SetValue(value);
         }
 
         public void SetValue(string value, bool isPointer = false)
         {
-            IsNull = false;
             Type = isPointer ? ValueTypes.Pointer : ValueTypes.String;
             s_value = value;
             if (!int.TryParse(value, out i_value)) i_value = 0;
@@ -167,7 +146,6 @@ namespace KerboScriptEngine
 
         public void SetValue(int value)
         {
-            IsNull = false;
             Type = ValueTypes.Integer;
             i_value = value;
             s_value = value.ToString();
@@ -178,7 +156,6 @@ namespace KerboScriptEngine
 
         public void SetValue(double value)
         {
-            IsNull = false;
             Type = ValueTypes.Float;
             f_value = value;
             i_value = (int)value;
@@ -189,7 +166,6 @@ namespace KerboScriptEngine
 
         public void SetValue(bool value)
         {
-            IsNull = false;
             Type = ValueTypes.Boolean;
             b_value = value;
             s_value = value.ToString();
@@ -200,7 +176,6 @@ namespace KerboScriptEngine
 
         public void SetValue(OrderedPair value)
         {
-            IsNull = false;
             Type = ValueTypes.OrderedPair;
             op_value = value;
             i_value = value.X;
@@ -238,7 +213,7 @@ namespace KerboScriptEngine
         #region Binary Operations
         public static Value operator ==(Value a, Value b)
         {
-            if (a.IsNull | b.IsNull) throw new NullReferenceException();
+            if (IsNull(a) | IsNull(b)) throw new NullReferenceException();
 
             if ((a.Type == ValueTypes.String) | (b.Type == ValueTypes.String))
                 return new Value(a.StringValue == b.StringValue);
@@ -256,14 +231,14 @@ namespace KerboScriptEngine
 
         public static Value operator !=(Value a, Value b)
         {
-            if (a.IsNull | b.IsNull) throw new NullReferenceException();
+            if (IsNull(a) | IsNull(b)) throw new NullReferenceException();
 
             return !(a == b);
         }
 
         public static Value operator +(Value a, Value b)
         {
-            if (a.IsNull | b.IsNull) throw new NullReferenceException();
+            if (IsNull(a) | IsNull(b)) throw new NullReferenceException();
 
             if ((a.Type == ValueTypes.String) | (b.Type == ValueTypes.String))
                 return new Value(a.StringValue + b.StringValue);
@@ -281,11 +256,9 @@ namespace KerboScriptEngine
 
         public static Value operator -(Value a, Value b)
         {
-            if (a.IsNull | b.IsNull) throw new NullReferenceException();
+            if (IsNull(a) | IsNull(b)) throw new NullReferenceException();
 
-            if ((a.Type == ValueTypes.String) | (b.Type == ValueTypes.String))
-                throw new InvalidOperationException("Cannot perform subtraction with a string value.");
-            else if ((a.Type == ValueTypes.Float) | (b.Type == ValueTypes.Float))
+            if ((a.Type == ValueTypes.Float) | (b.Type == ValueTypes.Float))
                 return new Value(a.FloatValue - b.FloatValue);
             else if ((a.Type == ValueTypes.Integer) | (b.Type == ValueTypes.Integer))
                 return new Value(a.IntegerValue - b.IntegerValue);
@@ -294,34 +267,34 @@ namespace KerboScriptEngine
             else if ((a.Type == ValueTypes.OrderedPair) | (b.Type == ValueTypes.OrderedPair))
                 return new Value(new OrderedPair(a.OrderedPairValue.X - b.OrderedPairValue.X, a.OrderedPairValue.Y - b.OrderedPairValue.Y));
             else
-                return new Value();
+                return new Value(a.FloatValue - b.FloatValue);
         }
 
         public static Value operator *(Value a, Value b)
         {
-            if (a.IsNull | b.IsNull) throw new NullReferenceException();
+            if (IsNull(a) | IsNull(b)) throw new NullReferenceException();
 
-            if ((a.Type == ValueTypes.String) | (b.Type == ValueTypes.String))
-                throw new InvalidOperationException("Cannot perform multiplication with a string value.");
-            else if ((a.Type == ValueTypes.Float) | (b.Type == ValueTypes.Float))
+            if ((a.Type == ValueTypes.Float) | (b.Type == ValueTypes.Float))
                 return new Value(a.FloatValue * b.FloatValue);
             else if ((a.Type == ValueTypes.Integer) | (b.Type == ValueTypes.Integer))
                 return new Value(a.IntegerValue * b.IntegerValue);
             else if ((a.Type == ValueTypes.Boolean) | (b.Type == ValueTypes.Boolean))
                 return new Value((a.IntegerValue * b.IntegerValue) != 0 ? true : false);
-            else if ((a.Type == ValueTypes.OrderedPair) | (b.Type == ValueTypes.OrderedPair))
+            else if ((a.Type == ValueTypes.OrderedPair) && (b.Type == ValueTypes.OrderedPair))
                 return new Value(new OrderedPair(a.OrderedPairValue.X * b.OrderedPairValue.X, a.OrderedPairValue.Y * b.OrderedPairValue.Y));
+            else if (a.Type == ValueTypes.OrderedPair)
+                return new Value(new OrderedPair(a.OrderedPairValue.X * b.IntegerValue, a.OrderedPairValue.Y * b.IntegerValue));
+            else if (b.Type == ValueTypes.OrderedPair)
+                return new Value(new OrderedPair(b.OrderedPairValue.X * a.IntegerValue, b.OrderedPairValue.Y * a.IntegerValue));
             else
-                return new Value();
+                return new Value(a.FloatValue * b.FloatValue);
         }
 
         public static Value operator /(Value a, Value b)
         {
-            if (a.IsNull | b.IsNull) throw new NullReferenceException();
+            if (IsNull(a) | IsNull(b)) throw new NullReferenceException();
 
-            if ((a.Type == ValueTypes.String) | (b.Type == ValueTypes.String))
-                throw new InvalidOperationException("Cannot perform division with a string value.");
-            else if ((a.Type == ValueTypes.Float) | (b.Type == ValueTypes.Float))
+            if ((a.Type == ValueTypes.Float) | (b.Type == ValueTypes.Float))
             {
                 if (b.FloatValue.CompareTo(0f) != 0)
                     throw new DivideByZeroException();
@@ -339,103 +312,100 @@ namespace KerboScriptEngine
                     throw new DivideByZeroException();
                 return new Value((a.IntegerValue / b.IntegerValue) != 0 ? true : false);
             }
-            else if ((a.Type == ValueTypes.OrderedPair) | (b.Type == ValueTypes.OrderedPair))
+            else if ((a.Type == ValueTypes.OrderedPair) && (b.Type == ValueTypes.OrderedPair))
             {
                 if ((b.OrderedPairValue.Y == 0) | (b.OrderedPairValue.X == 0))
                     throw new DivideByZeroException();
                 return new Value(new OrderedPair(a.OrderedPairValue.X / b.OrderedPairValue.X, a.OrderedPairValue.Y / b.OrderedPairValue.Y));
             }
+            else if (a.Type == ValueTypes.OrderedPair)
+            {
+                if (b.IntegerValue == 0)
+                    throw new DivideByZeroException();
+                return new Value(new OrderedPair(a.OrderedPairValue.X / b.IntegerValue, a.OrderedPairValue.Y / b.IntegerValue));
+            }
             else
-                return new Value();
+            {
+                if (b.FloatValue.CompareTo(0f) != 0)
+                    throw new DivideByZeroException();
+                return new Value(a.FloatValue / b.FloatValue);
+            }
         }
 
         public static Value operator %(Value a, Value b)
         {
-            if (a.IsNull | b.IsNull) throw new NullReferenceException();
+            if (IsNull(a) | IsNull(b)) throw new NullReferenceException();
 
-            if ((a.Type == ValueTypes.String) | (b.Type == ValueTypes.String))
-                throw new InvalidOperationException("Cannot perform remainder division with a string value.");
-            else if ((a.Type == ValueTypes.Float) | (b.Type == ValueTypes.Float))
-            {
-                if (b.FloatValue.CompareTo(0f) != 0)
-                    throw new DivideByZeroException();
-                return new Value(a.FloatValue % b.FloatValue);
-            }
-            else if ((a.Type == ValueTypes.Integer) | (b.Type == ValueTypes.Integer))
-            {
-                if (b.IntegerValue == 0)
-                    throw new DivideByZeroException();
-                return new Value(a.IntegerValue % b.IntegerValue);
-            }
-            else if ((a.Type == ValueTypes.Boolean) | (b.Type == ValueTypes.Boolean))
-            {
-                if (b.IntegerValue == 0)
-                    throw new DivideByZeroException();
-                return new Value((a.IntegerValue % b.IntegerValue) != 0 ? true : false);
-            }
-            else if ((a.Type == ValueTypes.OrderedPair) | (b.Type == ValueTypes.OrderedPair))
+            if ((a.Type == ValueTypes.OrderedPair) | (b.Type == ValueTypes.OrderedPair))
             {
                 if ((b.OrderedPairValue.X == 0) | (b.OrderedPairValue.Y == 0))
                     throw new DivideByZeroException();
                 return new Value(new OrderedPair(a.OrderedPairValue.X % b.OrderedPairValue.X, a.OrderedPairValue.Y % b.OrderedPairValue.Y));
             }
+            else if (a.Type == ValueTypes.OrderedPair)
+            {
+                if (b.IntegerValue == 0)
+                    throw new DivideByZeroException();
+                return new Value(new OrderedPair(a.OrderedPairValue.X % b.IntegerValue, a.OrderedPairValue.Y % b.IntegerValue));
+            }
             else
-                return new Value();
+            {
+                if (b.IntegerValue == 0)
+                    throw new DivideByZeroException();
+                return new Value(a.IntegerValue % b.IntegerValue);
+            }
         }
 
         public static Value RaiseToPower(Value x, Value power)
         {
-            if (x.IsNull | power.IsNull) throw new NullReferenceException();
+            if (IsNull(x) | IsNull(power)) throw new NullReferenceException();
 
-            if ((x.Type == ValueTypes.String) | (power.Type == ValueTypes.String))
-                throw new InvalidOperationException("Cannot perform multiplication with a string value.");
-            else if ((x.Type == ValueTypes.Float) | (power.Type == ValueTypes.Float))
+            if ((x.Type == ValueTypes.Float) | (power.Type == ValueTypes.Float))
                 return new Value(Math.Pow(x.FloatValue, power.FloatValue));
             else if ((x.Type == ValueTypes.Integer) | (power.Type == ValueTypes.Integer))
                 return new Value((int)Math.Pow(x.FloatValue, power.FloatValue));
             else if ((x.Type == ValueTypes.Boolean) | (power.Type == ValueTypes.Boolean))
                 return new Value(((int)Math.Pow(x.FloatValue, power.FloatValue)) != 0 ? true : false);
-            else if ((x.Type == ValueTypes.OrderedPair) | (power.Type == ValueTypes.OrderedPair))
+            else if ((x.Type == ValueTypes.OrderedPair) && (power.Type == ValueTypes.OrderedPair))
                 return new Value(new OrderedPair((int)Math.Pow(x.OrderedPairValue.X, power.OrderedPairValue.X),
                     (int)Math.Pow(x.OrderedPairValue.Y, power.OrderedPairValue.Y)));
+            else if (x.Type == ValueTypes.OrderedPair)
+                return new Value(new OrderedPair((int)Math.Pow(x.OrderedPairValue.X, power.FloatValue),
+                    (int)Math.Pow(x.OrderedPairValue.Y, power.FloatValue)));
             else
-                return new Value();
+                return new Value(Math.Pow(x.FloatValue, power.FloatValue));
         }
 
         public static Value operator &(Value a, Value b)
         {
-            if (a.IsNull | b.IsNull) throw new NullReferenceException();
+            if (IsNull(a) | IsNull(b)) throw new NullReferenceException();
 
-            if ((a.Type == ValueTypes.String) | (b.Type == ValueTypes.String))
-                throw new InvalidOperationException("Cannot perform bitwise or logical AND with a string value.");
-            else if ((a.Type == ValueTypes.Integer) | (b.Type == ValueTypes.Integer))
+            if ((a.Type == ValueTypes.Integer) | (b.Type == ValueTypes.Integer))
                 return new Value(a.IntegerValue & b.IntegerValue);
             else if ((a.Type == ValueTypes.Boolean) | (b.Type == ValueTypes.Boolean))
                 return new Value(a.BooleanValue & b.BooleanValue);
-            else if ((a.Type == ValueTypes.Float) | (b.Type == ValueTypes.Float))
-                throw new InvalidOperationException("Cannot perform bitwise or logical AND with a floating-point value.");
-            else if ((a.Type == ValueTypes.OrderedPair) | (b.Type == ValueTypes.OrderedPair))
+            else if ((a.Type == ValueTypes.OrderedPair) && (b.Type == ValueTypes.OrderedPair))
                 return new Value(new OrderedPair(a.OrderedPairValue.X & b.OrderedPairValue.X, a.OrderedPairValue.Y & b.OrderedPairValue.Y));
+            else if (a.Type == ValueTypes.OrderedPair)
+                return new Value(new OrderedPair(a.OrderedPairValue.Y & b.IntegerValue, a.OrderedPairValue.Y & b.IntegerValue));
             else
-                return new Value();
+                return new Value(a.IntegerValue & b.IntegerValue);
         }
 
         public static Value operator |(Value a, Value b)
         {
-            if (a.IsNull | b.IsNull) throw new NullReferenceException();
+            if (IsNull(a) | IsNull(b)) throw new NullReferenceException();
 
-            if ((a.Type == ValueTypes.String) | (b.Type == ValueTypes.String))
-                throw new InvalidOperationException("Cannot perform bitwise or logical AND with a string value.");
-            else if ((a.Type == ValueTypes.Integer) | (b.Type == ValueTypes.Integer))
+            if ((a.Type == ValueTypes.Integer) | (b.Type == ValueTypes.Integer))
                 return new Value(a.IntegerValue | b.IntegerValue);
             else if ((a.Type == ValueTypes.Boolean) | (b.Type == ValueTypes.Boolean))
                 return new Value(a.BooleanValue | b.BooleanValue);
-            else if ((a.Type == ValueTypes.Float) | (b.Type == ValueTypes.Float))
-                throw new InvalidOperationException("Cannot perform bitwise or logical AND with a floating-point value.");
-            else if ((a.Type == ValueTypes.OrderedPair) | (b.Type == ValueTypes.OrderedPair))
+            else if ((a.Type == ValueTypes.OrderedPair) && (b.Type == ValueTypes.OrderedPair))
                 return new Value(new OrderedPair(a.OrderedPairValue.X | b.OrderedPairValue.X, a.OrderedPairValue.Y | b.OrderedPairValue.Y));
+            else if (a.Type == ValueTypes.OrderedPair)
+                return new Value(new OrderedPair(a.OrderedPairValue.Y | b.IntegerValue, a.OrderedPairValue.Y | b.IntegerValue));
             else
-                return new Value();
+                return new Value(a.IntegerValue | b.IntegerValue);
         }
 
         #endregion
@@ -444,16 +414,16 @@ namespace KerboScriptEngine
 
         public static Value operator +(Value x)
         {
-            if (x.IsNull) throw new NullReferenceException();
+            if (IsNull(x)) throw new NullReferenceException();
             return x;
         }
 
         public static Value operator -(Value x)
         {
-            if (x.IsNull) throw new NullReferenceException();
+            if (IsNull(x)) throw new NullReferenceException();
 
             if (x.Type == ValueTypes.String)
-                throw new InvalidOperationException("Cannot perform mathematical negation on a string value.");
+                return x;
             else if (x.Type == ValueTypes.Float)
                 return new Value(x.FloatValue * -1);
             else if (x.Type == ValueTypes.Integer)
@@ -468,43 +438,30 @@ namespace KerboScriptEngine
 
         public static Value operator ~(Value x)
         {
-            if (x.IsNull) throw new NullReferenceException();
+            if (IsNull(x)) throw new NullReferenceException();
 
-            if (x.Type == ValueTypes.String)
-                throw new InvalidOperationException("Cannot perform binary negation on a string value.");
-            else if (x.Type == ValueTypes.Float)
-                throw new InvalidOperationException("Cannot perform binary negation on a double-precision floating point value.");
-            else if (x.Type == ValueTypes.Integer)
+            if (x.Type == ValueTypes.Integer)
                 return new Value(~x.IntegerValue);
             else if (x.Type == ValueTypes.Boolean)
                 return new Value((~x.IntegerValue) != 0 ? true : false);
             else if (x.Type == ValueTypes.OrderedPair)
                 return new Value(new OrderedPair(~x.OrderedPairValue.X, ~x.OrderedPairValue.Y));
             else
-                return new Value();
+                return new Value(~x.IntegerValue);
         }
 
         public static Value operator !(Value x)
         {
-            if (x.IsNull) throw new NullReferenceException();
+            if (IsNull(x)) throw new NullReferenceException();
 
-            if (x.Type == ValueTypes.Boolean)
-            {
-                return new Value(!x.BooleanValue);
-            }
-            else
-            {
-                throw new InvalidOperationException("Cannot perform logical-NOT on non-boolean values.");
-            }
+            return new Value(!x.BooleanValue);
         }
 
         public static Value operator ++(Value x)
         {
-            if (x.IsNull) throw new NullReferenceException();
+            if (IsNull(x)) throw new NullReferenceException();
 
-            if (x.Type == ValueTypes.String)
-                throw new InvalidOperationException("Cannot perform incrementation with a string value.");
-            else if (x.Type == ValueTypes.Float)
+            if (x.Type == ValueTypes.Float)
                 return new Value(x.FloatValue + 1);
             else if (x.Type == ValueTypes.Integer)
                 return new Value(x.IntegerValue + 1);
@@ -513,12 +470,12 @@ namespace KerboScriptEngine
             else if (x.Type == ValueTypes.OrderedPair)
                 return new Value(new OrderedPair(x.OrderedPairValue.X + 1, x.OrderedPairValue.Y + 1));
             else
-                return new Value();
+                return new Value(x.FloatValue + 1);
         }
 
         public static Value operator --(Value x)
         {
-            if (x.IsNull) throw new NullReferenceException();
+            if (IsNull(x)) throw new NullReferenceException();
 
             if (x.Type == ValueTypes.String)
                 throw new InvalidOperationException("Cannot perform decrementation with a string value.");

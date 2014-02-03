@@ -56,7 +56,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="InternalTypes\OrderedPair.cs" />
+    <Compile Include="InternalTypes\ValueArray.cs" />
     <Compile Include="Parser.cs" />
+    <Compile Include="ScriptAPI\KerboMath.cs" />
     <Compile Include="ScriptExecutor.cs" />
     <Compile Include="ErrorBuilder.cs" />
     <Compile Include="ExecutionFrame.cs" />
