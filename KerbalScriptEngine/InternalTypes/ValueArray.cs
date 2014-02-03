@@ -68,5 +68,20 @@ namespace KerboScriptEngine.InternalTypes
         {
             IsReadOnly = true;
         }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("{ ");
+            for (int i = 0; i < Count; i++)
+            {
+                sb.Append(items[i].ToString());
+                if (i < Count - 1) sb.Append(", ");
+            }
+            sb.Append(" }");
+
+            return sb.ToString();
+        }
     }
 }
