@@ -275,5 +275,20 @@ namespace KerboScriptEngine.ScriptAPI
         {
             return Math.Atan2(y.FloatValue, x.FloatValue);
         }
+
+        public static Value Log(Value base10)
+        {
+            return Math.Log10(base10.FloatValue);
+        }
+
+        public static Value Log(Value val, Value baseN)
+        {
+            return Math.Log(val.FloatValue, baseN.FloatValue);
+        }
+
+        public static Value Ln(Value baseE)
+        {
+            return Math.Log(baseE.FloatValue);
+        }
     }
 }
