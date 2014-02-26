@@ -2,48 +2,75 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jebnix;
-using Jebnix.stdlib;
+using KerboScriptEngine;
+using BIOS;
+using BIOS.Graphics;
+using BIOS.stdlib;
 
 namespace JebnixConsoleDebugger
 {
     class Program
     {
-        static VirtualMachine vm;
+        //static VirtualMachine vm;
+        static KerboScriptEngine.Interpreter interpreter;
+        static System.Timers.Timer clock;
+        static int consoleProc;
+
         static void Main(string[] args)
         {
-            vm = new VirtualMachine(10000);
-            stdio.outs = Console.Out;
-            stdio.ins = Console.In;
-            stdio.Initialize(TextMonitor.Mode.Console);
-            DebugLogger.Initialize();
-            Settings.ShowPath = false;
-            Console.SetWindowSize(TextMonitor.WIDTH, TextMonitor.HEIGHT);
+            Console.Title = "Jebnix Debug Console";
             Console.ForegroundColor = ConsoleColor.Green;
-            vm.ShowCursor = false;
-            stdio.ClearScreen();
-            Console.SetCursorPosition(0, 0);
-            vm.ScreenRefresh += new EventHandler(vm_ScreenRefresh);
 
-            vm.Start();
-            while (vm.IsRunning)
-            {
+            clock = new System.Timers.Timer(10);
+            interpreter = new KerboScriptEngine.Interpreter(new System.IO.DirectoryInfo("Archive"));
+            Graphics.Mode = Graphics.GraphicsMode.Text;
+            clock.Elapsed += new System.Timers.ElapsedEventHandler(clock_Elapsed);
+            stdio.PrintLine("Welcome to Jebnix");
+            stdio.PrintLine(interpreter.GetInterpreterVersion());
+            stdio.PrintLine();
+            consoleProc = interpreter.CreateProcess(new string[0], "Console");
 
-            }
+            Console.SetWindowSize(40, 21);
+
+            //DebugMode();
+            RealTimeMode();
         }
 
-        static void vm_ScreenRefresh(object sender, EventArgs e)
+        static void RealTimeMode()
         {
-            Console.Clear();
-            for (int y = 0; y < TextMonitor.HEIGHT; y++)
-            {   
-                for (int x = 0; x < TextMonitor.WIDTH; x++)
-                {
-                    Console.SetCursorPosition(x, y);
-                    Console.Write(stdio.ScreenCells[x, y]);
-                }
+            clock.Enabled = true;
+
+            while (clock.Enabled)
+            {
+                string inp = Console.ReadLine();
+                stdio.PrintLine(inp);
+                interpreter.AddCodeToProcess(consoleProc, new string[] { inp }, "Console");
             }
         }
-        
+
+        static void DebugMode()
+        {
+            clock_Elapsed(null, null);
+
+            string inp = Console.ReadLine();
+            stdio.PrintLine(inp);
+            interpreter.AddCodeToProcess(consoleProc, new string[] { inp }, "Console");
+
+            clock_Elapsed(null, null);
+            clock_Elapsed(null, null);
+            Console.ReadLine();
+        }
+
+        static void clock_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            interpreter.ExecuteProcess();
+            if (Graphics.TextMode.ScreenChanged)
+            {
+                Console.Clear();
+                Console.Write(Graphics.TextMode.ToString());
+                Console.SetCursorPosition(Graphics.TextMode.Column, Graphics.TextMode.Row);
+                Graphics.TextMode.ClearFlag();
+            }
+        }
     }
 }
