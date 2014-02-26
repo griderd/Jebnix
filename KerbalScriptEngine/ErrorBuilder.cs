@@ -27,16 +27,14 @@ namespace KerboScriptEngine
                     s.Append("Runtime error"); break;
 
                 case ErrorType.SyntaxError:
-                    s.Append("Syntax error:"); break;
+                    s.Append("Syntax error"); break;
             }
 
             s.Append(" (");
             s.Append(line.Filename);
             s.Append(":");
             s.Append(line.LineNumber);
-            s.Append(",");
-            s.Append(line.ColumnOffset);
-            s.Append(") - ");
+            s.Append("): ");
             s.Append(message);
 
             errlist.Add(s.ToString());
