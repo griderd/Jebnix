@@ -7,11 +7,37 @@ namespace KerboScriptEngine
 {
     class ReservedWords
     {
+        private static string[][] precedence = new string[][]
+        {
+            new string[] {","},
+            new string[] {"|", "or"},
+            new string[] {"&", "and"},
+            new string[] {"=", "==", "!="},
+            new string[] {"<", "<=", ">", ">=" },
+            new string[] {"+", "-"},
+            new string[] {"*", "/", "%" },
+            new string[] {"!", "~", "not", "^"},
+            new string[] {"++", "--", ":"}
+        };
+
+        public static int GetPrecedence(string op)
+        {
+            for (int i = 0; i < precedence.Length; i++)
+            {
+                if (precedence[i].Contains(op)) return i;
+            }
+            return -1;
+        }
+
         public static string[] Operators 
         {
             get
             {
-                return new string[] { "+", "-", "*", "/", "%", "^", "&", "and", "|", "or", "!", "not", "~", "++", "--" };
+                return new string[] { 
+                    "+", "-", "*", "/", "%", "^", "&",
+                    "and", "|", "or", "!", "not", "~", 
+                    "++", "--", "=", "==", ">", "<", 
+                    ">=", "<=", "!=" };
             }
         }
 

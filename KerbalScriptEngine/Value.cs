@@ -21,7 +21,8 @@ namespace KerboScriptEngine
             Float,
             Boolean,
             OrderedPair,
-            Pointer
+            Pointer,
+            Operator
         }
 
         public ValueTypes Type { get; private set; }
@@ -60,7 +61,7 @@ namespace KerboScriptEngine
                     return new Value(OrderedPairValue);
 
                 case ValueTypes.Pointer:
-                    return null;
+                    return Value.GetPointer(StringValue);
 
                 case ValueTypes.String:
                     return new Value(StringValue);
@@ -218,6 +219,14 @@ namespace KerboScriptEngine
             s_value = value.ToString();
         }
 
+        public static Value GetPointer(string pointsTo)
+        {
+            Value v = new Value(pointsTo);
+            v.CastToType(ValueTypes.Pointer);
+            return v;
+        }
+
+
         public void CastToType(ValueTypes t)
         {
             switch (Type)
@@ -240,6 +249,11 @@ namespace KerboScriptEngine
 
                 case ValueTypes.OrderedPair:
                     SetValue(OrderedPairValue);
+                    break;
+
+                case ValueTypes.Pointer:
+                    SetValue(StringValue);
+                    Type = ValueTypes.Pointer;
                     break;
             }
         }
@@ -268,6 +282,56 @@ namespace KerboScriptEngine
             if (IsNull(a) | IsNull(b)) throw new NullReferenceException();
 
             return !(a == b);
+        }
+
+        public static Value operator >(Value a, Value b)
+        {
+            if (IsNull(a) | IsNull(b)) throw new NullReferenceException();
+
+            if ((a.Type == ValueTypes.String) | (b.Type == ValueTypes.String))
+                return a.StringValue.CompareTo(b.StringValue) > 0;
+            else if ((a.Type == ValueTypes.Float) | (b.Type == ValueTypes.Float))
+                return a.FloatValue > b.FloatValue;
+            else if ((a.Type == ValueTypes.Integer) | (b.Type == ValueTypes.Integer))
+                return a.IntegerValue > b.IntegerValue;
+            else if ((a.Type == ValueTypes.Boolean) | (b.Type == ValueTypes.Boolean))
+                return a.IntegerValue > b.IntegerValue;
+            else if ((a.Type == ValueTypes.OrderedPair) | (b.Type == ValueTypes.OrderedPair))
+                return a.OrderedPairValue.CompareTo(b.OrderedPairValue) > 0;
+            else
+                return new Value();
+        }
+
+        public static Value operator >=(Value a, Value b)
+        {
+            if (IsNull(a) | IsNull(b)) throw new NullReferenceException();
+
+            return (a == b) | (a > b);
+        }
+
+        public static Value operator <=(Value a, Value b)
+        {
+            if (IsNull(a) | IsNull(b)) throw new NullReferenceException();
+
+            return (a == b) | (a < b);
+        }
+
+        public static Value operator <(Value a, Value b)
+        {
+            if (IsNull(a) | IsNull(b)) throw new NullReferenceException();
+
+            if ((a.Type == ValueTypes.String) | (b.Type == ValueTypes.String))
+                return a.StringValue.CompareTo(b.StringValue) < 0;
+            else if ((a.Type == ValueTypes.Float) | (b.Type == ValueTypes.Float))
+                return a.FloatValue < b.FloatValue;
+            else if ((a.Type == ValueTypes.Integer) | (b.Type == ValueTypes.Integer))
+                return a.IntegerValue < b.IntegerValue;
+            else if ((a.Type == ValueTypes.Boolean) | (b.Type == ValueTypes.Boolean))
+                return a.IntegerValue < b.IntegerValue;
+            else if ((a.Type == ValueTypes.OrderedPair) | (b.Type == ValueTypes.OrderedPair))
+                return a.OrderedPairValue.CompareTo(b.OrderedPairValue) < 0;
+            else
+                return new Value();
         }
 
         public static Value operator +(Value a, Value b)

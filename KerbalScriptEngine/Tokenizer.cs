@@ -54,7 +54,7 @@ namespace KerboScriptEngine
                         continue;
 
                     case '.':
-                        if ((inString) | (char.IsDigit(token[token.Length - 1]) && char.IsDigit(nextc)))
+                        if ((inString) | (token.Length > 0 && char.IsDigit(token[token.Length - 1]) && char.IsDigit(nextc)))
                             token.Append(c);
                         else
                         {

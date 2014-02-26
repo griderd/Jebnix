@@ -4,35 +4,87 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Reflection;
+using UnityEngine;
+using BIOS.FileSystem;
+using KerboScriptEngine.ScriptAPI;
 
 namespace KerboScriptEngine
 {
-    public class Interpreter : Jebnix.IInterpreter
+    public class Interpreter : BIOS.Interpreter
     {
         List<ScriptProcess> processes;
         int currentProcess;
 
-        Dictionary<string, Value> globalVariables;
+        List<string> apiFunctions;
+        List<string> filesAsFunctions;
 
-        public Interpreter()
+        public string[] GlobalFunctions
+        {
+            get
+            {
+                List<string> funcs = new List<string>(filesAsFunctions);
+                funcs.AddRange(apiFunctions.ToArray());
+                return funcs.ToArray();
+            }
+        }
+
+        private void GetFilesAsFunctions()
+        {
+            filesAsFunctions.Clear();
+
+            foreach (BIOS.FileSystem.File file in CurrentFolder.Files)
+            {
+                filesAsFunctions.Add(file.Name);
+            }
+        }
+
+        public override bool HasVariable(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void GetAPIFunctions()
+        {
+            // TODO: Add API functions
+        }
+
+        public Value InvokeAPIFunction(string function, params Value[] p)
+        {
+            // TODO: Switch function for API
+
+            return 0;
+        }
+
+        public Interpreter(DirectoryInfo archive)
+            :  base(archive)
         {
             processes = new List<ScriptProcess>();
-            globalVariables = new Dictionary<string, Value>();
+            apiFunctions = new List<string>();
+            filesAsFunctions = new List<string>();
             currentProcess = 0;
         }
 
-        public string GetInterpreterVersion()
+        public Interpreter(Vessel vessel, DirectoryInfo archive)
+            : base(vessel, archive)
         {
-            System.Version v =  Assembly.GetExecutingAssembly().GetName().Version;
-            return "KerboScript++ Interpreter v" + v.Major + "." + v.Minor + "." + v.Revision + " Build " + v.Build;
+            processes = new List<ScriptProcess>();
+            currentProcess = 0;
         }
 
-        public void ExecuteProcess()
+        public override string GetInterpreterVersion()
         {
-            if (processes.Count < currentProcess)
+            System.Version v =  Assembly.GetExecutingAssembly().GetName().Version;
+            return "KerboScript++ Interpreter " + v.Major + "." + v.Minor + " Build " + v.Revision;
+        }
+
+        public override void ExecuteProcess()
+        {
+            if (processes.Count > currentProcess)
             {
                 processes[currentProcess].ExecuteNext();
                 currentProcess++;
+                if (currentProcess == processes.Count)
+                    currentProcess = 0;
             }
             else
             {
@@ -40,55 +92,30 @@ namespace KerboScriptEngine
             }
         }
 
-        public bool HasVariable(string name)
+        public override int CreateProcess(string file)
         {
-            return globalVariables.ContainsKey(name);
-        }
-
-        public bool TryGetVariable(string name, out Value value)
-        {
-            if (globalVariables.ContainsKey(name))
+            if (System.IO.File.Exists(file))
             {
-                value = globalVariables[name];
-                return true;
+                processes.Add(new ScriptProcess(ConvertToLineInfo(System.IO.File.ReadAllLines(file), file), this));
+                return processes.Count - 1;
             }
-            else
+            return -1;
+        }
+
+        public override int CreateProcess(string[] lines, string filename)
+        {
+            processes.Add(new ScriptProcess(ConvertToLineInfo(lines, filename), this));
+            return processes.Count - 1;
+        }
+
+        public bool AddCodeToProcess(int processId, string[] lines, string filename)
+        {
+            if ((processId >= 0) && (processes.Count > processId))
             {
-                value = Value.NullValue;
-                return false;
-            }
-        }
-
-        public Value GetVariable(string name)
-        {
-            if (HasVariable(name))
-                return globalVariables[name];
-            else
-                return Value.NullValue;
-        }
-
-        public void SetVariable(string name, Value val)
-        {
-            if (HasVariable(name))
-                globalVariables[name] = val;
-            else
-                globalVariables.Add(name, val);
-        }
-
-        public bool CreateProcess(string file)
-        {
-            if (File.Exists(file))
-            {
-                processes.Add(new ScriptProcess(ConvertToLineInfo(File.ReadAllLines(file), file), this));
+                processes[processId].AddLines(ConvertToLineInfo(lines, filename));
                 return true;
             }
             return false;
-        }
-
-        public bool CreateProcess(string[] lines, string filename)
-        {
-            processes.Add(new ScriptProcess(ConvertToLineInfo(lines, filename), this));
-            return true;
         }
 
         private LineInfo[] ConvertToLineInfo(string[] lines, string filename)
@@ -102,7 +129,7 @@ namespace KerboScriptEngine
             return l.ToArray();
         }
 
-        public void MemoryDump()
+        public override void MemoryDump()
         {
             foreach (ScriptProcess t in processes)
             {

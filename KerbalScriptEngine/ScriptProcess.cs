@@ -2,18 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BIOS.stdlib;
 
 namespace KerboScriptEngine
 {
     partial class ScriptProcess
     {
+        Dictionary<string, Value> globalScope;
+        Dictionary<string, string> globalLocked;
         Stack<ExecutionState> stateStack;
 
         ExecutionState CurrentState
         {
             get
             {
-                return stateStack.Pop();
+                return stateStack.Peek();
             }
         }
 
@@ -21,7 +24,40 @@ namespace KerboScriptEngine
         {
             get
             {
-                return CurrentState.scopeStack.Pop();
+                return CurrentState.scopeStack.Peek();
+            }
+        }
+
+        /// <summary>
+        /// Gets the variables that exist in the local scope, as well as the global scope. Local variables override global variables with the same name.
+        /// </summary>
+        Dictionary<string, Value> ResolvedScope
+        {
+            get
+            {
+                Dictionary<string, Value> vars = new Dictionary<string, Value>();
+
+                foreach (KeyValuePair<string, Value> kvp in CurrentState.parameters)
+                {
+                    vars.Add(kvp.Key, kvp.Value);
+                }
+
+                foreach (Dictionary<string, Value> dict in CurrentState.scopeStack)
+                {
+                    foreach (KeyValuePair<string, Value> kvp in dict)
+                    {
+                        if (!vars.ContainsKey(kvp.Key))
+                            vars.Add(kvp.Key, kvp.Value);
+                    }
+                }
+
+                foreach (KeyValuePair<string, Value> kvp in globalScope)
+                {
+                    if (!vars.ContainsKey(kvp.Key))
+                        vars.Add(kvp.Key, kvp.Value);
+                }
+
+                return vars;
             }
         }
 
@@ -67,13 +103,31 @@ namespace KerboScriptEngine
             }
             stateStack.Push(new ExecutionState(lines));
             argumentStack = new Stack<Value>();
+            globalLocked = new Dictionary<string, string>();
+            globalScope = new Dictionary<string, Value>();
         }
 
         public void ExecuteNext()
         {
-            string[] err;
-            Execute(CurrentState.nextLine, CurrentState.nextToken, CurrentState.lines.ToArray(), out err);
+            string[] err = new string[0];
+            if (CurrentState.nextLine < CurrentState.lines.Count)
+            {
+                Execute(CurrentState.nextLine, CurrentState.nextToken, CurrentState.lines.ToArray(), out err);
+                CurrentState.nextLine++;
+            }
 
+            if (err.Length > 0)
+            {
+                foreach (string e in err)
+                {
+                    stdio.PrintLine(e);
+                }
+            }
+        }
+
+        public void AddLines(LineInfo[] lines)
+        {
+            CurrentState.lines.AddRange(lines);
         }
 
         public void Interrupt(int nextLine, int nextToken)
@@ -88,29 +142,85 @@ namespace KerboScriptEngine
             string[] err;
             foreach (LineInfo when in CurrentState.whenBlocks.Keys)
             {
-                if (Evaluator.Evaluate(when, out err).BooleanValue && err.Length == 0)
+                if (Evaluator.Evaluate(when, ResolvedScope, Parent.GlobalFunctions, out err).BooleanValue && err.Length == 0)
                 {
                     Interrupt(CurrentState.whenBlocks[when].Item1, CurrentState.whenBlocks[when].Item2); 
                     CurrentState.whenBlocks.Remove(when);
                 }
                 if (err.Length > 0)
                 {
-                    // TODO: print errors
+                    foreach (string e in err)
+                    {
+                        stdio.PrintLine(e);
+                    }
                 }
             }
         }
 
-        public void AddLines(LineInfo[] lines)
-        {
-            CurrentState.lines.AddRange(lines);
-        }
-
+        /// <summary>
+        /// Determines whether a variable with the given name exists in the resolved scope.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public bool HasVariable(string name)
         {
-            return CurrentState.parameters.ContainsKey(name) | LocalScope.ContainsKey(name);
+            return ResolvedScope.ContainsKey(name);
         }
 
-        public void SetVariable(string name, Value val)
+        /// <summary>
+        /// Sets a variable with the given name in the resolved scope. Returns a value determining if the variable exists.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        public bool SetVariable(string name, Value val)
+        {
+            if (CurrentState.parameters.ContainsKey(name))
+            {
+                CurrentState.parameters[name] = val;
+                return true;
+            }
+            else
+            {
+                // Go through the scope stack looking for the variable
+                foreach (Dictionary<string, Value> scope in CurrentState.scopeStack)
+                {
+                    if (scope.ContainsKey(name))
+                    {
+                        scope[name] = val;
+                        return true;
+                    }
+                }
+            }
+
+            if (globalScope.ContainsKey(name))
+            {
+                globalScope[name] = val;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Sets or creates a variable in the global scope.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="val"></param>
+        public void SetGlobalVariable(string name, Value val)
+        {
+            if (globalScope.ContainsKey(name))
+                globalScope[name] = val;
+            else
+                globalScope.Add(name, val);
+        }
+
+        /// <summary>
+        /// Sets or creates a variable in the local scope.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="val"></param>
+        public void SetLocalVariable(string name, Value val)
         {
             if (LocalScope.ContainsKey(name))
                 LocalScope[name] = val;
@@ -125,9 +235,10 @@ namespace KerboScriptEngine
                 value = CurrentState.parameters[name];
                 return true;
             }
-            else if (Parent.HasVariable(name))
+            else if (globalScope.ContainsKey(name))
             {
-                return Parent.TryGetVariable(name, out value);
+                value = globalScope[name];
+                return true;
             }
             else
             {
@@ -142,7 +253,7 @@ namespace KerboScriptEngine
                 }
             }
 
-            value = Value.NullValue;
+            value = null;
             return false;
         }
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jebnix.stdlib;
+using BIOS.stdlib;
 
 namespace KerboScriptEngine
 {
@@ -15,7 +15,7 @@ namespace KerboScriptEngine
         /// <param name="lines"></param>
         /// <param name="err"></param>
         /// <returns>Returns a tuple containing the lineIndex stopped at and the token stopped at.</returns>
-        private Tuple<int, int> Execute(int lineIndex, int tokenIndex, LineInfo[] lines, out string[] err)
+        private Tuple<int, int> Execute(int lineIndex, int tokenIndex, LineInfo[] lines, out string[]  err)
         {
             LineInfo line = lines[lineIndex];
 
@@ -128,15 +128,23 @@ namespace KerboScriptEngine
                             {
                                 string expression = GetNextExpression(new string[] { "." });
                                 string[] ex;
-                                Value var = Evaluator.Evaluate(expression, line, out ex);
+                                Value var = Evaluator.Evaluate(expression, line, ResolvedScope, Parent.GlobalFunctions, out ex);
                                 errors.AddRange(ex);
 
                                 if (ex.Length == 0)
                                 {
-                                    if (local)
+                                    if (HasVariable(name))
+                                    {
                                         SetVariable(name, var);
+                                    }
+                                    else if (local)
+                                    {
+                                        SetLocalVariable(name, var);
+                                    }
                                     else
-                                        Parent.SetVariable(name, var);
+                                    {
+                                        SetGlobalVariable(name, var);
+                                    }
                                 }
                             }
                             else
@@ -225,7 +233,7 @@ namespace KerboScriptEngine
                         }
                         
                         // Evaluate expression
-                        Value output = Evaluator.Evaluate(s, line, out ex);
+                        Value output = Evaluator.Evaluate(s, line, ResolvedScope, Parent.GlobalFunctions, out ex);
                         errors.AddRange(ex);
                         if (ex.Length > 0)
                             break;
@@ -238,7 +246,7 @@ namespace KerboScriptEngine
                                 ThrowError(ErrorBuilder.ErrorType.SyntaxError, "No ordered pair provided. Cannot run PRINT.");
                                 break;
                             }
-                            Value location = Evaluator.Evaluate(s, line, out ex);
+                            Value location = Evaluator.Evaluate(s, line, ResolvedScope, Parent.GlobalFunctions, out ex);
                             errors.AddRange(ex);
                             if (ex.Length > 0)
                                 break;
@@ -247,7 +255,7 @@ namespace KerboScriptEngine
                         }
                         else
                         {
-                            stdio.PrintLine(output.StringValue, true);        
+                            stdio.PrintLine(output.StringValue);        
                         }
                         break;
                     }
@@ -275,7 +283,7 @@ namespace KerboScriptEngine
                         else
                         {
                             string[] ex;
-                            Value v = Evaluator.Evaluate(s, line, out ex);
+                            Value v = Evaluator.Evaluate(s, line, ResolvedScope, Parent.GlobalFunctions, out ex);
                             errors.AddRange(ex);
                             if (ex.Length > 0)
                                 break;

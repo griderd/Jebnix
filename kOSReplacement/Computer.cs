@@ -10,9 +10,11 @@ namespace Jebnix
     {
         VirtualMachine vm;
 
+        Interpreter interpreter;
+
         public override void OnStart(StartState state)
         {
-            vm = new VirtualMachine(10);
+            //vm = new VirtualMachine(10);
             vm.ScreenRefresh += new EventHandler(vm_ScreenRefresh);
 
             if (state != StartState.Editor)

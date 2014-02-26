@@ -25,7 +25,7 @@ namespace Jebnix
         Timer clock;
         Timer cursorBlink;
 
-        IInterpreter interpreter;
+        Interpreter interpreter;
 
         public event EventHandler ScreenRefresh;
         public event EventHandler CursorChanged;
@@ -65,7 +65,7 @@ namespace Jebnix
         /// Instantiates a virtual machine with the given interval between clock cycles.
         /// </summary>
         /// <param name="clockInterval">Interval between clock cycles in milliseconds.</param>
-        public VirtualMachine(double clockInterval, IInterpreter interpreter)
+        public VirtualMachine(double clockInterval, Interpreter interpreter)
         {
             this.interpreter = interpreter;
             clock = new Timer(clockInterval);
