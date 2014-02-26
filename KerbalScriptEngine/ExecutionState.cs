@@ -42,7 +42,7 @@ namespace KerboScriptEngine
         public Stack<Dictionary<string, Value>> scopeStack;
 
         /// <summary>
-        /// 
+        /// Locked variables.
         /// </summary>
         public Dictionary<string, string> lockedVariables;
 
@@ -67,6 +67,11 @@ namespace KerboScriptEngine
         public Dictionary<LineInfo, bool> whenThenPersist;
 
         /// <summary>
+        /// ON events
+        /// </summary>
+        public Dictionary<LineInfo, Tuple<int, int>> onBlocks;
+
+        /// <summary>
         /// Function parameters
         /// </summary>
         public Dictionary<string, Value> parameters;
@@ -83,6 +88,7 @@ namespace KerboScriptEngine
             whenThenPersist = new Dictionary<LineInfo, bool>();
             parameters = new Dictionary<string, Value>();
             scopeStack.Push(new Dictionary<string, Value>());
+            lockedVariables = new Dictionary<string, string>();
         }
 
         public void PushExecutionFrame()
