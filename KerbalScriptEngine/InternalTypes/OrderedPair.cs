@@ -73,5 +73,15 @@ namespace KerboScriptEngine.InternalTypes
         {
             return "(" + X.ToString() + ", " + Y.ToString() + ")";
         }
+
+        public double CompareTo(OrderedPair other)
+        {
+            return DistanceFromOrigin() - other.DistanceFromOrigin();
+        }
+
+        public double DistanceFromOrigin()
+        {
+            return Math.Sqrt(Math.Pow(X, 2) + Math.Pow(Y, 2));
+        }
     }
 }
