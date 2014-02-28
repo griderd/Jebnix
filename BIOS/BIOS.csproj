@@ -84,6 +84,8 @@
     <Compile Include="Interpreter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="stdlib\stdio.cs" />
+    <Compile Include="stdlib\stdtime.cs" />
+    <Compile Include="stdlib\stdvessel.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
