@@ -6,14 +6,14 @@ using System.Text;
 namespace BIOS.Graphics
 {
     public class Graphics
-    {
+    {   
         public enum GraphicsMode
         {
             Text,
             Graphical
         }
 
-        static GraphicsMode mode;
+        static GraphicsMode mode = GraphicsMode.Text;
         public static GraphicsMode Mode
         {
             get
