@@ -27,6 +27,7 @@ namespace JebnixConsoleDebugger
             clock.Elapsed += new System.Timers.ElapsedEventHandler(clock_Elapsed);
             stdio.PrintLine("Welcome to Jebnix");
             stdio.PrintLine(interpreter.GetInterpreterVersion());
+            stdio.PrintLine(stdio.GetBIOSVersion());
             stdio.PrintLine();
             consoleProc = interpreter.CreateProcess(new string[0], "Console");
 

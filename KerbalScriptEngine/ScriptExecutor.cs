@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BIOS.stdlib;
+using KSP;
 
 namespace KerboScriptEngine
 {
@@ -337,6 +338,96 @@ namespace KerboScriptEngine
                         }
                     }
                     break;
+
+                case "list":
+                    {
+                        GetNextToken();
+                        string lst = token;
+                        GetNextToken();
+                        if (token != ".")
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "'.' expected.");
+                            break;
+                        }
+                        switch (lst)
+                        {
+                            case "volumes":
+                                stdio.PrintLine("0 - Archive\t" + Parent.Archive.BytesUsed + "/" +
+                                    (Parent.Archive.MaxCapacity > 0 ? Parent.Archive.MaxCapacity.ToString() : "Infinity") + " (" +
+                                    (!double.IsInfinity(Parent.Archive.UsagePercent) ? Parent.Archive.UsagePercent.ToString("F2") : "Infinity") + "%)");
+                                stdio.PrintLine("1 - Root   \t" + Parent.RootFolder.BytesUsed + "/" + 
+                                    (Parent.RootFolder.MaxCapacity > 0 ? Parent.RootFolder.MaxCapacity.ToString() : "Infinity") + " (" +
+                                    (!double.IsInfinity(Parent.RootFolder.UsagePercent) ? Parent.RootFolder.UsagePercent.ToString("F2") : "Infinity") + "%)");
+                                stdio.PrintLine();
+                                break;
+                                
+                            case "files":
+                                stdio.PrintLine("~/" + Parent.CurrentFolder.Name);
+                                stdio.PrintLine(Parent.CurrentFolder.Files.Length.ToString() + " files in directory.");
+                                stdio.PrintLine();
+                                foreach (BIOS.FileSystem.File file in Parent.CurrentFolder.Files)
+                                {
+                                    stdio.PrintLine(file.Name + "\t" + file.Size + " bytes");
+                                }
+                                if (Parent.CurrentFolder.Files.Length > 0) stdio.PrintLine();
+                                break;
+
+                            case "parts":
+                                if (Parent.vessel == null)
+                                {
+                                    ThrowError(ErrorBuilder.ErrorType.InternalError, "Vessel is currently NULL. Are you running outside KSP?");
+                                    break;
+                                }
+
+                                stdio.PrintLine("Vessel: " + Parent.vessel.vesselName);
+                                stdio.PrintLine(Parent.vessel.Parts.Count.ToString() + " parts in vessel.");
+                                stdio.PrintLine();
+                                foreach (Part p in Parent.vessel.Parts)
+                                {
+                                    stdio.PrintLine(p.partName);
+                                }
+                                if (Parent.vessel.Parts.Count > 0) stdio.PrintLine();
+                                break;
+
+                            case "resources":
+                                if (Parent.vessel == null)
+                                {
+                                    ThrowError(ErrorBuilder.ErrorType.InternalError, "Vessel is currently NULL. Are you running outside KSP?");
+                                    break;
+                                }
+
+                                stdio.PrintLine("Vessel: " + Parent.vessel.vesselName);
+                                List<PartResource> res = new List<PartResource>();
+
+                                Func<PartResource, bool> HasResource = delegate(PartResource x) { 
+                                    foreach (PartResource r in res) { 
+                                        if (r.resourceName == x.resourceName) 
+                                            return true; 
+                                    } 
+                                    return false; 
+                                };
+
+                                foreach (Part p in Parent.vessel.Parts)
+                                {
+                                    foreach (PartResource r in p.Resources)
+                                    {
+                                        if (!HasResource(r))
+                                            res.Add(r);
+                                    }
+                                }
+
+                                stdio.PrintLine(res.Count.ToString() + " resources found.");
+                                stdio.PrintLine();
+                                foreach (PartResource r in res)
+                                {
+                                    stdio.PrintLine(r.resourceName + "\t" + r.amount + "/" + r.maxAmount);
+                                }
+                                if (res.Count > 0) stdio.PrintLine();
+
+                                break;
+                        }
+                        break;
+                    }
             }
 
 

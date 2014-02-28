@@ -6,7 +6,7 @@ namespace BIOS
 {
     public abstract class Interpreter
     {
-        Vessel vessel;
+        public Vessel vessel;
 
         public Interpreter(System.IO.DirectoryInfo archiveFolder)
         {

@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 
 namespace BIOS.stdlib
 {
+    /// <summary>
+    /// Handles I/O related operations
+    /// </summary>
     public class stdio
     {
         static BIOS.Graphics.TextMemory screen = BIOS.Graphics.Graphics.TextMode;
@@ -34,6 +38,12 @@ namespace BIOS.stdlib
         public static void ClearScreen()
         {
             screen.Clear();
+        }
+
+        public static string GetBIOSVersion()
+        {
+            System.Version v = Assembly.GetExecutingAssembly().GetName().Version;
+            return "Jebnix " + v.Major + "." + v.Minor + " Build " + v.Revision;
         }
     }
 }
