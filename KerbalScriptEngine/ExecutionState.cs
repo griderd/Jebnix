@@ -89,6 +89,7 @@ namespace KerboScriptEngine
             parameters = new Dictionary<string, Value>();
             scopeStack.Push(new Dictionary<string, Value>());
             lockedVariables = new Dictionary<string, string>();
+            onBlocks = new Dictionary<LineInfo, Tuple<int, int>>();
         }
 
         public void PushExecutionFrame()
