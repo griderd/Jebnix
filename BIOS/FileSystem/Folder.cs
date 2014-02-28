@@ -105,6 +105,9 @@ namespace BIOS.FileSystem
             this.Parent = parent;
             MaxCapacity = capacity;
             RealFolder = null;
+
+            subfolders = new List<Folder>();
+            files = new List<File>();
         }
 
         /// <summary>
@@ -122,6 +125,9 @@ namespace BIOS.FileSystem
             Parent = Parent;
             RealFolder = null;
             MaxCapacity = capacity;
+
+            subfolders = new List<Folder>();
+            files = new List<File>();
         }
 
         /// <summary>
