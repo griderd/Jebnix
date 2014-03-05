@@ -25,12 +25,15 @@ namespace KerboScriptEngine
 
             int i = tokenIndex;
             token = line.Tokens[i];
+                
 
+            // Build and throw an error
             Action<ErrorBuilder.ErrorType, string> ThrowError = delegate(ErrorBuilder.ErrorType t, string message)
             {
                 ErrorBuilder.BuildError(line, t, message, ref errors);
             };
 
+            // Increments to the next line, if it exists.
             Func<bool> GetNextLine = delegate()
             {
                 lineIndex++;
@@ -47,6 +50,7 @@ namespace KerboScriptEngine
                 }
             };
 
+            // Increments to the next token, if it exists.
             Func<bool> GetNextToken = delegate()
             {
                 i++;
@@ -87,6 +91,7 @@ namespace KerboScriptEngine
                 }
             };
 
+            // Exits the current scope. 
             Action AdvanceToEndOfScope = delegate()
             {
                 Stack<object> scope = new Stack<object>();
@@ -114,6 +119,12 @@ namespace KerboScriptEngine
                     GetNextToken();
                 }
             };
+
+            if (((i > 0) || (lineIndex > 0)) && (!GetNextToken()))
+            {
+                err = errors.ToArray();
+                return new Tuple<int, int>(lineIndex, tokenIndex);
+            }
 
             switch (token)
             {
@@ -298,6 +309,7 @@ namespace KerboScriptEngine
                     }
 
                 case "clearscreen":
+                    GetNextToken();
                     if (token == ".")
                     {
                         stdio.ClearScreen();

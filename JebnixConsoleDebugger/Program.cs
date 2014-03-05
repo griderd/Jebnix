@@ -21,7 +21,7 @@ namespace JebnixConsoleDebugger
             Console.Title = "Jebnix Debug Console";
             Console.ForegroundColor = ConsoleColor.Green;
 
-            clock = new System.Timers.Timer(10);
+            clock = new System.Timers.Timer(50);
             interpreter = new KerboScriptEngine.Interpreter(new System.IO.DirectoryInfo("Archive"));
             Graphics.Mode = Graphics.GraphicsMode.Text;
             clock.Elapsed += new System.Timers.ElapsedEventHandler(clock_Elapsed);

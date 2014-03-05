@@ -112,8 +112,11 @@ namespace KerboScriptEngine
             string[] err = new string[0];
             if (CurrentState.nextLine < CurrentState.lines.Count)
             {
-                Execute(CurrentState.nextLine, CurrentState.nextToken, CurrentState.lines.ToArray(), out err);
-                CurrentState.nextLine++;
+                Tuple<int, int> t = Execute(CurrentState.nextLine, CurrentState.nextToken, CurrentState.lines.ToArray(), out err);
+                //if (CurrentState.nextToken >= CurrentState.lines[CurrentState.nextLine].Tokens.Length)
+                //    CurrentState.nextLine++;
+                CurrentState.nextLine = t.Item1;
+                CurrentState.nextToken = t.Item2;
             }
 
             if (err.Length > 0)
