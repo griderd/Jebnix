@@ -31,33 +31,47 @@ namespace KerboScriptEngine
                 ErrorBuilder.BuildError(line, t, message, ref errors);
             };
 
-            Action GetNextLine = delegate()
+            Func<bool> GetNextLine = delegate()
             {
                 lineIndex++;
                 if (lineIndex < lines.Length)
                 {
                     line = lines[lineIndex];
                     i = 0;
+                    return true;
                 }
                 else
+                {
                     lineIndex--;
+                    return false;
+                }
             };
 
-            Action GetNextToken = delegate()
+            Func<bool> GetNextToken = delegate()
             {
                 i++;
                 if (i < line.Tokens.Length)
+                {
                     token = line.Tokens[i];
+                }
                 else
-                    GetNextLine();
-                //ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "Line ended unexpectedly. Are you missing a '.'?", ref errors);
+                {
+                    if (!GetNextLine())
+                        return false;
+                }
+                return true;
             };
 
-            Func<string[], string> GetNextExpression = delegate(string[] expressionTerminators)
+            // Gets the tokens of the next expression.
+            // Returns empty string when the expression is empty.
+            // Returns null when the an expressionTerminator is missing.
+            Func<string[], string> GetNextExpression = delegate(string[] expressionTerminators) 
             {
                 StringBuilder s = new StringBuilder();
 
-                GetNextToken();
+                if (!GetNextToken())
+                    return null;
+
                 if (expressionTerminators.Contains(token))
                     return "";
                 else
@@ -65,7 +79,8 @@ namespace KerboScriptEngine
                     while (!expressionTerminators.Contains(token))
                     {
                         s.Append(token);
-                        GetNextToken();
+                        if (!GetNextToken())
+                            return null;
                     }
 
                     return s.ToString();
@@ -172,6 +187,17 @@ namespace KerboScriptEngine
                             {
                                 string expression = GetNextExpression(new string[] { "." });
 
+                                if (expression == "")
+                                {
+                                    ThrowError(ErrorBuilder.ErrorType.SyntaxError, "No expression provided.");
+                                    break;
+                                }
+                                if (expression == null)
+                                {
+                                    ThrowError(ErrorBuilder.ErrorType.SyntaxError, "\".\" expected.");
+                                    break;
+                                }
+
                                 if (CurrentState.lockedVariables.ContainsKey(name))
                                 {
                                     CurrentState.lockedVariables[name] = expression;
@@ -232,6 +258,11 @@ namespace KerboScriptEngine
                             ThrowError(ErrorBuilder.ErrorType.SyntaxError, "No expression provided. Cannot run PRINT.");
                             break;
                         }
+                        if (s == null)
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Missing expression terminator \"at\" or \".\".");
+                            break;
+                        }
                         
                         // Evaluate expression
                         Value output = Evaluator.Evaluate(s, line, ResolvedScope, Parent.GlobalFunctions, out ex);
@@ -245,6 +276,11 @@ namespace KerboScriptEngine
                             if (s == "")
                             {
                                 ThrowError(ErrorBuilder.ErrorType.SyntaxError, "No ordered pair provided. Cannot run PRINT.");
+                                break;
+                            }
+                            if (s == null)
+                            {
+                                ThrowError(ErrorBuilder.ErrorType.SyntaxError, "\".\" expected.");
                                 break;
                             }
                             Value location = Evaluator.Evaluate(s, line, ResolvedScope, Parent.GlobalFunctions, out ex);
@@ -262,7 +298,6 @@ namespace KerboScriptEngine
                     }
 
                 case "clearscreen":
-                    GetNextToken();
                     if (token == ".")
                     {
                         stdio.ClearScreen();
@@ -279,6 +314,11 @@ namespace KerboScriptEngine
                         if (s == "")
                         {
                             ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Expression expected.");
+                            break;
+                        }
+                        else if (s == null)
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "\"{\" expected after IF.");
                             break;
                         }
                         else
