@@ -217,7 +217,7 @@ namespace KerboScriptEngine
             int itemp;
             double ftemp;
             bool btemp;
-            OrderedPair optemp;
+            OrderedPair optemp; 
             Value v = null;
 
             if (process.TryGetVariable(token, out v))
