@@ -38,7 +38,6 @@ Global
 		{B824FA3B-6E60-4ACE-856A-02867651441B}.Release|x86.ActiveCfg = Release|Any CPU
 		{2EB60326-5273-4ECA-9AA0-3686A0867BF2}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{2EB60326-5273-4ECA-9AA0-3686A0867BF2}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{2EB60326-5273-4ECA-9AA0-3686A0867BF2}.Debug|Mixed Platforms.Build.0 = Debug|x86
 		{2EB60326-5273-4ECA-9AA0-3686A0867BF2}.Debug|x86.ActiveCfg = Debug|x86
 		{2EB60326-5273-4ECA-9AA0-3686A0867BF2}.Debug|x86.Build.0 = Debug|x86
 		{2EB60326-5273-4ECA-9AA0-3686A0867BF2}.Release|Any CPU.ActiveCfg = Release|x86
@@ -92,7 +91,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		BuildVersion_BuildVersioningStyle = None.None.None.Increment
 		BuildVersion_DetectChanges = True
+		BuildVersion_BuildVersioningStyle = None.None.None.Increment
 	EndGlobalSection
 EndGlobal

@@ -6,19 +6,32 @@ using KerboScriptEngine.InternalTypes;
 
 namespace KerboScriptEngine
 {
+    /// <summary>
+    /// This class contains a postfix expression evaluator, as well as a infix-to-postfix converter.
+    /// </summary>
     class Evaluator
     {
-        public static Value Evaluate(string expression, LineInfo source, Dictionary<string, Value> vars, string[] functions, out string[] errors, ScriptProcess process)
+        /// <summary>
+        /// Evaluates the given expression from the given source, and evaluates it.
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <param name="source"></param>
+        /// <param name="vars"></param>
+        /// <param name="functions"></param>
+        /// <param name="errors"></param>
+        /// <param name="process"></param>
+        /// <returns></returns>
+        public static Value Evaluate(string expression, LineInfo source, out string[] errors, ScriptProcess process)
         {
-            return Evaluate(new LineInfo(expression, source.Filename, source.LineNumber, source.ColumnOffset, source.Process), vars, functions, out errors, process);
+            return Evaluate(new LineInfo(expression, source.Filename, source.LineNumber, source.ColumnOffset, source.Process), out errors, process);
         }
 
-        public static Value Evaluate(LineInfo line, Dictionary<string, Value> vars, string[] functions, out string[] errors, ScriptProcess process)
+        public static Value Evaluate(LineInfo line, out string[] errors, ScriptProcess process)
         {
             List<string> err = new List<string>();
             Stack<Value> result = new Stack<Value>();
             string[] e;
-            Queue<string> postfix = ConvertToPostfix(line.Tokens, vars, out e);
+            Queue<string> postfix = ConvertToPostfix(line.Tokens, process, out e);
             err.AddRange(e);
 
             string[] unaryOperators = new string[] { "!", "~", "not", "++", "--" };
@@ -182,7 +195,7 @@ namespace KerboScriptEngine
                 }
                 else
                 {
-                    result.Push(ConvertToValue(token, vars, functions));
+                    result.Push(ConvertToValue(token, process));
                 }
             }
 
@@ -199,14 +212,19 @@ namespace KerboScriptEngine
             }
         }
 
-        private static Value ConvertToValue(string token, Dictionary<string, Value> vars, string[] function)
+        private static Value ConvertToValue(string token, ScriptProcess process)
         {
             int itemp;
             double ftemp;
             bool btemp;
             OrderedPair optemp;
+            Value v = null;
 
-            if (ReservedWords.IsString(token))
+            if (process.TryGetVariable(token, out v))
+            {
+                return v;
+            }
+            else if (ReservedWords.IsString(token))
             {
                 return token.Trim('\"');
             }
@@ -226,15 +244,6 @@ namespace KerboScriptEngine
             {
                 return new Value(optemp);
             }
-            else if (vars.ContainsKey(token))
-            {
-                return vars[token];
-            }
-            else if (function.Contains(token))
-            {
-                // TODO: evaluate function
-                return "";
-            }
             else
             {
                 return null;
@@ -248,7 +257,7 @@ namespace KerboScriptEngine
         /// <param name="vars"></param>
         /// <param name="errors"></param>
         /// <returns></returns>
-        private static Queue<string> ConvertToPostfix(string[] tokens, Dictionary<string, Value> vars, out string[] errors)
+        private static Queue<string> ConvertToPostfix(string[] tokens, ScriptProcess process, out string[] errors)
         {
             Queue<string> output = new Queue<string>();
             Stack<string> s = new Stack<string>();
@@ -280,7 +289,7 @@ namespace KerboScriptEngine
                 {
                     output.Enqueue(token);
                 }
-                else if (vars.ContainsKey(token))
+                else if (process.HasVariable(token))
                 {
                     output.Enqueue(token);
                 }

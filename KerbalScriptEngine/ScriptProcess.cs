@@ -145,7 +145,7 @@ namespace KerboScriptEngine
             string[] err;
             foreach (LineInfo when in CurrentState.whenBlocks.Keys)
             {
-                if (Evaluator.Evaluate(when, ResolvedScope, Parent.GlobalFunctions, out err, this).BooleanValue && err.Length == 0)
+                if (Evaluator.Evaluate(when, out err, this).BooleanValue && err.Length == 0)
                 {
                     Interrupt(CurrentState.whenBlocks[when].Item1, CurrentState.whenBlocks[when].Item2); 
                     CurrentState.whenBlocks.Remove(when);
@@ -233,32 +233,43 @@ namespace KerboScriptEngine
 
         public bool TryGetVariable(string name, out Value value)
         {
-            if (CurrentState.parameters.ContainsKey(name))
+            if (ResolvedScope.ContainsKey(name))
             {
-                value = CurrentState.parameters[name];
+                value = ResolvedScope[name];
                 return true;
             }
-            else if (globalScope.ContainsKey(name))
-            {
-                value = globalScope[name];
-                return true;
-            }
-            else
-            {
-                // Go through the scope stack looking for the variable
-                foreach (Dictionary<string, Value> scope in CurrentState.scopeStack)
-                {
-                    if (scope.ContainsKey(name))
-                    {
-                        value = scope[name];
-                        return true;
-                    }
-                }
-            }
-
             value = null;
             return false;
         }
+
+        //public bool TryGetVariable(string name, out Value value)
+        //{
+        //    if (CurrentState.parameters.ContainsKey(name))
+        //    {
+        //        value = CurrentState.parameters[name];
+        //        return true;
+        //    }
+        //    else if (globalScope.ContainsKey(name))
+        //    {
+        //        value = globalScope[name];
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        // Go through the scope stack looking for the variable
+        //        foreach (Dictionary<string, Value> scope in CurrentState.scopeStack)
+        //        {
+        //            if (scope.ContainsKey(name))
+        //            {
+        //                value = scope[name];
+        //                return true;
+        //            }
+        //        }
+        //    }
+
+        //    value = null;
+        //    return false;
+        //}
 
         internal void Dump()
         {

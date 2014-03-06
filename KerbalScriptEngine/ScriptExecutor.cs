@@ -155,7 +155,7 @@ namespace KerboScriptEngine
                             {
                                 string expression = GetNextExpression(new string[] { "." });
                                 string[] ex;
-                                Value var = Evaluator.Evaluate(expression, line, ResolvedScope, Parent.GlobalFunctions, out ex, this);
+                                Value var = Evaluator.Evaluate(expression, line, out ex, this);
                                 errors.AddRange(ex);
 
                                 if (ex.Length == 0)
@@ -276,7 +276,7 @@ namespace KerboScriptEngine
                         }
                         
                         // Evaluate expression
-                        Value output = Evaluator.Evaluate(s, line, ResolvedScope, Parent.GlobalFunctions, out ex, this);
+                        Value output = Evaluator.Evaluate(s, line, out ex, this);
                         errors.AddRange(ex);
                         if (ex.Length > 0)
                             break;
@@ -294,7 +294,7 @@ namespace KerboScriptEngine
                                 ThrowError(ErrorBuilder.ErrorType.SyntaxError, "\".\" expected.");
                                 break;
                             }
-                            Value location = Evaluator.Evaluate(s, line, ResolvedScope, Parent.GlobalFunctions, out ex, this);
+                            Value location = Evaluator.Evaluate(s, line, out ex, this);
                             errors.AddRange(ex);
                             if (ex.Length > 0)
                                 break;
@@ -336,7 +336,7 @@ namespace KerboScriptEngine
                         else
                         {
                             string[] ex;
-                            Value v = Evaluator.Evaluate(s, line, ResolvedScope, Parent.GlobalFunctions, out ex, this);
+                            Value v = Evaluator.Evaluate(s, line, out ex, this);
                             errors.AddRange(ex);
                             if (ex.Length > 0)
                                 break;
