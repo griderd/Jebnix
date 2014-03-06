@@ -12,7 +12,7 @@ namespace KerboScriptEngine
     class Evaluator
     {
         /// <summary>
-        /// Evaluates the given expression from the given source, and evaluates it.
+        /// Evaluates the given expression from the given source.
         /// </summary>
         /// <param name="expression"></param>
         /// <param name="source"></param>

@@ -398,12 +398,6 @@ namespace KerboScriptEngine
                     throw new DivideByZeroException();
                 return new Value(a.FloatValue / b.FloatValue);
             }
-            else if ((a.Type == ValueTypes.Integer) | (b.Type == ValueTypes.Integer))
-            {
-                if (b.IntegerValue == 0)
-                    throw new DivideByZeroException();
-                return new Value(a.IntegerValue / b.IntegerValue);
-            }
             else if ((a.Type == ValueTypes.Boolean) | (b.Type == ValueTypes.Boolean))
             {
                 if (b.IntegerValue == 0)
