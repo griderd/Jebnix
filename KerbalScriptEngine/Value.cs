@@ -394,7 +394,7 @@ namespace KerboScriptEngine
 
             if ((a.Type == ValueTypes.Float) | (b.Type == ValueTypes.Float))
             {
-                if (b.FloatValue.CompareTo(0f) != 0)
+                if (b.FloatValue.CompareTo(0f) == 0)
                     throw new DivideByZeroException();
                 return new Value(a.FloatValue / b.FloatValue);
             }
@@ -424,7 +424,7 @@ namespace KerboScriptEngine
             }
             else
             {
-                if (b.FloatValue.CompareTo(0f) != 0)
+                if (b.FloatValue.CompareTo(0f) == 0)
                     throw new DivideByZeroException();
                 return new Value(a.FloatValue / b.FloatValue);
             }
