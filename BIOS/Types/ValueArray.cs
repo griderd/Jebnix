@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KerboScriptEngine.InternalTypes
+namespace BIOS.Types
 {
-    class ValueArray : Value, ICollection<Value>
+    public class ValueArray : Value, ICollection<Value>
     {
         List<Value> items;
 

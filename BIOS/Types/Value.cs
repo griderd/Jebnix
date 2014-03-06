@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using KerboScriptEngine.InternalTypes;
 
-namespace KerboScriptEngine
+namespace BIOS.Types
 {
     public class Value
     {

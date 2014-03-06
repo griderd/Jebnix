@@ -76,6 +76,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExternalFunctions.cs" />
     <Compile Include="FileSystem\File.cs" />
     <Compile Include="FileSystem\Folder.cs" />
     <Compile Include="FileSystem\VirtualFile.cs" />
@@ -86,6 +87,9 @@
     <Compile Include="stdlib\stdio.cs" />
     <Compile Include="stdlib\stdtime.cs" />
     <Compile Include="stdlib\stdvessel.cs" />
+    <Compile Include="Types\OrderedPair.cs" />
+    <Compile Include="Types\Value.cs" />
+    <Compile Include="Types\ValueArray.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
