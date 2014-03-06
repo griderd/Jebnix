@@ -15,7 +15,6 @@ namespace KerboScriptEngine
         List<ScriptProcess> processes;
         int currentProcess;
 
-        List<string> apiFunctions;
         List<string> filesAsFunctions;
 
         public string[] GlobalFunctions
@@ -23,7 +22,7 @@ namespace KerboScriptEngine
             get
             {
                 List<string> funcs = new List<string>(filesAsFunctions);
-                funcs.AddRange(apiFunctions.ToArray());
+                funcs.AddRange(APIInfo.FunctionNames);
                 return funcs.ToArray();
             }
         }
@@ -43,23 +42,10 @@ namespace KerboScriptEngine
             throw new NotImplementedException();
         }
 
-        private void GetAPIFunctions()
-        {
-            // TODO: Add API functions
-        }
-
-        public Value InvokeAPIFunction(string function, params Value[] p)
-        {
-            // TODO: Switch function for API
-
-            return 0;
-        }
-
         public Interpreter(DirectoryInfo archive)
             :  base(archive)
         {
             processes = new List<ScriptProcess>();
-            apiFunctions = new List<string>();
             filesAsFunctions = new List<string>();
             currentProcess = 0;
         }

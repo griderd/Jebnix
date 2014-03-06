@@ -155,7 +155,7 @@ namespace KerboScriptEngine
                             {
                                 string expression = GetNextExpression(new string[] { "." });
                                 string[] ex;
-                                Value var = Evaluator.Evaluate(expression, line, ResolvedScope, Parent.GlobalFunctions, out ex);
+                                Value var = Evaluator.Evaluate(expression, line, ResolvedScope, Parent.GlobalFunctions, out ex, this);
                                 errors.AddRange(ex);
 
                                 if (ex.Length == 0)
@@ -276,7 +276,7 @@ namespace KerboScriptEngine
                         }
                         
                         // Evaluate expression
-                        Value output = Evaluator.Evaluate(s, line, ResolvedScope, Parent.GlobalFunctions, out ex);
+                        Value output = Evaluator.Evaluate(s, line, ResolvedScope, Parent.GlobalFunctions, out ex, this);
                         errors.AddRange(ex);
                         if (ex.Length > 0)
                             break;
@@ -294,7 +294,7 @@ namespace KerboScriptEngine
                                 ThrowError(ErrorBuilder.ErrorType.SyntaxError, "\".\" expected.");
                                 break;
                             }
-                            Value location = Evaluator.Evaluate(s, line, ResolvedScope, Parent.GlobalFunctions, out ex);
+                            Value location = Evaluator.Evaluate(s, line, ResolvedScope, Parent.GlobalFunctions, out ex, this);
                             errors.AddRange(ex);
                             if (ex.Length > 0)
                                 break;
@@ -336,7 +336,7 @@ namespace KerboScriptEngine
                         else
                         {
                             string[] ex;
-                            Value v = Evaluator.Evaluate(s, line, ResolvedScope, Parent.GlobalFunctions, out ex);
+                            Value v = Evaluator.Evaluate(s, line, ResolvedScope, Parent.GlobalFunctions, out ex, this);
                             errors.AddRange(ex);
                             if (ex.Length > 0)
                                 break;
@@ -449,32 +449,15 @@ namespace KerboScriptEngine
                                 }
 
                                 stdio.PrintLine("Vessel: " + Parent.vessel.vesselName);
-                                List<PartResource> res = new List<PartResource>();
+                                PartResource[] res = stdvessel.GetResources(Parent.vessel);
 
-                                Func<PartResource, bool> HasResource = delegate(PartResource x) { 
-                                    foreach (PartResource r in res) { 
-                                        if (r.resourceName == x.resourceName) 
-                                            return true; 
-                                    } 
-                                    return false; 
-                                };
-
-                                foreach (Part p in Parent.vessel.Parts)
-                                {
-                                    foreach (PartResource r in p.Resources)
-                                    {
-                                        if (!HasResource(r))
-                                            res.Add(r);
-                                    }
-                                }
-
-                                stdio.PrintLine(res.Count.ToString() + " resources found.");
+                                stdio.PrintLine(res.Length.ToString() + " resources found.");
                                 stdio.PrintLine();
                                 foreach (PartResource r in res)
                                 {
                                     stdio.PrintLine(r.resourceName + "\t" + r.amount + "/" + r.maxAmount);
                                 }
-                                if (res.Count > 0) stdio.PrintLine();
+                                if (res.Length > 0) stdio.PrintLine();
 
                                 break;
                         }

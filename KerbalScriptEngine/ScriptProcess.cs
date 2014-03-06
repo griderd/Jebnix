@@ -145,7 +145,7 @@ namespace KerboScriptEngine
             string[] err;
             foreach (LineInfo when in CurrentState.whenBlocks.Keys)
             {
-                if (Evaluator.Evaluate(when, ResolvedScope, Parent.GlobalFunctions, out err).BooleanValue && err.Length == 0)
+                if (Evaluator.Evaluate(when, ResolvedScope, Parent.GlobalFunctions, out err, this).BooleanValue && err.Length == 0)
                 {
                     Interrupt(CurrentState.whenBlocks[when].Item1, CurrentState.whenBlocks[when].Item2); 
                     CurrentState.whenBlocks.Remove(when);

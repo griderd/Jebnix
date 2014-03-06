@@ -33,8 +33,8 @@ namespace JebnixConsoleDebugger
 
             Console.SetWindowSize(40, 21);
 
-            //DebugMode();
-            RealTimeMode();
+            DebugMode();
+            //RealTimeMode();
         }
 
         static void RealTimeMode()

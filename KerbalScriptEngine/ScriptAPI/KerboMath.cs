@@ -111,7 +111,7 @@ namespace KerboScriptEngine.ScriptAPI
         /// <param name="x"></param>
         /// <param name="place"></param>
         /// <returns></returns>
-        public static Value Round(Value x, Value place)
+        public static Value RoundTo(Value x, Value place)
         {
             if (Value.IsNull(x))
                 throw new ArgumentNullException();
@@ -281,7 +281,7 @@ namespace KerboScriptEngine.ScriptAPI
             return Math.Log10(base10.FloatValue);
         }
 
-        public static Value Log(Value val, Value baseN)
+        public static Value LogX(Value val, Value baseN)
         {
             return Math.Log(val.FloatValue, baseN.FloatValue);
         }

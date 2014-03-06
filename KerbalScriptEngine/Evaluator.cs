@@ -8,12 +8,12 @@ namespace KerboScriptEngine
 {
     class Evaluator
     {
-        public static Value Evaluate(string expression, LineInfo source, Dictionary<string, Value> vars, string[] functions, out string[] errors)
+        public static Value Evaluate(string expression, LineInfo source, Dictionary<string, Value> vars, string[] functions, out string[] errors, ScriptProcess process)
         {
-            return Evaluate(new LineInfo(expression, source.Filename, source.LineNumber, source.ColumnOffset, source.Process), vars, functions, out errors);
+            return Evaluate(new LineInfo(expression, source.Filename, source.LineNumber, source.ColumnOffset, source.Process), vars, functions, out errors, process);
         }
 
-        public static Value Evaluate(LineInfo line, Dictionary<string, Value> vars, string[] functions, out string[] errors)
+        public static Value Evaluate(LineInfo line, Dictionary<string, Value> vars, string[] functions, out string[] errors, ScriptProcess process)
         {
             List<string> err = new List<string>();
             Stack<Value> result = new Stack<Value>();
@@ -33,7 +33,7 @@ namespace KerboScriptEngine
                         b = result.Pop();
                     else
                     {
-                        err.Add("Syntax error: invalid expression.");
+                        ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "Invalid expression.", ref err);
                         errors = err.ToArray();
                         return 0;
                     }
@@ -138,7 +138,7 @@ namespace KerboScriptEngine
                         }
                         else
                         {
-                            err.Add("Syntax error: invalid expression.");
+                            ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "Invalid expression.", ref err);
                             errors = err.ToArray();
                             return 0;
                         }
@@ -146,6 +146,36 @@ namespace KerboScriptEngine
                     catch (Exception ex)
                     {
                         err.Add(ex.Message);
+                        errors = err.ToArray();
+                        return 0;
+                    }
+                }
+                else if (process.Parent.GlobalFunctions.Contains(token))
+                {
+                    Value returnVal = null;
+                    Stack<Value> paramList = new Stack<Value>();
+
+                    if (ScriptAPI.APIInfo.FunctionNames.Contains(token))
+                    {
+                        if (ScriptAPI.APIInfo.IsSignatureMatch(token, result.Count))
+                        {
+                            while (result.Count > 0)
+                            {
+                                paramList.Push(result.Pop());
+                            }
+                            if (!ScriptAPI.APIInfo.InvokeFunction(token, out returnVal, paramList.ToArray()))
+                                ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.RuntimeError, "An error occured while invoking the API function \"" + token + "\". Ensure the function exists and takes the number of arguments provided.", ref err);
+                        }
+                        else
+                        {
+                            ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.RuntimeError, "The function \"" + token + "\" does not take " + result.Count.ToString() + " arguments. The function requires " + ScriptAPI.APIInfo.ArgumentCount(token).ToString() + " arguments.", ref err);   
+                        }
+                    }
+
+                    if (!Value.IsNull(returnVal))
+                        result.Push(returnVal);
+                    else
+                    {
                         errors = err.ToArray();
                         return 0;
                     }
@@ -163,7 +193,7 @@ namespace KerboScriptEngine
             }
             else
             {
-                err.Add("Syntax error: invalid expression.");
+                ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "Invalid expression.", ref err);
                 errors = err.ToArray();
                 return 0;
             }

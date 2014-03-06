@@ -82,6 +82,7 @@
     <Compile Include="InternalTypes\OrderedPair.cs" />
     <Compile Include="InternalTypes\ValueArray.cs" />
     <Compile Include="Parser.cs" />
+    <Compile Include="ScriptAPI\APIInfo.cs" />
     <Compile Include="ScriptAPI\KerboMath.cs" />
     <Compile Include="ScriptAPI\Physics.cs" />
     <Compile Include="ScriptExecutor.cs" />
