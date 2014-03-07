@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KerboScriptEngine;
-using BIOS;
-using BIOS.Graphics;
-using BIOS.stdlib;
+using Jebnix;
+using Jebnix.Graphics;
+using Jebnix.stdlib;
 
 namespace JebnixConsoleDebugger
 {
@@ -18,6 +18,8 @@ namespace JebnixConsoleDebugger
 
         static void Main(string[] args)
         {
+            ExternalFunctionTest.Class1 obj = new ExternalFunctionTest.Class1();
+
             Console.Title = "Jebnix Debug Console";
             Console.ForegroundColor = ConsoleColor.Green;
 
@@ -27,7 +29,7 @@ namespace JebnixConsoleDebugger
             clock.Elapsed += new System.Timers.ElapsedEventHandler(clock_Elapsed);
             stdio.PrintLine("Welcome to Jebnix");
             stdio.PrintLine(interpreter.GetInterpreterVersion());
-            stdio.PrintLine(stdio.GetBIOSVersion());
+            stdio.PrintLine(stdio.GetJebnixVersion());
             stdio.PrintLine();
             consoleProc = interpreter.CreateProcess(new string[0], "Console");
 
@@ -65,12 +67,12 @@ namespace JebnixConsoleDebugger
         static void clock_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             interpreter.ExecuteProcess();
-            if (Graphics.TextMode.ScreenChanged)
+            if (Graphics.TextChanged)
             {
                 Console.Clear();
-                Console.Write(Graphics.TextMode.ToString());
-                Console.SetCursorPosition(Graphics.TextMode.Column, Graphics.TextMode.Row);
-                Graphics.TextMode.ClearFlag();
+                Console.Write(Graphics.Text);
+                Console.SetCursorPosition(Graphics.TextColumn, Graphics.TextRow);
+                Graphics.ClearTextChangedFlag();
             }
         }
     }

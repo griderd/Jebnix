@@ -84,9 +84,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BIOS\BIOS.csproj">
+    <ProjectReference Include="..\BIOS\Jebnix.csproj">
       <Project>{DACBE0FD-8F8C-40EC-8D6C-02AD3DAE2254}</Project>
-      <Name>BIOS</Name>
+      <Name>Jebnix</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ExternalFunctionTest\ExternalFunctionTest.csproj">
+      <Project>{80EF198C-EE98-4F7E-9191-D209EF63CD62}</Project>
+      <Name>ExternalFunctionTest</Name>
     </ProjectReference>
     <ProjectReference Include="..\KerbalScriptEngine\KerboScriptEngine.csproj">
       <Project>{45E8DD3D-0621-49D3-A09F-0203E8802105}</Project>
@@ -121,7 +125,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

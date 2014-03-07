@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BIOS.Types
+namespace Jebnix.Types
 {
     public class Value
     {
@@ -223,6 +223,25 @@ namespace BIOS.Types
             Value v = new Value(pointsTo);
             v.CastToType(ValueTypes.Pointer);
             return v;
+        }
+
+        public static Value Parse(string value)
+        {
+            OrderedPair op_temp;
+            int i_temp;
+            double f_temp;
+            bool b_temp;
+
+            if (OrderedPair.TryParse(value, out op_temp))
+                return new Value(op_temp);
+            else if (int.TryParse(value, out i_temp))
+                return i_temp;
+            else if (double.TryParse(value, out f_temp))
+                return f_temp;
+            else if (bool.TryParse(value, out b_temp))
+                return b_temp;
+            else
+                return value;
         }
 
 
@@ -605,6 +624,8 @@ namespace BIOS.Types
         {
             return new Value(x);
         }
+
+
 
         #endregion
 

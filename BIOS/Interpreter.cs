@@ -1,8 +1,8 @@
 ﻿using System;
 using UnityEngine;
-using BIOS.FileSystem;
+using Jebnix.FileSystem;
 
-namespace BIOS
+namespace Jebnix
 {
     public abstract class Interpreter
     {
@@ -13,6 +13,7 @@ namespace BIOS
             Archive = new Folder("Archive", null, archiveFolder);
             RootFolder = new Folder("Root");
             CurrentFolder = Archive;
+            Functions.RegisterStandardLibrary();
         }
 
         public Interpreter(Vessel vessel, System.IO.DirectoryInfo archiveFolder)

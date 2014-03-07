@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BIOS.FileSystem
+namespace Jebnix.FileSystem
 {
     /// <summary>
     /// Represents a file that only exists in memory. A VirtualFile has no real backing.

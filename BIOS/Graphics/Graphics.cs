@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BIOS.Graphics
+namespace Jebnix.Graphics
 {
     public class Graphics
     {   
@@ -27,6 +27,43 @@ namespace BIOS.Graphics
             }
         }
 
-        public static TextMemory TextMode { get; private set; }
+        public static string Text
+        {
+            get
+            {
+                return TextMode.ToString();
+            }
+        }
+
+        public static bool TextChanged
+        {
+            get
+            {
+                return TextMode.ScreenChanged;
+            }
+        }
+
+        public static void ClearTextChangedFlag()
+        {
+            TextMode.ClearFlag();
+        }
+
+        public static int TextColumn
+        {
+            get
+            {
+                return TextMode.Column;
+            }
+        }
+
+        public static int TextRow
+        {
+            get
+            {
+                return TextMode.Row;
+            }
+        }
+
+        internal static TextMemory TextMode { get; private set; }
     }
 }

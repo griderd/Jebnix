@@ -11,7 +11,7 @@ do so there. Keep in mind that Jebnix IS NOT feature-complete, and many language
 are only partially complete. You can expect that many are still buggy.
 
 Projects:
-BIOS - Includes Interpreter class, file system, graphics, and standard library for interacting with the Jebnix
+Jebnix - Includes Interpreter class, file system, graphics, and standard library for interacting with the Jebnix
 environment and KSP.
 
 JebnixConsoleDebugger - Displays an interactive Jebnix console in your OS. Useful for basic testing. Uses the terminal.

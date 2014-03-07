@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using KSP;
 
-namespace BIOS.stdlib
+namespace Jebnix.stdlib
 {
     /// <summary>
     /// Handles time-related operations

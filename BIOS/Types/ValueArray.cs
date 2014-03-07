@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BIOS.Types
+namespace Jebnix.Types
 {
     public class ValueArray : Value, ICollection<Value>
     {

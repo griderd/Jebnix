@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jebnix", "kOSReplacement\Jebnix.csproj", "{B824FA3B-6E60-4ACE-856A-02867651441B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JebnixDebugger", "kOSDebugger\JebnixDebugger.csproj", "{2EB60326-5273-4ECA-9AA0-3686A0867BF2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JebnixConsoleDebugger", "JebnixConsoleDebugger\JebnixConsoleDebugger.csproj", "{0942D5DF-CA69-4BE0-A58E-DF506155A370}"
@@ -14,9 +12,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BIOS", "BIOS\BIOS.csproj", "{DACBE0FD-8F8C-40EC-8D6C-02AD3DAE2254}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jebnix", "BIOS\Jebnix.csproj", "{DACBE0FD-8F8C-40EC-8D6C-02AD3DAE2254}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JebnixRPM", "JebnixRPM\JebnixRPM.csproj", "{104196D0-8ABC-45A0-A686-6D9E42CA51B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExternalFunctionTest", "ExternalFunctionTest\ExternalFunctionTest.csproj", "{80EF198C-EE98-4F7E-9191-D209EF63CD62}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,14 +28,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B824FA3B-6E60-4ACE-856A-02867651441B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B824FA3B-6E60-4ACE-856A-02867651441B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{B824FA3B-6E60-4ACE-856A-02867651441B}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{B824FA3B-6E60-4ACE-856A-02867651441B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B824FA3B-6E60-4ACE-856A-02867651441B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B824FA3B-6E60-4ACE-856A-02867651441B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{B824FA3B-6E60-4ACE-856A-02867651441B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{B824FA3B-6E60-4ACE-856A-02867651441B}.Release|x86.ActiveCfg = Release|Any CPU
 		{2EB60326-5273-4ECA-9AA0-3686A0867BF2}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{2EB60326-5273-4ECA-9AA0-3686A0867BF2}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{2EB60326-5273-4ECA-9AA0-3686A0867BF2}.Debug|x86.ActiveCfg = Debug|x86
@@ -86,12 +78,23 @@ Global
 		{104196D0-8ABC-45A0-A686-6D9E42CA51B2}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{104196D0-8ABC-45A0-A686-6D9E42CA51B2}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{104196D0-8ABC-45A0-A686-6D9E42CA51B2}.Release|x86.ActiveCfg = Release|Any CPU
+		{80EF198C-EE98-4F7E-9191-D209EF63CD62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80EF198C-EE98-4F7E-9191-D209EF63CD62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80EF198C-EE98-4F7E-9191-D209EF63CD62}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{80EF198C-EE98-4F7E-9191-D209EF63CD62}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{80EF198C-EE98-4F7E-9191-D209EF63CD62}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{80EF198C-EE98-4F7E-9191-D209EF63CD62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80EF198C-EE98-4F7E-9191-D209EF63CD62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80EF198C-EE98-4F7E-9191-D209EF63CD62}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{80EF198C-EE98-4F7E-9191-D209EF63CD62}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{80EF198C-EE98-4F7E-9191-D209EF63CD62}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		BuildVersion_DetectChanges = True
+		BuildVersion_UseGlobalSettings = True
 		BuildVersion_BuildVersioningStyle = None.None.None.Increment
+		BuildVersion_DetectChanges = True
 	EndGlobalSection
 EndGlobal

@@ -80,8 +80,6 @@
   <ItemGroup>
     <Compile Include="Enums\ActionGroups.cs" />
     <Compile Include="Parser.cs" />
-    <Compile Include="ScriptAPI\APIInfo.cs" />
-    <Compile Include="ScriptAPI\KerboMath.cs" />
     <Compile Include="ScriptAPI\Physics.cs" />
     <Compile Include="ScriptExecutor.cs" />
     <Compile Include="ErrorBuilder.cs" />
@@ -118,15 +116,15 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BIOS\BIOS.csproj">
+    <ProjectReference Include="..\BIOS\Jebnix.csproj">
       <Project>{DACBE0FD-8F8C-40EC-8D6C-02AD3DAE2254}</Project>
-      <Name>BIOS</Name>
+      <Name>Jebnix</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

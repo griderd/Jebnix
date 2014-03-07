@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BIOS.stdlib;
-using BIOS.Types;
+using Jebnix.stdlib;
+using Jebnix.Types;
 
 namespace KerboScriptEngine
 {

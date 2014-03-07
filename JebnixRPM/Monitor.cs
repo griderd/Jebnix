@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KerboScriptEngine;
-using BIOS.FileSystem;
+using Jebnix.FileSystem;
 
 namespace JebnixRPM
 {
@@ -20,7 +20,7 @@ namespace JebnixRPM
 
         public string UpdateRPM(int width, int height)
         {
-            return BIOS.Graphics.Graphics.TextMode.ToString();
+            return Jebnix.Graphics.Graphics.Text;
         }
     }
 }

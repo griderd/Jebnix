@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BIOS.Types
+namespace Jebnix.Types
 {
     /// <summary>
     /// Represents a pair of coordinates on the screen.
