@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BIOS.stdlib;
-using BIOS.Types;
+using Jebnix.stdlib;
+using Jebnix.Types;
 using KSP;
 
 namespace KerboScriptEngine
@@ -261,18 +261,38 @@ namespace KerboScriptEngine
                     }
                     break;
 
+                case "call":
+                    {
+                        string[] ex;
+                        string s = GetNextExpression(new string[] { "." });
+                        if (s == null)
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Missing expression terminator \".\"");
+                        }
+                        if (s == "")
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "No expression provided. Cannot run CALL.");
+                            break;
+                        }
+
+                        Evaluator.Evaluate(s, line, out ex, this);
+                        errors.AddRange(ex);
+
+                        break;
+                    }
+
                 case "print":
                     {
                         string[] ex;
                         string s = GetNextExpression(new string[] { "at", "." });
-                        if (s == "")
-                        {
-                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "No expression provided. Cannot run PRINT.");
-                            break;
-                        }
                         if (s == null)
                         {
                             ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Missing expression terminator \"at\" or \".\".");
+                            break;
+                        }
+                        if (s == "")
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "No expression provided. Cannot run PRINT.");
                             break;
                         }
                         
@@ -418,7 +438,7 @@ namespace KerboScriptEngine
                                 stdio.PrintLine("~/" + Parent.CurrentFolder.Name);
                                 stdio.PrintLine(Parent.CurrentFolder.Files.Length.ToString() + " files in directory.");
                                 stdio.PrintLine();
-                                foreach (BIOS.FileSystem.File file in Parent.CurrentFolder.Files)
+                                foreach (Jebnix.FileSystem.File file in Parent.CurrentFolder.Files)
                                 {
                                     stdio.PrintLine(file.Name + "\t" + file.Size + " bytes");
                                 }

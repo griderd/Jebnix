@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BIOS.Types;
+using Jebnix.Types;
+using Jebnix;
 
 namespace KerboScriptEngine
 {
@@ -163,25 +164,30 @@ namespace KerboScriptEngine
                         return 0;
                     }
                 }
-                else if (process.Parent.GlobalFunctions.Contains(token))
+                else if (token.EndsWith("$"))
                 {
-                    Value returnVal = null;
-                    Stack<Value> paramList = new Stack<Value>();
+                    token = token.Substring(0, token.Length - 1);
 
-                    if (ScriptAPI.APIInfo.FunctionNames.Contains(token))
+                    Value returnVal = null;
+                    object temp = null;
+                    Stack<Value> paramList = new Stack<Value>();
+                    
+                    if (Functions.ContainsFunction(token, result.Count))
                     {
-                        if (ScriptAPI.APIInfo.IsSignatureMatch(token, result.Count))
+                        while (result.Count > 0)
                         {
-                            while (result.Count > 0)
-                            {
-                                paramList.Push(result.Pop());
-                            }
-                            if (!ScriptAPI.APIInfo.InvokeFunction(token, out returnVal, paramList.ToArray()))
-                                ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.RuntimeError, "An error occured while invoking the API function \"" + token + "\". Ensure the function exists and takes the number of arguments provided.", ref err);
+                            paramList.Push(result.Pop());
+                        }
+                        if (Functions.InvokeFunction(token, out temp, paramList.ToArray()))
+                        {
+                            if (temp == null)
+                                returnVal = 0;
+                            else
+                                returnVal = Value.Parse(Convert.ToString(temp));
                         }
                         else
                         {
-                            ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.RuntimeError, "The function \"" + token + "\" does not take " + result.Count.ToString() + " arguments. The function requires " + ScriptAPI.APIInfo.ArgumentCount(token).ToString() + " arguments.", ref err);   
+                            ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.RuntimeError, "An error occured while invoking the API function \"" + token + "\". Ensure the function exists and takes the number of arguments provided.", ref err);
                         }
                     }
 
@@ -303,6 +309,8 @@ namespace KerboScriptEngine
                     }
                     if ((s.Count > 0) && (s.Peek() == "("))
                         s.Pop();
+                    if ((s.Count > 0) && (s.Peek().EndsWith("$")))
+                        output.Enqueue(s.Pop());
                 }
                 else if (token == "]")
                 {
@@ -321,7 +329,7 @@ namespace KerboScriptEngine
                 }
                 else
                 {
-                    s.Push(token);
+                    s.Push(token + "$");
                 }
             }
 

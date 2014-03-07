@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BIOS.Types;
+using Jebnix.Types;
 
-namespace KerboScriptEngine.ScriptAPI
+namespace Jebnix.stdlib
 {
-    class KerboMath
+    class stdmath
     {
         /// <summary>
         /// The constant PI
@@ -112,7 +112,7 @@ namespace KerboScriptEngine.ScriptAPI
         /// <param name="x"></param>
         /// <param name="place"></param>
         /// <returns></returns>
-        public static Value RoundTo(Value x, Value place)
+        public static Value Round(Value x, Value place)
         {
             if (Value.IsNull(x))
                 throw new ArgumentNullException();
@@ -282,7 +282,7 @@ namespace KerboScriptEngine.ScriptAPI
             return Math.Log10(base10.FloatValue);
         }
 
-        public static Value LogX(Value val, Value baseN)
+        public static Value Log(Value val, Value baseN)
         {
             return Math.Log(val.FloatValue, baseN.FloatValue);
         }

@@ -5,12 +5,12 @@ using System.Text;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
-using BIOS.FileSystem;
+using Jebnix.FileSystem;
 using KerboScriptEngine.ScriptAPI;
 
 namespace KerboScriptEngine
 {
-    public class Interpreter : BIOS.Interpreter
+    public class Interpreter : Jebnix.Interpreter
     {
         List<ScriptProcess> processes;
         int currentProcess;
@@ -22,7 +22,6 @@ namespace KerboScriptEngine
             get
             {
                 List<string> funcs = new List<string>(filesAsFunctions);
-                funcs.AddRange(APIInfo.FunctionNames);
                 return funcs.ToArray();
             }
         }
@@ -31,7 +30,7 @@ namespace KerboScriptEngine
         {
             filesAsFunctions.Clear();
 
-            foreach (BIOS.FileSystem.File file in CurrentFolder.Files)
+            foreach (Jebnix.FileSystem.File file in CurrentFolder.Files)
             {
                 filesAsFunctions.Add(file.Name);
             }
