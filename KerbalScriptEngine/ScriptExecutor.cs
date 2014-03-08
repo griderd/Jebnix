@@ -130,6 +130,10 @@ namespace KerboScriptEngine
                 err = errors.ToArray();
                 return new Tuple<int, int>(lineIndex, tokenIndex);
             }
+            else
+            {
+                token = line.Tokens[i];
+            }
 
             switch (token)
             {

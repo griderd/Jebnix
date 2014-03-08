@@ -41,7 +41,7 @@ namespace JebnixConsoleDebugger
 
             Console.SetWindowSize(40, 21);
 
-            //DebugMode();
+            //DebugMode(5);
             RealTimeMode();
         }
 
@@ -59,17 +59,18 @@ namespace JebnixConsoleDebugger
             }
         }
 
-        static void DebugMode()
+        static void DebugMode(int count)
         {
             clock_Elapsed(null, null);
 
-            string inp = Console.ReadLine();
-            stdio.PrintLine(inp);
-            interpreter.AddCodeToProcess(consoleProc, new string[] { inp }, "Console");
+            for (int i = 0; i < count; i++)
+            {
+                string inp = Console.ReadLine();
+                stdio.PrintLine(inp);
+                interpreter.AddCodeToProcess(consoleProc, new string[] { inp }, "Console");
 
-            clock_Elapsed(null, null);
-            clock_Elapsed(null, null);
-            Console.ReadLine();
+                clock_Elapsed(null, null);
+            }
         }
 
         static void clock_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -82,41 +83,19 @@ namespace JebnixConsoleDebugger
             {
                 cycleCount++;
             }
-#if DEBUG
-            Debug.Print("CYCLE START");
+            if (interpreter.Busy) busyCount++;
 
-            if (interpreter.Busy)
-            {
-                Debug.Print("Interpreter is busy.");
-                busyCount++;
-            }
-
-            percentUsage = ((double)busyCount / (double)cycleCount);
-            if (percentUsage > peakPercent)
-                peakPercent = percentUsage;
-
-            Debug.Print("Percent usage: {0:P2}", percentUsage);
-            Debug.Print("Peak usage: {0:P2}", peakPercent);
-#endif
-
-            if (!interpreter.Busy) 
+            if (!interpreter.Busy)
                 interpreter.ExecuteProcess();
 
             if (Graphics.TextChanged)
             {
-#if DEBUG
-                Debug.Print("Updating screen.");
-#endif
                 Console.Clear();
                 Console.Write(Graphics.Text);
                 Console.SetCursorPosition(Graphics.TextColumn, Graphics.TextRow);
                 Graphics.ClearTextChangedFlag();
             }
 
-#if DEBUG
-            Debug.Print("CYCLE END");
-            Debug.Print("");
-#endif
         }
     }
 }
