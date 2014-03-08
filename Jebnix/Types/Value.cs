@@ -625,8 +625,6 @@ namespace Jebnix.Types
             return new Value(x);
         }
 
-
-
         #endregion
 
         public override int GetHashCode()

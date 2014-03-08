@@ -28,6 +28,17 @@ namespace Jebnix
         public const string STDIO = "stdio";
 
         /// <summary>
+        /// An empty parameter list.
+        /// </summary>
+        public static object[] EmptyParams
+        {
+            get
+            {
+                return new object[0];
+            }
+        }
+
+        /// <summary>
         /// Generates a unique name for a function based on global namespace, function name, and parameter count.
         /// </summary>
         /// <param name="name">Function name</param>
@@ -60,6 +71,59 @@ namespace Jebnix
             return namespc + "_" + name + "_" + paramCount.ToString();
         }
 
+        public static string ResolveNamespace(string[] namespaces)
+        {
+            if (namespaces == null)
+                throw new ArgumentNullException();
+            if (namespaces.Length == 0)
+                throw new ArgumentOutOfRangeException();
+
+            StringBuilder s = new StringBuilder();
+            for (int i = 0; i < namespaces.Length; i++)
+            {
+                string n = namespaces[i];
+                if (n == null)
+                    throw new ArgumentNullException();
+                else if (n == "")
+                    throw new ArgumentOutOfRangeException();
+                else
+                {
+                    s.Append(n);
+                    if (i < namespaces.Length - 1) s.Append("_");
+                }
+            }
+
+            return s.ToString();
+        }
+
+        public static string GenerateUniqueName(string[] namespaces, string name, int paramCount)
+        {
+            if ((namespaces == null) | (name == null))
+                throw new ArgumentNullException();
+            if ((namespaces.Length == 0) | (name == "") | (paramCount < 0))
+                throw new ArgumentOutOfRangeException();
+
+            StringBuilder s = new StringBuilder();
+            foreach (string n in namespaces)
+            {
+                if (n == null)
+                    throw new ArgumentNullException();
+                else if (n == "")
+                    throw new ArgumentOutOfRangeException();
+                else
+                {
+                    s.Append(n);
+                    s.Append("_");
+                }
+            }
+
+            s.Append(name);
+            s.Append("_");
+            s.Append(paramCount);
+
+            return s.ToString();
+        }
+
         public static bool ContainsFunction(string functionName, int paramCount)
         {
             return ContainsFunction(GLOBAL, functionName, paramCount);
@@ -68,6 +132,11 @@ namespace Jebnix
         public static bool ContainsFunction(string namespc, string functionName, int paramCount)
         {
             return functions.ContainsKey(GenerateUniqueName(namespc, functionName, paramCount));
+        }
+
+        public static bool ContainsFunction(string[] namespaces, string functionName, int paramCount)
+        {
+            return functions.ContainsKey(GenerateUniqueName(namespaces, functionName, paramCount));
         }
 
         /// <summary>
@@ -220,6 +289,19 @@ namespace Jebnix
         }
 
         /// <summary>
+        /// Invokes a function with the given name in the given namespace. This DOES NOT return a result.
+        /// </summary>
+        /// <param name="namespc"></param>
+        /// <param name="name"></param>
+        /// <param name="paramList"></param>
+        /// <returns></returns>
+        public static bool InvokeMethod(string namespc, string name, params object[] paramList)
+        {
+            object o;
+            return InvokeFunction(namespc, name, out o, paramList);
+        }
+
+        /// <summary>
         /// Invokes a function with the given name in the given namespace. Returns the result.
         /// </summary>
         /// <param name="namespc">Namespace</param>
@@ -232,8 +314,15 @@ namespace Jebnix
             string n = GenerateUniqueName(namespc, name, paramList.Length);
             if (functions.ContainsKey(n))
             {
-                returnVal = functions[n].DynamicInvoke(paramList);
-                return true;
+                try
+                {
+                    returnVal = functions[n].DynamicInvoke(paramList);
+                    return true;
+                }
+                catch
+                {
+                    throw;
+                }
             }
             returnVal = null;
             return false;
@@ -249,6 +338,7 @@ namespace Jebnix
             if (!stdlibRegistered)
             {
                 RegisterMathFunctions();
+                RegisterIOFunctions();
 
                 stdlibRegistered = true;
             }
@@ -256,11 +346,11 @@ namespace Jebnix
 
         private static void RegisterIOFunctions()
         {
-            RegisterFunction(STDIO, "print", 1, new Action<string>(stdio.Print));
-            RegisterFunction(STDIO, "println", 1, new Action<string>(stdio.PrintLine));
+            RegisterFunction(STDIO, "print", 1, new Action<Value>(stdio.Print));
+            RegisterFunction(STDIO, "println", 1, new Action<Value>(stdio.PrintLine));
             RegisterFunction(STDIO, "println", 0, new Action(stdio.PrintLine));
             RegisterFunction(STDIO, "clearscreen", 0, new Action(stdio.ClearScreen));
-            RegisterFunction(STDIO, "getJebnixversion", 0, new Func<string>(stdio.GetJebnixVersion));
+            RegisterFunction(STDIO, "getjebnixversion", 0, new Func<string>(stdio.GetJebnixVersion));
         }
 
         private static void RegisterMathFunctions()
