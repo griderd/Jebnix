@@ -171,14 +171,29 @@ namespace KerboScriptEngine
                     Value returnVal = null;
                     object temp = null;
                     Stack<Value> paramList = new Stack<Value>();
-                    
-                    if (Functions.ContainsFunction(token, result.Count))
+
+                    string namespc, name;
+                    string[] parts;
+                    if ((token.Contains(':')) && (!token.StartsWith(":")) && (!token.EndsWith(":")))
+                    {
+                        int lastColon = token.LastIndexOf(':');
+                        parts = token.Substring(0, lastColon).Split(':');
+                        namespc = Functions.ResolveNamespace(parts);
+                        name = token.Substring(lastColon + 1, token.Length - lastColon - 1);
+                    }
+                    else
+                    {
+                        namespc = Functions.GLOBAL;
+                        name = token;
+                    }
+
+                    if (Functions.ContainsFunction(namespc, name, result.Count))
                     {
                         while (result.Count > 0)
                         {
                             paramList.Push(result.Pop());
                         }
-                        if (Functions.InvokeFunction(token, out temp, paramList.ToArray()))
+                        if (Functions.InvokeFunction(namespc, name, out temp, paramList.ToArray()))
                         {
                             if (temp == null)
                                 returnVal = 0;

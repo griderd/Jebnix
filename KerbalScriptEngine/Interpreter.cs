@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Reflection;
+using System.Diagnostics;
 using UnityEngine;
 using Jebnix.FileSystem;
 using KerboScriptEngine.ScriptAPI;
@@ -16,6 +17,12 @@ namespace KerboScriptEngine
         int currentProcess;
 
         List<string> filesAsFunctions;
+
+        public bool Busy
+        {
+            get;
+            private set;
+        }
 
         public string[] GlobalFunctions
         {
@@ -64,12 +71,17 @@ namespace KerboScriptEngine
 
         public override void ExecuteProcess()
         {
-            if (processes.Count > currentProcess)
+            if ((!Busy) && (processes.Count > currentProcess))
             {
+                Busy = true;
+#if DEBUG
+                System.Diagnostics.Debug.Print("Executing process " + currentProcess.ToString());
+#endif
                 processes[currentProcess].ExecuteNext();
                 currentProcess++;
                 if (currentProcess == processes.Count)
                     currentProcess = 0;
+                Busy = false;
             }
             else
             {

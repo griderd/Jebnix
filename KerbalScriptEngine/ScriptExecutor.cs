@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 using Jebnix.stdlib;
 using Jebnix.Types;
 using KSP;
@@ -20,6 +21,9 @@ namespace KerboScriptEngine
         private Tuple<int, int> Execute(int lineIndex, int tokenIndex, LineInfo[] lines, out string[]  err)
         {
             LineInfo line = lines[lineIndex];
+#if DEBUG
+            Debug.Print("Executing line: " + line.Line);
+#endif
 
             string token;
             List<string> errors = new List<string>();

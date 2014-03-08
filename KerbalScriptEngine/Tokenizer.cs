@@ -64,7 +64,6 @@ namespace KerboScriptEngine
                         }
                         continue;
 
-                    case ':':
                     case '+':
                     case '-':
                     case '*':

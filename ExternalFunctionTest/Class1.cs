@@ -17,6 +17,7 @@ namespace ExternalFunctionTest
             Functions.RegisterFunction("test", 0, new Func<string>(TestFunction));
             Functions.RegisterFunction("librarytest", 1, new Action<Value>(LibraryPrintTest));
             Functions.RegisterFunction("getnumber", 0, new Func<double>(GetNumber));
+            Functions.RegisterFunction("externaltest", 0, new Action(ExternalCallTest));
         }
 
         /// <summary>
@@ -36,6 +37,18 @@ namespace ExternalFunctionTest
             stdio.PrintLine("This is a library test. " + value.StringValue);
         }
 
+        /// <summary>
+        /// Prints "This is an invocation test" to the screen via the registered function "stdio_println_1".
+        /// </summary>
+        public void ExternalCallTest()
+        {
+            Functions.InvokeMethod(Functions.STDIO, "println", "This is an invocation test.");
+        }
+
+        /// <summary>
+        /// Returns the number 10.
+        /// </summary>
+        /// <returns></returns>
         public double GetNumber()
         {
             return 10;

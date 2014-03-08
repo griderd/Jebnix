@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 using Jebnix.stdlib;
 using Jebnix.Types;
 
@@ -110,9 +111,13 @@ namespace KerboScriptEngine
 
         public void ExecuteNext()
         {
+#if DEBUG
+            Debug.Print("ExecuteNext()");
+#endif
             string[] err = new string[0];
             if (CurrentState.nextLine < CurrentState.lines.Count)
             {
+                
                 Tuple<int, int> t = Execute(CurrentState.nextLine, CurrentState.nextToken, CurrentState.lines.ToArray(), out err);
                 //if (CurrentState.nextToken >= CurrentState.lines[CurrentState.nextLine].Tokens.Length)
                 //    CurrentState.nextLine++;
