@@ -29,7 +29,7 @@ namespace KerboScriptEngine
 
             for (int i = 0; i < s.Length; i++)
             {
-                char c = s[i];
+                char c = s.ToLower()[i];
                 char nextc;
                 if (i + 1 < s.Length)
                     nextc = s[i + 1];
@@ -64,10 +64,9 @@ namespace KerboScriptEngine
                         }
                         continue;
 
-                    case '+':
-                    case '-':
                     case '*':
                     case '/':
+                    case '%':
                     case '^':
                     case '|':
                     case '&':
@@ -85,6 +84,68 @@ namespace KerboScriptEngine
                             token.Clear();
                             tokens.Add(c.ToString());
                         
+                        }
+                        continue;
+
+                    case '+':
+                    case '-':
+                    case '=':
+                        if (inString)
+                            token.Append(c);
+                        else if (c == nextc)
+                        {
+                            if (token.Length > 0)
+                            {
+                                tokens.Add(token.ToString());
+                                token.Clear();
+                            }
+                            token.Append(c);
+                            token.Append(c);
+                            tokens.Add(token.ToString());
+                            token.Clear();
+                            i++;
+                        }
+                        else
+                        {
+                            if (token.Length > 0)
+                            {
+                                tokens.Add(token.ToString());
+                                token.Clear();
+                            }
+                            token.Append(c);
+                            tokens.Add(token.ToString());
+                            token.Clear();
+                        }
+                        continue;
+
+                    case '!':
+                    case '>':
+                    case '<':
+                        if (inString)
+                            token.Append(c);
+                        else if (nextc == '=')
+                        {
+                            if (token.Length > 0)
+                            {
+                                tokens.Add(token.ToString());
+                                token.Clear();
+                            }
+                            token.Append(c);
+                            token.Append(nextc);
+                            tokens.Add(token.ToString());
+                            token.Clear();
+                            i++;
+                        }
+                        else
+                        {
+                            if (token.Length > 0)
+                            {
+                                tokens.Add(token.ToString());
+                                token.Clear();
+                            }
+                            token.Append(c);
+                            tokens.Add(token.ToString());
+                            token.Clear();
                         }
                         continue;
 

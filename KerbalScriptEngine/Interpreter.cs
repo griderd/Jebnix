@@ -109,19 +109,21 @@ namespace KerboScriptEngine
         {
             if ((processId >= 0) && (processes.Count > processId))
             {
-                processes[processId].AddLines(ConvertToLineInfo(lines, filename));
+                processes[processId].AddLines(ConvertToLineInfo(lines, filename, processes[processId]));
                 return true;
             }
             return false;
         }
 
-        private LineInfo[] ConvertToLineInfo(string[] lines, string filename)
+        private LineInfo[] ConvertToLineInfo(string[] lines, string filename, ScriptProcess p = null)
         {
             List<LineInfo> l = new List<LineInfo>();
 
             for (int i = 0; i < lines.Length; i++)
             {
-                l.Add(new LineInfo(lines[i], filename, i + 1, 0, null));
+                lines[i] = lines[i].Trim();
+                if (lines[i] != "")
+                    l.Add(new LineInfo(lines[i], filename, i + 1, 0, p));
             }
             return l.ToArray();
         }

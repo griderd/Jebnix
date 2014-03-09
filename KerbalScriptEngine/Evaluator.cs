@@ -22,17 +22,17 @@ namespace KerboScriptEngine
         /// <param name="errors"></param>
         /// <param name="process"></param>
         /// <returns></returns>
-        public static Value Evaluate(string expression, LineInfo source, out string[] errors, ScriptProcess process)
+        public static Value Evaluate(string expression, LineInfo source, out string[] errors)
         {
-            return Evaluate(new LineInfo(expression, source.Filename, source.LineNumber, source.ColumnOffset, source.Process), out errors, process);
+            return Evaluate(new LineInfo(expression, source.Filename, source.LineNumber, source.ColumnOffset, source.Process), out errors);
         }
 
-        public static Value Evaluate(LineInfo line, out string[] errors, ScriptProcess process)
+        public static Value Evaluate(LineInfo line, out string[] errors)
         {
             List<string> err = new List<string>();
             Stack<Value> result = new Stack<Value>();
             string[] e;
-            Queue<string> postfix = ConvertToPostfix(line.Tokens, process, out e);
+            Queue<string> postfix = ConvertToPostfix(line.Tokens, line.Process, out e);
             err.AddRange(e);
 
             string[] unaryOperators = new string[] { "!", "~", "not", "++", "--" };
@@ -216,7 +216,7 @@ namespace KerboScriptEngine
                 }
                 else
                 {
-                    result.Push(ConvertToValue(token, process));
+                    result.Push(ConvertToValue(token, line.Process));
                 }
             }
 
@@ -239,7 +239,7 @@ namespace KerboScriptEngine
             double ftemp;
             bool btemp;
             OrderedPair optemp; 
-            Value v = null;
+            Value v;
 
             if (process.TryGetVariable(token, out v))
             {

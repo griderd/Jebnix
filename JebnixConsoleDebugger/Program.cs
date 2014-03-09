@@ -41,7 +41,7 @@ namespace JebnixConsoleDebugger
 
             Console.SetWindowSize(40, 21);
 
-            //DebugMode(5);
+            //DebugMode(25);
             RealTimeMode();
         }
 
@@ -63,12 +63,12 @@ namespace JebnixConsoleDebugger
         {
             clock_Elapsed(null, null);
 
+            string inp = Console.ReadLine();
+            stdio.PrintLine(inp);
+            interpreter.AddCodeToProcess(consoleProc, new string[] { inp }, "Console");
+
             for (int i = 0; i < count; i++)
             {
-                string inp = Console.ReadLine();
-                stdio.PrintLine(inp);
-                interpreter.AddCodeToProcess(consoleProc, new string[] { inp }, "Console");
-
                 clock_Elapsed(null, null);
             }
         }

@@ -7,13 +7,11 @@ namespace KerboScriptEngine
 {
     class ExecutionFrame
     {
-        public int LineNumber { get; private set; }
-        public int TokenOffset { get; private set; }
+        public LineInfo Line { get; private set; }
 
-        public ExecutionFrame(int lineNumber, int tokenOffset)
+        public ExecutionFrame(string condition, LineInfo line)
         {
-            LineNumber = lineNumber;
-            TokenOffset = tokenOffset;
+            Line = new LineInfo(condition, line.Filename, line.LineNumber, line.ColumnOffset, line.Process);
         }
     }
 }

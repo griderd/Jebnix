@@ -61,6 +61,7 @@ namespace KerboScriptEngine
             string[] err;
             Tokens = Tokenizer.Tokenize(this, out err);
             Errors = err;
+            Process = process;
         }
     }
 }

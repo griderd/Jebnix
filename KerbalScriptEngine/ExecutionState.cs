@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 using Jebnix.Types;
 
 namespace KerboScriptEngine
@@ -48,9 +49,9 @@ namespace KerboScriptEngine
         public Dictionary<string, string> lockedVariables;
 
         /// <summary>
-        /// Stack of internal call frames.
+        /// Stack of internal call frames. The line number/token offset is where the frame starts. The condition to jump is located in the line text.
         /// </summary>
-        public Stack<ExecutionFrame> executionStack;
+        public Stack<LineInfo> callStack;
 
         /// <summary>
         /// Stack of execution statuses
@@ -83,7 +84,7 @@ namespace KerboScriptEngine
             nextLine = 0;
             nextToken = 0;
             scopeStack = new Stack<Dictionary<string, Value>>();
-            executionStack = new Stack<ExecutionFrame>();
+            callStack = new Stack<LineInfo>();
             statusStack = new Stack<Status>();
             whenBlocks = new Dictionary<LineInfo, Tuple<int,int>>();
             whenThenPersist = new Dictionary<LineInfo, bool>();
@@ -93,16 +94,52 @@ namespace KerboScriptEngine
             onBlocks = new Dictionary<LineInfo, Tuple<int, int>>();
         }
 
-        public void PushExecutionFrame()
+        public void PushCall(LineInfo call)
         {
-            executionStack.Push(new ExecutionFrame(nextLine, nextToken));
+#if DEBUG
+            Debug.Print("Pushing to call stack: \"" + call.Line + "\" at " + call.LineNumber + ", " + call.ColumnOffset);
+#endif
+            callStack.Push(call);
         }
 
-        public void PopExecutionFrame()
+        public void PushCall(string condition, string filename, ScriptProcess process)
         {
-            ExecutionFrame f = executionStack.Pop();
-            nextLine = f.LineNumber;
-            nextToken = f.TokenOffset;
+#if DEBUG
+            Debug.Print("Pushing to call stack: \"" + condition + "\" at " + nextLine + ", " + nextToken);
+#endif
+            callStack.Push(new LineInfo(condition, filename, nextLine, nextToken, process));
+        }
+
+        public bool PopCall(out string[] errors, out LineInfo call)
+        {
+            if (callStack.Count > 0)
+            {
+                call = callStack.Pop();
+#if DEBUG
+                Debug.Print("Popped from call stack: \"" + call.Line + "\" at " + call.LineNumber + ", " + call.ColumnOffset);
+#endif
+                if (Evaluator.Evaluate(call, out errors).BooleanValue)
+                {
+#if DEBUG
+                    Debug.Print("Condition TRUE");
+#endif
+                    return true;
+                }
+                else
+                {
+#if DEBUG
+                    Debug.Print("Condition TRUE");
+#endif
+                    return false;
+                }
+            }
+
+#if DEBUG
+            Debug.Print("Call stack empty!");
+#endif
+            call = new LineInfo();
+            errors = new string[0];
+            return false;
         }
     }
 }

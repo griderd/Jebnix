@@ -25,12 +25,10 @@ namespace KerboScriptEngine
             Debug.Print("Executing line: " + line.Line);
 #endif
 
-            string token;
+            string token = "";
             List<string> errors = new List<string>();
 
             int i = tokenIndex;
-            token = line.Tokens[i];
-                
 
             // Build and throw an error
             Action<ErrorBuilder.ErrorType, string> ThrowError = delegate(ErrorBuilder.ErrorType t, string message)
@@ -67,8 +65,26 @@ namespace KerboScriptEngine
                 {
                     if (!GetNextLine())
                         return false;
+                    else
+                        token = line.Tokens[i];
                 }
                 return true;
+            };
+
+            Func<string> ReadNextToken = delegate()
+            {
+                if (i + 1 < line.Tokens.Length)
+                {
+                    return line.Tokens[i + 1];
+                }
+                else if (lineIndex + 1 < lines.Length)
+                {
+                    return lines[lineIndex + 1].Tokens[0];
+                }
+                else
+                {
+                    return null;
+                }
             };
 
             // Gets the tokens of the next expression.
@@ -145,8 +161,15 @@ namespace KerboScriptEngine
 
                 case "}":
                     {
-                        if (!ExitScope())
+                        string[] e;
+                        Tuple<int, int> newPosition;
+                        if (!ExitScope(out e, out newPosition))
                             ThrowError(ErrorBuilder.ErrorType.SyntaxError, "'}' without matching '{'.");
+                        if (newPosition != null)
+                        {
+                            lineIndex = newPosition.Item1;
+                            i = newPosition.Item2;
+                        }
                         break;
                     }
 
@@ -164,7 +187,7 @@ namespace KerboScriptEngine
                             {
                                 string expression = GetNextExpression(new string[] { "." });
                                 string[] ex;
-                                Value var = Evaluator.Evaluate(expression, line, out ex, this);
+                                Value var = Evaluator.Evaluate(expression, line, out ex);
                                 errors.AddRange(ex);
 
                                 if (ex.Length == 0)
@@ -283,7 +306,7 @@ namespace KerboScriptEngine
                             break;
                         }
 
-                        Evaluator.Evaluate(s, line, out ex, this);
+                        Evaluator.Evaluate(s, line, out ex);
                         errors.AddRange(ex);
 
                         break;
@@ -305,7 +328,7 @@ namespace KerboScriptEngine
                         }
                         
                         // Evaluate expression
-                        Value output = Evaluator.Evaluate(s, line, out ex, this);
+                        Value output = Evaluator.Evaluate(s, line, out ex);
                         errors.AddRange(ex);
                         if (ex.Length > 0)
                             break;
@@ -323,7 +346,7 @@ namespace KerboScriptEngine
                                 ThrowError(ErrorBuilder.ErrorType.SyntaxError, "\".\" expected.");
                                 break;
                             }
-                            Value location = Evaluator.Evaluate(s, line, out ex, this);
+                            Value location = Evaluator.Evaluate(s, line, out ex);
                             errors.AddRange(ex);
                             if (ex.Length > 0)
                                 break;
@@ -352,20 +375,20 @@ namespace KerboScriptEngine
                 case "if":
                     {
                         string s = GetNextExpression(new string[] { "{" });
-                        if (s == "")
-                        {
-                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Expression expected.");
-                            break;
-                        }
-                        else if (s == null)
+                        if (s == null)
                         {
                             ThrowError(ErrorBuilder.ErrorType.SyntaxError, "\"{\" expected after IF.");
                             break;
                         }
+                        else if (s == "")
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Expression expected.");
+                            break;
+                        } 
                         else
                         {
                             string[] ex;
-                            Value v = Evaluator.Evaluate(s, line, out ex, this);
+                            Value v = Evaluator.Evaluate(s, line, out ex);
                             errors.AddRange(ex);
                             if (ex.Length > 0)
                                 break;
@@ -492,6 +515,81 @@ namespace KerboScriptEngine
                         }
                         break;
                     }
+
+                case "run":
+                    string nextToken = ReadNextToken();
+                    if (nextToken == null)
+                    {
+                        ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "No file name or expression provided.", ref errors);
+                    }
+                    else if (Parent.CurrentFolder.ContainsFile(nextToken + ".txt"))
+                    {
+                        GetNextToken();
+                        GetNextToken();
+                        if (token == ".")
+                            Parent.CreateProcess(Parent.CurrentFolder.GetFile(nextToken + ".txt").Lines, token);
+                        else
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Expected \".\"");
+                    }
+                    else
+                    {
+                        string[] e = new string[0];
+                        string s = GetNextExpression(new string[] { "." });
+                        if (s == null)
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "\"{\" expected after IF.");
+                            break;
+                        }
+                        else if (s == "")
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Expression expected.");
+                            break;
+                        } 
+                        Value v = Evaluator.Evaluate(s, line, out e);
+                        if (e.Length > 0)
+                        {
+                            errors.AddRange(e);
+                            break;
+                        }
+                        else if (Parent.CurrentFolder.ContainsFile(v.StringValue + ".txt"))
+                        {
+                            Parent.CreateProcess(Parent.CurrentFolder.GetFile(v.StringValue + ".txt").Lines, v.StringValue);
+                        }
+                        else
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "File \"" + v.StringValue + "\" does not exist.");
+                        }
+                    }
+                    break;
+
+                case "while":
+                    {
+                        string s = GetNextExpression(new string[] { "{" });
+                        if (s == null)
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "\"{\" expected after WHILE.");
+                            break;
+                        }
+                        else if (s == "")
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Expression expected.");
+                            break;
+                        }
+                        
+                        string[] e;
+                        Value v = Evaluator.Evaluate(s, line, out e);
+                        if ((v.BooleanValue) && (e.Length == 0))
+                        {
+                            CurrentState.PushCall(s, line.Filename, this);
+                            NewScope(ExecutionState.Status.WhileLoop);
+                        }
+                        else
+                        {
+                            errors.AddRange(e);
+                            AdvanceToEndOfScope();
+                        }
+                    }
+                    break;
             }
 
 

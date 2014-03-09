@@ -62,7 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\ActionGroups.cs" />
-    <Compile Include="Parser.cs" />
     <Compile Include="ScriptAPI\Physics.cs" />
     <Compile Include="ScriptExecutor.cs" />
     <Compile Include="ErrorBuilder.cs" />

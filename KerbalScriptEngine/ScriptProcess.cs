@@ -65,18 +65,44 @@ namespace KerboScriptEngine
 
         void NewScope(ExecutionState.Status status)
         {
+#if DEBUG
+            Debug.Print("Entering scope " + status.ToString());
+#endif
             CurrentState.scopeStack.Push(new Dictionary<string, Value>());
             CurrentState.statusStack.Push(status);
         }
 
-        bool ExitScope()
+        bool ExitScope(out string[] errors, out Tuple<int, int> newPosition)
         {
             if (CurrentState.scopeStack.Count > 1)
             {
                 CurrentState.scopeStack.Pop();
-                CurrentState.statusStack.Pop();
+                ExecutionState.Status status = CurrentState.statusStack.Pop();
+
+#if DEBUG
+                Debug.Print("Exiting scope " + status.ToString());
+#endif
+
+                newPosition = null;
+                if (status == ExecutionState.Status.WhileLoop)
+                {
+                    LineInfo call;
+                    if (CurrentState.PopCall(out errors, out call))
+                    {
+                        NewScope(ExecutionState.Status.WhileLoop);
+                        CurrentState.PushCall(call);
+                        newPosition = new Tuple<int, int>(call.LineNumber, call.ColumnOffset);
+                    }
+                }
+                else
+                {
+                    errors = new string[0];
+                    newPosition = null;
+                }
                 return true;
             }
+            errors = new string[0];
+            newPosition = null;
             return false;
         }
 
@@ -111,13 +137,12 @@ namespace KerboScriptEngine
 
         public void ExecuteNext()
         {
-#if DEBUG
-            Debug.Print("ExecuteNext()");
-#endif
             string[] err = new string[0];
             if (CurrentState.nextLine < CurrentState.lines.Count)
             {
-                
+#if DEBUG
+                Debug.Print("Executing at " + CurrentState.nextLine + ", " + CurrentState.nextToken);
+#endif
                 Tuple<int, int> t = Execute(CurrentState.nextLine, CurrentState.nextToken, CurrentState.lines.ToArray(), out err);
                 //if (CurrentState.nextToken >= CurrentState.lines[CurrentState.nextLine].Tokens.Length)
                 //    CurrentState.nextLine++;
@@ -136,12 +161,16 @@ namespace KerboScriptEngine
 
         public void AddLines(LineInfo[] lines)
         {
-            CurrentState.lines.AddRange(lines);
+            for (int i = 0; i < lines.Length; i++)
+            {
+                lines[i].Process = this;
+                CurrentState.lines.Add(lines[i]);
+            }
         }
 
         public void Interrupt(int nextLine, int nextToken)
         {
-            CurrentState.PushExecutionFrame();
+            CurrentState.PushCall("true", "", this);
             CurrentState.nextLine = nextLine;
             CurrentState.nextToken = nextToken;
         }
@@ -151,7 +180,7 @@ namespace KerboScriptEngine
             string[] err;
             foreach (LineInfo when in CurrentState.whenBlocks.Keys)
             {
-                if (Evaluator.Evaluate(when, out err, this).BooleanValue && err.Length == 0)
+                if (Evaluator.Evaluate(when, out err).BooleanValue && err.Length == 0)
                 {
                     Interrupt(CurrentState.whenBlocks[when].Item1, CurrentState.whenBlocks[when].Item2); 
                     CurrentState.whenBlocks.Remove(when);
