@@ -16,8 +16,6 @@ namespace JebnixConsoleDebugger
         static System.Timers.Timer clock;
         static int consoleProc;
 
-        static int busyCount = 0;
-        static int cycleCount = 0;
         static int clockFreq = 100;
 
         static StringBuilder input;
@@ -141,16 +139,6 @@ namespace JebnixConsoleDebugger
 
         static void clock_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (cycleCount == 1000)
-            {
-                busyCount--;
-            }
-            else if (cycleCount < 1000)
-            {
-                cycleCount++;
-            }
-            if (interpreter.Busy) busyCount++;
-
             if (!interpreter.Busy)
                 interpreter.ExecuteProcess();
 
