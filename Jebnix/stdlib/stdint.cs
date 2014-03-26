@@ -19,6 +19,19 @@ namespace Jebnix.stdlib
         /// Raised when a keyboard key is pressed.
         /// </summary>
         public static event EventHandler<InterruptEventArgs<KeyData>> OnKeyPress;
+
+        public static void RaiseOnKeyPress(object sender, KeyData key)
+        {
+            if (OnKeyPress != null)
+                OnKeyPress(sender, new InterruptEventArgs<KeyData>(key));
+            RaiseOnInterrupt(sender, key);
+        }
+
+        public static void RaiseOnInterrupt(object sender, object data)
+        {
+            if (OnInterrupt != null)
+                OnInterrupt(sender, new InterruptEventArgs<object>(data));
+        }
     }
 
     public class InterruptEventArgs<T> : EventArgs
@@ -45,6 +58,21 @@ namespace Jebnix.stdlib
             Shift = shift;
             CapsLock = capsLock;
             KeyCode = keyCode;
+            ConsKey = 0;
+            IsFormsKey = true;
+            Character = c;
+        }
+
+        public KeyData(bool alt, bool ctrl, bool shift, bool capsLock, System.ConsoleKey keyCode, char c)
+            : this()
+        {
+            Alt = alt;
+            Ctrl = ctrl;
+            Shift = shift;
+            CapsLock = capsLock;
+            ConsKey = keyCode;
+            KeyCode = 0;
+            IsFormsKey = false;
             Character = c;
         }
 
@@ -52,7 +80,9 @@ namespace Jebnix.stdlib
         public bool Ctrl { get; private set; }
         public bool Shift { get; private set; }
         public bool CapsLock { get; private set; }
+        public bool IsFormsKey { get; private set; }
         public System.Windows.Forms.Keys KeyCode { get; private set; }
+        public System.ConsoleKey ConsKey { get; private set; }
         public char Character { get; private set; }
     }
 }

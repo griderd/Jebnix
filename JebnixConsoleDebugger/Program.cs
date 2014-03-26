@@ -60,7 +60,47 @@ namespace JebnixConsoleDebugger
 
         static void stdint_OnKeyPress(object sender, InterruptEventArgs<KeyData> e)
         {
-            
+            if (e.Data.IsFormsKey) return;
+
+            switch (e.Data.ConsKey)
+            {
+                case ConsoleKey.Enter:
+                    stdio.ProcessChar('\n');
+                    if (Mode == ConsoleMode.Intermediate)
+                    {
+                        interpreter.AddCodeToProcess(consoleProc, new string[] { input.ToString() }, "Console");
+                        input.Clear();
+                    }
+                    break;
+
+                case ConsoleKey.Backspace:
+                    stdio.ProcessChar('\b');
+                    if (input.Length > 0)
+                        input.Remove(input.Length - 1, 1);
+                    break;
+
+                case ConsoleKey.Tab:
+                    stdio.ProcessChar('\t');
+                    input.Append('\t');
+                    break;
+
+                default:
+                    stdio.ProcessChar(e.Data.Character);
+                    input.Append(e.Data.Character);
+                    break;
+            }
+        }
+
+        static void RaiseOnKeyPress(ConsoleKeyInfo key)
+        {
+            object sender = null;
+
+            bool alt = (key.Modifiers & ConsoleModifiers.Alt) != 0;
+            bool shift = (key.Modifiers & ConsoleModifiers.Shift) != 0;
+            bool ctrl = (key.Modifiers & ConsoleModifiers.Control) != 0;
+
+            KeyData data = new KeyData(alt, ctrl, shift, (!shift && (key.KeyChar >= 'A' & key.KeyChar <= 'Z')), key.Key, key.KeyChar);
+            stdint.RaiseOnKeyPress(sender, data);
         }
 
         static void RealTimeMode()
@@ -72,33 +112,9 @@ namespace JebnixConsoleDebugger
                 if (Console.KeyAvailable)
                 {
                     ConsoleKeyInfo key = Console.ReadKey(true);
-                    switch (key.Key)
-                    {
-                        case ConsoleKey.Enter:
-                            stdio.ProcessChar('\n');
-                            if (Mode == ConsoleMode.Intermediate)
-                            {
-                                interpreter.AddCodeToProcess(consoleProc, new string[] { input.ToString() }, "Console");
-                                input.Clear();
-                            }
-                            break;
-
-                        case ConsoleKey.Backspace:
-                            stdio.ProcessChar('\b');
-                            if (input.Length > 0) 
-                                input.Remove(input.Length - 1, 1);
-                            break;
-
-                        case ConsoleKey.Tab:
-                            stdio.ProcessChar('\t');
-                            input.Append('\t');
-                            break;
-
-                        default:
-                            stdio.ProcessChar(key.KeyChar);
-                            input.Append(key.KeyChar);
-                            break;
-                    }
+                    RaiseOnKeyPress(key);
+                    
+                    
                 }
 
                 //Debug.Print("Waiting for user input.");
