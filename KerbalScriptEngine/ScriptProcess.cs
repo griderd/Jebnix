@@ -94,6 +94,16 @@ namespace KerboScriptEngine
                         newPosition = new Tuple<int, int>(call.LineNumber, call.ColumnOffset);
                     }
                 }
+                else if (status == ExecutionState.Status.UntilLoop)
+                {
+                    LineInfo call;
+                    if (!CurrentState.PopCall(out errors, out call))
+                    {
+                        NewScope(ExecutionState.Status.UntilLoop);
+                        CurrentState.PushCall(call);
+                        newPosition = new Tuple<int, int>(call.LineNumber, call.ColumnOffset);
+                    }
+                }
                 else
                 {
                     errors = new string[0];

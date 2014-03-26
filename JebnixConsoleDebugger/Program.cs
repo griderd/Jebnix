@@ -18,8 +18,6 @@ namespace JebnixConsoleDebugger
 
         static int busyCount = 0;
         static int cycleCount = 0;
-        static double percentUsage;
-        static double peakPercent = 0;
         static int clockFreq = 100;
 
         static StringBuilder input;

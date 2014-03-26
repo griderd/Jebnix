@@ -176,61 +176,54 @@ namespace KerboScriptEngine
                 case "set":
                     {
                         CanAddParameters = false;
-                        GetNextToken();
-                        bool local = (token == "local");
+                        string nextToken = ReadNextToken();
+                        bool local = (nextToken == "local");
                         if (local) GetNextToken();
-                        if (!ReservedWords.IsReserved(token))
-                        {
-                            string name = GetNextExpression(new string[] { "to", "=" });
-                            string[] ex1;
-                            Value nameptr = Evaluator.Evaluate(name, line, out ex1);
-                            if (ex1.Length > 0)
-                            {
-                                errors.AddRange(ex1);
-                                break;
-                            }
-                            if (!ReservedWords.IsValidIdentifier(nameptr.StringValue))
-                            {
-                                ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Identifier not valid.");
-                                break;
-                            }
-                            GetNextToken();
-                            if (token == "to" | token == "=")
-                            {
-                                string expression = GetNextExpression(new string[] { "." });
-                                string[] ex;
-                                Value var = Evaluator.Evaluate(expression, line, out ex);
-                                errors.AddRange(ex);
+                        
+                        string name = GetNextExpression(new string[] { "to", "=" });
+                        string[] ex1 = new string[0];
 
-                                if (ex.Length == 0)
-                                {
-                                    if (HasVariable(nameptr.StringValue))
-                                    {
-                                        SetVariable(nameptr.StringValue, var);
-                                    }
-                                    else if (local)
-                                    {
-                                        SetLocalVariable(nameptr.StringValue, var);
-                                    }
-                                    else
-                                    {
-                                        SetGlobalVariable(nameptr.StringValue, var);
-                                    }
-                                }
-                                else
-                                {
-                                    errors.AddRange(ex);
-                                    break;
-                                }
+                        Value nameptr;
+                        if (name.Contains('[') && name.Contains(']'))
+                            nameptr = Evaluator.Evaluate(name, line, out ex1);
+                        else
+                            nameptr = name;
+
+                        if (ex1.Length > 0)
+                        {
+                            errors.AddRange(ex1);
+                            break;
+                        }
+                        if (!ReservedWords.IsValidIdentifier(nameptr.StringValue))
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Identifier not valid.");
+                            break;
+                        }
+
+                        string expression = GetNextExpression(new string[] { "." });
+                        string[] ex;
+                        Value var = Evaluator.Evaluate(expression, line, out ex);
+                        errors.AddRange(ex);
+
+                        if (ex.Length == 0)
+                        {
+                            if (HasVariable(nameptr.StringValue))
+                            {
+                                SetVariable(nameptr.StringValue, var);
+                            }
+                            else if (local)
+                            {
+                                SetLocalVariable(nameptr.StringValue, var);
                             }
                             else
                             {
-                                ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "Expected keyword 'TO' or '='.", ref errors);
+                                SetGlobalVariable(nameptr.StringValue, var);
                             }
                         }
                         else
                         {
-                            ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "Identifier cannot be reserved word.", ref errors);
+                            errors.AddRange(ex);
+                            break;
                         }
                     }
                     break;
@@ -534,50 +527,52 @@ namespace KerboScriptEngine
                     }
 
                 case "run":
-                    string nextToken = ReadNextToken();
-                    if (nextToken == null)
                     {
-                        ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "No file name or expression provided.", ref errors);
-                    }
-                    else if (Parent.CurrentFolder.ContainsFile(nextToken + ".txt"))
-                    {
-                        GetNextToken();
-                        GetNextToken();
-                        if (token == ".")
-                            Parent.CreateProcess(Parent.CurrentFolder.GetFile(nextToken + ".txt").Lines, token);
-                        else
-                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Expected \".\"");
-                    }
-                    else
-                    {
-                        string[] e = new string[0];
-                        string s = GetNextExpression(new string[] { "." });
-                        if (s == null)
+                        string nextToken = ReadNextToken();
+                        if (nextToken == null)
                         {
-                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "\"{\" expected after IF.");
-                            break;
+                            ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "No file name or expression provided.", ref errors);
                         }
-                        else if (s == "")
+                        else if (Parent.CurrentFolder.ContainsFile(nextToken + ".txt"))
                         {
-                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Expression expected.");
-                            break;
-                        } 
-                        Value v = Evaluator.Evaluate(s, line, out e);
-                        if (e.Length > 0)
-                        {
-                            errors.AddRange(e);
-                            break;
-                        }
-                        else if (Parent.CurrentFolder.ContainsFile(v.StringValue + ".txt"))
-                        {
-                            Parent.CreateProcess(Parent.CurrentFolder.GetFile(v.StringValue + ".txt").Lines, v.StringValue);
+                            GetNextToken();
+                            GetNextToken();
+                            if (token == ".")
+                                Parent.CreateProcess(Parent.CurrentFolder.GetFile(nextToken + ".txt").Lines, token);
+                            else
+                                ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Expected \".\"");
                         }
                         else
                         {
-                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "File \"" + v.StringValue + "\" does not exist.");
+                            string[] e = new string[0];
+                            string s = GetNextExpression(new string[] { "." });
+                            if (s == null)
+                            {
+                                ThrowError(ErrorBuilder.ErrorType.SyntaxError, "\"{\" expected after IF.");
+                                break;
+                            }
+                            else if (s == "")
+                            {
+                                ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Expression expected.");
+                                break;
+                            }
+                            Value v = Evaluator.Evaluate(s, line, out e);
+                            if (e.Length > 0)
+                            {
+                                errors.AddRange(e);
+                                break;
+                            }
+                            else if (Parent.CurrentFolder.ContainsFile(v.StringValue + ".txt"))
+                            {
+                                Parent.CreateProcess(Parent.CurrentFolder.GetFile(v.StringValue + ".txt").Lines, v.StringValue);
+                            }
+                            else
+                            {
+                                ThrowError(ErrorBuilder.ErrorType.SyntaxError, "File \"" + v.StringValue + "\" does not exist.");
+                            }
                         }
+                        break;
                     }
-                    break;
 
                 case "while":
                     {
@@ -599,6 +594,35 @@ namespace KerboScriptEngine
                         {
                             CurrentState.PushCall(s, line.Filename, this);
                             NewScope(ExecutionState.Status.WhileLoop);
+                        }
+                        else
+                        {
+                            errors.AddRange(e);
+                            AdvanceToEndOfScope();
+                        }
+                    }
+                    break;
+
+                case "until":
+                    {
+                        string s = GetNextExpression(new string[] { "{" });
+                        if (s == null)
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "\"{\" expected after UNTIL.");
+                            break;
+                        }
+                        else if (s == "")
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Expression expected.");
+                            break;
+                        }
+
+                        string[] e;
+                        Value v = Evaluator.Evaluate(s, line, out e);
+                        if ((!v.BooleanValue) && (e.Length == 0))
+                        {
+                            CurrentState.PushCall(s, line.Filename, this);
+                            NewScope(ExecutionState.Status.UntilLoop);
                         }
                         else
                         {

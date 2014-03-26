@@ -22,6 +22,7 @@ namespace JebnixPart
         public JebnixGui(int x, int y, int width, int height)
         {
             GUIStyle windowStyle = new GUIStyle(GUI.skin.window);
+
         }
 
         /// <summary>
