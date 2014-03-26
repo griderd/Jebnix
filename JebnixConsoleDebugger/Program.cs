@@ -22,6 +22,16 @@ namespace JebnixConsoleDebugger
         static double peakPercent = 0;
         static int clockFreq = 100;
 
+        static StringBuilder input;
+
+        enum ConsoleMode
+        {
+            Intermediate,
+            Edit
+        }
+
+        static ConsoleMode Mode { get; set; }
+
         static void Main(string[] args)
         {
             ExternalFunctionTest.Class1 obj = new ExternalFunctionTest.Class1();
@@ -41,8 +51,18 @@ namespace JebnixConsoleDebugger
 
             Console.SetWindowSize(40, 21);
 
+            stdint.OnKeyPress += new EventHandler<InterruptEventArgs<KeyData>>(stdint_OnKeyPress);
+            input = new StringBuilder();
+
+            Mode = ConsoleMode.Intermediate;
+
             //DebugMode(25);
             RealTimeMode();
+        }
+
+        static void stdint_OnKeyPress(object sender, InterruptEventArgs<KeyData> e)
+        {
+            
         }
 
         static void RealTimeMode()
@@ -51,12 +71,44 @@ namespace JebnixConsoleDebugger
 
             while (clock.Enabled)
             {
-                Debug.Print("Waiting for user input.");
-                string inp = Console.ReadLine();
-                stdio.PrintLine(inp);
-                Debug.Print("Sending input string \"" + inp + "\" to interpreter.");
-                interpreter.AddCodeToProcess(consoleProc, new string[] { inp }, "Console");
-            }
+                if (Console.KeyAvailable)
+                {
+                    ConsoleKeyInfo key = Console.ReadKey(true);
+                    switch (key.Key)
+                    {
+                        case ConsoleKey.Enter:
+                            stdio.ProcessChar('\n');
+                            if (Mode == ConsoleMode.Intermediate)
+                            {
+                                interpreter.AddCodeToProcess(consoleProc, new string[] { input.ToString() }, "Console");
+                                input.Clear();
+                            }
+                            break;
+
+                        case ConsoleKey.Backspace:
+                            stdio.ProcessChar('\b');
+                            if (input.Length > 0) 
+                                input.Remove(input.Length - 1, 1);
+                            break;
+
+                        case ConsoleKey.Tab:
+                            stdio.ProcessChar('\t');
+                            input.Append('\t');
+                            break;
+
+                        default:
+                            stdio.ProcessChar(key.KeyChar);
+                            input.Append(key.KeyChar);
+                            break;
+                    }
+                }
+
+                //Debug.Print("Waiting for user input.");
+                //string inp = Console.ReadLine();
+                //stdio.PrintLine(inp);
+                //Debug.Print("Sending input string \"" + inp + "\" to interpreter.");
+                //interpreter.AddCodeToProcess(consoleProc, new string[] { inp }, "Console");
+            }   
         }
 
         static void DebugMode(int count)

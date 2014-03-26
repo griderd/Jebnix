@@ -51,6 +51,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -61,6 +62,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Drivers\IKeyboardDriver.cs" />
+    <Compile Include="Drivers\KSPKeyboardDriver.cs" />
     <Compile Include="Functions.cs" />
     <Compile Include="FileSystem\File.cs" />
     <Compile Include="FileSystem\Folder.cs" />
@@ -69,6 +72,7 @@
     <Compile Include="Graphics\TextMemory.cs" />
     <Compile Include="Interpreter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="stdlib\stdint.cs" />
     <Compile Include="stdlib\stdio.cs" />
     <Compile Include="stdlib\stdmath.cs" />
     <Compile Include="stdlib\stdtime.cs" />

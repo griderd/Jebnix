@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace KerboScriptEngine
 {
@@ -62,6 +63,11 @@ namespace KerboScriptEngine
         public static bool IsString(string s)
         {
             return s.StartsWith("\"") & s.EndsWith("\"");
+        }
+
+        public static bool IsValidIdentifier(string s)
+        {
+            return Regex.IsMatch(s, @"[a-zA-Z_]+[a-zA-Z_0-9]*(\[[0-9]+/])?");
         }
     }
 }

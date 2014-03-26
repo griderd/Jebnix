@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jebnix", "Jebnix\Jebnix.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JebnixDebugger", "JebnixDebugger\JebnixDebugger.csproj", "{2EB60326-5273-4ECA-9AA0-3686A0867BF2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JebnixModule", "JebnixPart\JebnixModule.csproj", "{96377BF5-EF14-4744-B066-E1E95EA831B4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,13 +90,23 @@ Global
 		{2EB60326-5273-4ECA-9AA0-3686A0867BF2}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{2EB60326-5273-4ECA-9AA0-3686A0867BF2}.Release|x86.ActiveCfg = Release|x86
 		{2EB60326-5273-4ECA-9AA0-3686A0867BF2}.Release|x86.Build.0 = Release|x86
+		{96377BF5-EF14-4744-B066-E1E95EA831B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96377BF5-EF14-4744-B066-E1E95EA831B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96377BF5-EF14-4744-B066-E1E95EA831B4}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{96377BF5-EF14-4744-B066-E1E95EA831B4}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{96377BF5-EF14-4744-B066-E1E95EA831B4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{96377BF5-EF14-4744-B066-E1E95EA831B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96377BF5-EF14-4744-B066-E1E95EA831B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96377BF5-EF14-4744-B066-E1E95EA831B4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{96377BF5-EF14-4744-B066-E1E95EA831B4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{96377BF5-EF14-4744-B066-E1E95EA831B4}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		BuildVersion_DetectChanges = True
-		BuildVersion_BuildVersioningStyle = None.None.None.Increment
 		BuildVersion_UseGlobalSettings = True
+		BuildVersion_BuildVersioningStyle = None.None.None.Increment
+		BuildVersion_DetectChanges = True
 	EndGlobalSection
 EndGlobal

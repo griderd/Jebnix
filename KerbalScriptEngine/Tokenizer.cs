@@ -29,7 +29,11 @@ namespace KerboScriptEngine
 
             for (int i = 0; i < s.Length; i++)
             {
-                char c = s.ToLower()[i];
+                char c = s[i];
+
+                if (!inString)
+                    c = char.ToLower(c);
+
                 char nextc;
                 if (i + 1 < s.Length)
                     nextc = s[i + 1];

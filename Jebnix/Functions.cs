@@ -346,9 +346,9 @@ namespace Jebnix
 
         private static void RegisterIOFunctions()
         {
-            RegisterFunction(STDIO, "print", 1, new Action<Value>(stdio.Print));
-            RegisterFunction(STDIO, "println", 1, new Action<Value>(stdio.PrintLine));
-            RegisterFunction(STDIO, "println", 0, new Action(stdio.PrintLine));
+            RegisterFunction(STDIO, "print", 1, new Action<Value, bool>(stdio.Print));
+            RegisterFunction(STDIO, "println", 1, new Action<Value, bool>(stdio.PrintLine));
+            RegisterFunction(STDIO, "println", 0, new Action<bool>(stdio.PrintLine));
             RegisterFunction(STDIO, "clearscreen", 0, new Action(stdio.ClearScreen));
             RegisterFunction(STDIO, "getjebnixversion", 0, new Func<string>(stdio.GetJebnixVersion));
         }

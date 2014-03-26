@@ -112,7 +112,7 @@ namespace KerboScriptEngine
                 }
             };
 
-            // Exits the current scope. 
+            // Exits the current scope, ignoring trailing WHILE.
             Action AdvanceToEndOfScope = delegate()
             {
                 Stack<object> scope = new Stack<object>();
@@ -181,7 +181,19 @@ namespace KerboScriptEngine
                         if (local) GetNextToken();
                         if (!ReservedWords.IsReserved(token))
                         {
-                            string name = token;
+                            string name = GetNextExpression(new string[] { "to", "=" });
+                            string[] ex1;
+                            Value nameptr = Evaluator.Evaluate(name, line, out ex1);
+                            if (ex1.Length > 0)
+                            {
+                                errors.AddRange(ex1);
+                                break;
+                            }
+                            if (!ReservedWords.IsValidIdentifier(nameptr.StringValue))
+                            {
+                                ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Identifier not valid.");
+                                break;
+                            }
                             GetNextToken();
                             if (token == "to" | token == "=")
                             {
@@ -192,18 +204,23 @@ namespace KerboScriptEngine
 
                                 if (ex.Length == 0)
                                 {
-                                    if (HasVariable(name))
+                                    if (HasVariable(nameptr.StringValue))
                                     {
-                                        SetVariable(name, var);
+                                        SetVariable(nameptr.StringValue, var);
                                     }
                                     else if (local)
                                     {
-                                        SetLocalVariable(name, var);
+                                        SetLocalVariable(nameptr.StringValue, var);
                                     }
                                     else
                                     {
-                                        SetGlobalVariable(name, var);
+                                        SetGlobalVariable(nameptr.StringValue, var);
                                     }
+                                }
+                                else
+                                {
+                                    errors.AddRange(ex);
+                                    break;
                                 }
                             }
                             else
@@ -590,6 +607,39 @@ namespace KerboScriptEngine
                         }
                     }
                     break;
+
+                //case "for":
+                //    {
+                //        string a = GetNextExpression(new string[] { "from", "." });
+                //        GetNextToken();
+                //        if (token == ".") 
+                            
+                //        string b = GetNextExpression(new string[] { "to" });
+                //        GetNextToken();
+                //        string c = GetNextExpression(new string[] { "step", "{" });
+                //        GetNextToken();
+                //        string d;
+                //        if (token == "step")
+                //        {
+                //            d = "set " + a + " to " + GetNextExpression(new string[] { "{" }) + ".";
+                //        }
+                //        else
+                //        {
+                //            string[] e, f;
+                //            Value bval = Evaluator.Evaluate(b, line, out e);
+                //            Value cval = Evaluator.Evaluate(c, line, out f);
+                //            if ((e.Length > 0) || (f.Length > 0))
+                //            {
+                //                errors.AddRange(e);
+                //                errors.AddRange(f);
+                //                break;
+                //            }
+
+                //            d = "set " + a + " to " + a + " + " + ((cval > bval).BooleanValue ? "1" : "-1") + ".";
+                //        }
+
+                        
+                //    }
             }
 
 
