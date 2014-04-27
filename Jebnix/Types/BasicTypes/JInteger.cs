@@ -96,12 +96,18 @@ namespace Jebnix.Types.BasicTypes
 
         public static JInteger operator /(JInteger a, JInteger b)
         {
-            return a.value / b.value;
+            if (a != 0 & b != 0)
+                return a.value / b.value;
+            else
+                throw new DivideByZeroException();
         }
 
         public static JInteger operator %(JInteger a, JInteger b)
         {
-            return a.value % b.value;
+            if (a != 0 & b != 0)
+                return a.value % b.value;
+            else
+                throw new DivideByZeroException();
         }
 
         public static bool operator ==(JInteger a, JInteger b)
@@ -152,6 +158,101 @@ namespace Jebnix.Types.BasicTypes
         public override bool Equals(object obj)
         {
             return base.Equals(obj);
+        }
+
+        protected override bool IsEqual(JObject a)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override bool IsNotEqual(JObject a)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override JObject IsLessThan(JObject a)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override JObject IsLessThanOrEqual(JObject a)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override JObject IsGreaterThan(JObject a)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override JObject IsGreaterThanOrEqual(JObject a)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override JObject Addition(JObject a)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override JObject Subtract(JObject a)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override JObject Multiply(JObject a)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override JObject Divide(JObject a)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override JObject Modulus(JObject a)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override JObject Pow(JObject a)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override JObject And(JObject a)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override JObject Or(JObject a)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override JObject Positive()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override JObject Negative()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override JObject Not()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override JObject Increment()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override JObject Decrement()
+        {
+            throw new NotImplementedException();
         }
     }
 }

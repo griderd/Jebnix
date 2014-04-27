@@ -139,7 +139,7 @@ namespace Jebnix.Types
         protected abstract JObject IsLessThanOrEqual(JObject a);
         protected abstract JObject IsGreaterThan(JObject a);
         protected abstract JObject IsGreaterThanOrEqual(JObject a);
-        protected abstract JObject Add(JObject a);
+        protected abstract JObject Addition(JObject a);
         protected abstract JObject Subtract(JObject a);
         protected abstract JObject Multiply(JObject a);
         protected abstract JObject Divide(JObject a);
@@ -234,7 +234,7 @@ namespace Jebnix.Types
         {
             try
             {
-                return a.Add(b);
+                return a.Addition(b);
             }
             catch
             {
@@ -320,6 +320,14 @@ namespace Jebnix.Types
 
         #endregion
 
-        
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

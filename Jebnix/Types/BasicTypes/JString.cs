@@ -69,5 +69,127 @@ namespace Jebnix.Types.BasicTypes
             return a.value + b.ToString();
         }
 
+        public static bool operator ==(JString a, JString b)
+        {
+            return a.Value == b.Value;
+        }
+
+        public static bool operator !=(JString a, JString b)
+        {
+            return a.Value != b.Value;
+        }
+
+        protected override bool IsEqual(JObject a)
+        {
+            if (!IsSameType(a))
+                return false;
+
+            JString s = (JString)a;
+            return this == s;
+        }
+
+        protected override bool IsNotEqual(JObject a)
+        {
+            if (!IsSameType(a))
+                return false;
+
+            JString s = (JString)a;
+            return this != s;
+        }
+
+        protected override JObject IsLessThan(JObject a)
+        {
+            throw new InvalidOperationException();
+        }
+
+        protected override JObject IsLessThanOrEqual(JObject a)
+        {
+            throw new InvalidOperationException();
+        }
+
+        protected override JObject IsGreaterThan(JObject a)
+        {
+            throw new InvalidOperationException();
+        }
+
+        protected override JObject IsGreaterThanOrEqual(JObject a)
+        {
+            throw new InvalidOperationException();
+        }
+
+        protected override JObject Addition(JObject a)
+        {
+            return this + a;
+        }
+
+        protected override JObject Subtract(JObject a)
+        {
+            throw new InvalidOperationException();
+        }
+
+        protected override JObject Multiply(JObject a)
+        {
+            throw new InvalidOperationException();
+        }
+
+        protected override JObject Divide(JObject a)
+        {
+            throw new InvalidOperationException();
+        }
+
+        protected override JObject Modulus(JObject a)
+        {
+            throw new InvalidOperationException();
+        }
+
+        protected override JObject Pow(JObject a)
+        {
+            throw new InvalidOperationException();
+        }
+
+        protected override JObject And(JObject a)
+        {
+            throw new InvalidOperationException();
+        }
+
+        protected override JObject Or(JObject a)
+        {
+            throw new InvalidOperationException();
+        }
+
+        protected override JObject Positive()
+        {
+            throw new InvalidOperationException();
+        }
+
+        protected override JObject Negative()
+        {
+            throw new InvalidOperationException();
+        }
+
+        protected override JObject Not()
+        {
+            throw new InvalidOperationException();
+        }
+
+        protected override JObject Increment()
+        {
+            throw new InvalidOperationException();
+        }
+
+        protected override JObject Decrement()
+        {
+            throw new InvalidOperationException();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

@@ -30,7 +30,7 @@ namespace Jebnix.Types
             }
         }
 
-        public void AddItem(JObject item)
+        public void Add(JObject item)
         {
             items.Add(item);
         }
@@ -146,7 +146,7 @@ namespace Jebnix.Types
             throw new InvalidOperationException();
         }
 
-        protected override JObject Add(JObject a)
+        protected override JObject Addition(JObject a)
         {
             throw new InvalidOperationException();
         }

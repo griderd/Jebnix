@@ -174,7 +174,7 @@ namespace Jebnix.Types.Structures
             throw new InvalidOperationException();
         }
 
-        protected override JObject Add(JObject a)
+        protected override JObject Addition(JObject a)
         {
             if (IsSameType(a))
                 return this + (OrderedPair)a;
