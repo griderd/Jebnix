@@ -10,9 +10,13 @@ namespace KerboScriptEngine
 {
     partial class ScriptProcess
     {
-        Dictionary<string, Value> globalScope;
+        Dictionary<string, JObject> globalScope;
         Dictionary<string, string> globalLocked;
         Stack<ExecutionState> stateStack;
+
+        public bool IsRunning { get; private set; }
+
+        Queue<LineInfo> execOnResume = new Queue<LineInfo>();
 
         ExecutionState CurrentState
         {
@@ -22,7 +26,7 @@ namespace KerboScriptEngine
             }
         }
 
-        Dictionary<string, Value> LocalScope
+        Dictionary<string, JObject> LocalScope
         {
             get
             {
@@ -33,20 +37,20 @@ namespace KerboScriptEngine
         /// <summary>
         /// Gets the variables that exist in the local scope, as well as the global scope. Local variables override global variables with the same name.
         /// </summary>
-        Dictionary<string, Value> ResolvedScope
+        Dictionary<string, JObject> ResolvedScope
         {
             get
             {
-                Dictionary<string, Value> vars = new Dictionary<string, Value>();
+                Dictionary<string, JObject> vars = new Dictionary<string, JObject>();
 
-                foreach (KeyValuePair<string, Value> kvp in CurrentState.parameters)
+                foreach (KeyValuePair<string, JObject> kvp in CurrentState.parameters)
                 {
                     vars.Add(kvp.Key, kvp.Value);
                 }
 
-                foreach (Dictionary<string, Value> dict in CurrentState.scopeStack)
+                foreach (Dictionary<string, JObject> dict in CurrentState.scopeStack)
                 {
-                    foreach (KeyValuePair<string, Value> kvp in dict)
+                    foreach (KeyValuePair<string, JObject> kvp in dict)
                     {
                         if (!vars.ContainsKey(kvp.Key))
                             vars.Add(kvp.Key, kvp.Value);
@@ -143,10 +147,63 @@ namespace KerboScriptEngine
             argumentStack = new Stack<Value>();
             globalLocked = new Dictionary<string, string>();
             globalScope = new Dictionary<string, Value>();
+
+            IsRunning = true;
+            stdint.OnInterrupt += new EventHandler<InterruptEventArgs>(stdint_OnInterrupt);
+        }
+
+        void stdint_OnInterrupt(object sender, InterruptEventArgs e)
+        {
+            if (((ScriptProcess)sender) == this)
+            {
+                switch (e.Type)
+                {
+                    case stdint.InterruptType.Halt:
+                        if (IsRunning) Halt();
+                        break;
+
+                    case stdint.InterruptType.Resume:
+                        if (!IsRunning) Resume();
+                        break;
+                }
+            }
+        }
+
+        private void Halt()
+        {
+            IsRunning = false;
+            stdint.RaiseOnHalt(this);
+        }
+
+        private void Halt(string executeOnResume)
+        {
+            execOnResume.Enqueue(new LineInfo(executeOnResume, "INTERNAL", 0, 0, this));
+            Halt();
+        }
+
+        private void Resume()
+        {
+            if (execOnResume.Count > 0)
+            {
+                string[] err;
+                LineInfo l = execOnResume.Dequeue();
+                ExecuteLine(l, out err);
+                if (err.Length > 0)
+                {
+                    foreach (string ex in err)
+                    {
+                        stdio.PrintLine(ex);
+                    }
+                }
+            }
+            IsRunning = true;
         }
 
         public void ExecuteNext()
         {
+            if (!IsRunning)
+                return;
+
             string[] err = new string[0];
             if (CurrentState.nextLine < CurrentState.lines.Count)
             {
@@ -268,7 +325,7 @@ namespace KerboScriptEngine
         /// </summary>
         /// <param name="name"></param>
         /// <param name="val"></param>
-        public void SetLocalVariable(string name, Value val)
+        public void SetLocalVariable(string name, JObject val)
         {
             if (LocalScope.ContainsKey(name))
                 LocalScope[name] = val;
@@ -276,7 +333,7 @@ namespace KerboScriptEngine
                 LocalScope.Add(name, val);
         }
 
-        public bool TryGetVariable(string name, out Value value)
+        public bool TryGetVariable(string name, out JObject value)
         {
             if (ResolvedScope.ContainsKey(name))
             {

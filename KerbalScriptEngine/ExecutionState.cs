@@ -41,7 +41,7 @@ namespace KerboScriptEngine
         /// <summary>
         /// Stack of scope-based local values.
         /// </summary>
-        public Stack<Dictionary<string, Value>> scopeStack;
+        public Stack<Dictionary<string, JObject>> scopeStack;
 
         /// <summary>
         /// Locked variables.
@@ -76,20 +76,20 @@ namespace KerboScriptEngine
         /// <summary>
         /// Function parameters
         /// </summary>
-        public Dictionary<string, Value> parameters;
+        public Dictionary<string, JObject> parameters;
 
         public ExecutionState(LineInfo[] lines)
         {
             this.lines = new List<LineInfo>(lines);
             nextLine = 0;
             nextToken = 0;
-            scopeStack = new Stack<Dictionary<string, Value>>();
+            scopeStack = new Stack<Dictionary<string, JObject>>();
             callStack = new Stack<LineInfo>();
             statusStack = new Stack<Status>();
             whenBlocks = new Dictionary<LineInfo, Tuple<int,int>>();
             whenThenPersist = new Dictionary<LineInfo, bool>();
-            parameters = new Dictionary<string, Value>();
-            scopeStack.Push(new Dictionary<string, Value>());
+            parameters = new Dictionary<string, JObject>();
+            scopeStack.Push(new Dictionary<string, JObject>());
             lockedVariables = new Dictionary<string, string>();
             onBlocks = new Dictionary<LineInfo, Tuple<int, int>>();
         }

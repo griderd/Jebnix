@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jebnix.Types;
+using Jebnix.Types.BasicTypes;
 
 namespace KerboScriptEngine.ScriptAPI
 {
     class Physics
     {
-        public static Value GravitationalConstant
+        public static JFloat GravitationalConstant
         {
             get
             {

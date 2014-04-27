@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jebnix.Types;
+using Jebnix.Types.BasicTypes;
 
 namespace Jebnix.stdlib
 {
@@ -11,7 +11,7 @@ namespace Jebnix.stdlib
         /// <summary>
         /// The constant PI
         /// </summary>
-        public static Value Pi
+        public static JFloat Pi
         {
             get
             {
@@ -22,7 +22,7 @@ namespace Jebnix.stdlib
         /// <summary>
         /// The constant natural number E
         /// </summary>
-        public static Value E
+        public static JFloat E
         {
             get
             {
@@ -35,15 +35,9 @@ namespace Jebnix.stdlib
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
-        public static Value Abs(Value x)
+        public static JFloat Abs(JFloat x)
         {
-            if (Value.IsNull(x))
-                throw new ArgumentNullException();
-
-            if (x.Type == Value.ValueTypes.Integer)
-                return x.IntegerValue < 0 ? x.IntegerValue * -1 : x.IntegerValue;
-            else
-                return x.FloatValue < 0 ? x.FloatValue * -1 : x.FloatValue;
+            return Math.Abs(x);
         }
 
         /// <summary>
@@ -52,19 +46,9 @@ namespace Jebnix.stdlib
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static Value Mod(Value a, Value b)
+        public static JInteger Mod(JInteger a, JInteger b)
         {
-            if (Value.IsNull(a) | Value.IsNull(b))
-                throw new ArgumentNullException();
-
-            try
-            {
-                return a % b;
-            }
-            catch
-            {
-                throw;
-            }
+            return a % b;
         }
 
         /// <summary>
@@ -72,12 +56,9 @@ namespace Jebnix.stdlib
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
-        public static Value Floor(Value x)
+        public static JFloat Floor(JFloat x)
         {
-            if (Value.IsNull(x))
-                throw new ArgumentNullException();
-
-            return Math.Floor(x.FloatValue);
+            return Math.Floor(x);
         }
 
         /// <summary>
@@ -85,12 +66,9 @@ namespace Jebnix.stdlib
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
-        public static Value Ceiling(Value x)
+        public static JFloat Ceiling(JFloat x)
         {
-            if (Value.IsNull(x))
-                throw new ArgumentNullException();
-
-            return Math.Ceiling(x.FloatValue);
+            return Math.Ceiling(x);
         }
 
         /// <summary>
@@ -98,12 +76,9 @@ namespace Jebnix.stdlib
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
-        public static Value Round(Value x)
+        public static JFloat Round(JFloat x)
         {
-            if (Value.IsNull(x))
-                throw new ArgumentNullException();
-
-            return Math.Round(x.FloatValue);
+            return Math.Round(x);
         }
 
         /// <summary>
@@ -112,12 +87,9 @@ namespace Jebnix.stdlib
         /// <param name="x"></param>
         /// <param name="place"></param>
         /// <returns></returns>
-        public static Value Round(Value x, Value place)
+        public static JFloat Round(JFloat x, JInteger place)
         {
-            if (Value.IsNull(x))
-                throw new ArgumentNullException();
-
-            return Math.Round(x.FloatValue, place.IntegerValue);
+            return Math.Round(x, place);
         }
 
         /// <summary>
@@ -125,12 +97,9 @@ namespace Jebnix.stdlib
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
-        public static Value Sqrt(Value x)
+        public static JFloat Sqrt(JFloat x)
         {
-            if (Value.IsNull(x))
-                throw new ArgumentNullException();
-
-            return Math.Sqrt(x.FloatValue);
+            return Math.Sqrt(x);
         }
 
         /// <summary>
@@ -138,12 +107,9 @@ namespace Jebnix.stdlib
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
-        public static Value RadToDeg(Value x)
+        public static JFloat RadToDeg(JFloat x)
         {
-            if (Value.IsNull(x))
-                throw new ArgumentNullException();
-
-            return (180.0 / Math.PI) * x.FloatValue;
+            return (180.0 / Math.PI) * x;
         }
 
         /// <summary>
@@ -151,12 +117,9 @@ namespace Jebnix.stdlib
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
-        public static Value DegToRad(Value x)
+        public static JFloat DegToRad(JFloat x)
         {
-            if (Value.IsNull(x))
-                throw new ArgumentNullException();
-
-            return x.FloatValue * (Math.PI / 180.0);
+            return x * (Math.PI / 180.0);
         }
 
         /// <summary>
@@ -164,12 +127,9 @@ namespace Jebnix.stdlib
         /// </summary>
         /// <param name="x">An angle measured in degrees</param>
         /// <returns></returns>
-        public static Value Sin(Value x)
+        public static JFloat Sin(JFloat x)
         {
-            if (Value.IsNull(x))
-                throw new ArgumentNullException();
-
-            return Math.Sin(DegToRad(x).FloatValue);
+            return Math.Sin(DegToRad(x));
         }
 
         /// <summary>
@@ -177,12 +137,9 @@ namespace Jebnix.stdlib
         /// </summary>
         /// <param name="x">An angle measured in degrees.</param>
         /// <returns></returns>
-        public static Value Cos(Value x)
+        public static JFloat Cos(JFloat x)
         {
-            if (Value.IsNull(x))
-                throw new ArgumentNullException();
-
-            return Math.Cos(DegToRad(x).FloatValue);
+            return Math.Cos(DegToRad(x));
         }
 
         /// <summary>
@@ -190,12 +147,9 @@ namespace Jebnix.stdlib
         /// </summary>
         /// <param name="x">An angle measured in degrees.</param>
         /// <returns></returns>
-        public static Value Tan(Value x)
+        public static JFloat Tan(JFloat x)
         {
-            if (Value.IsNull(x))
-                throw new ArgumentNullException();
-
-            return Math.Tan(DegToRad(x).FloatValue);
+            return Math.Tan(DegToRad(x));
         }
 
         /// <summary>
@@ -203,12 +157,9 @@ namespace Jebnix.stdlib
         /// </summary>
         /// <param name="x">An angle measured in radians.</param>
         /// <returns></returns>
-        public static Value SinR(Value x)
+        public static JFloat SinR(JFloat x)
         {
-            if (Value.IsNull(x))
-                throw new ArgumentNullException();
-
-            return Math.Sin(x.FloatValue);
+            return Math.Sin(x);
         }
 
         /// <summary>
@@ -216,12 +167,9 @@ namespace Jebnix.stdlib
         /// </summary>
         /// <param name="x">An angle measured in radians.</param>
         /// <returns></returns>
-        public static Value CosR(Value x)
+        public static JFloat CosR(JFloat x)
         {
-            if (Value.IsNull(x))
-                throw new ArgumentNullException();
-
-            return Math.Cos(x.FloatValue);
+            return Math.Cos(x);
         }
 
         /// <summary>
@@ -229,67 +177,64 @@ namespace Jebnix.stdlib
         /// </summary>
         /// <param name="x">An angle measured in radians.</param>
         /// <returns></returns>
-        public static Value TanR(Value x)
+        public static JFloat TanR(JFloat x)
         {
-            if (Value.IsNull(x))
-                throw new ArgumentNullException();
-
-            return new Value(Math.Tan(x.FloatValue));
+            return new JFloat(Math.Tan(x));
         }
 
-        public static Value ASin(Value x)
+        public static JFloat ASin(JFloat x)
         {
-            return RadToDeg(Math.Asin(x.FloatValue));
+            return RadToDeg(Math.Asin(x));
         }
 
-        public static Value ACos(Value x)
+        public static JFloat ACos(JFloat x)
         {
-            return RadToDeg(Math.Acos(x.FloatValue));
+            return RadToDeg(Math.Acos(x));
         }
 
-        public static Value ATan(Value x)
+        public static JFloat ATan(JFloat x)
         {
-            return RadToDeg(Math.Atan(x.FloatValue));
+            return RadToDeg(Math.Atan(x));
         }
 
-        public static Value ATan2(Value y, Value x)
+        public static JFloat ATan2(JFloat y, JFloat x)
         {
-            return RadToDeg(Math.Atan2(y.FloatValue, x.FloatValue));
+            return RadToDeg(Math.Atan2(y, x));
         }
 
-        public static Value ASinR(Value x)
+        public static JFloat ASinR(JFloat x)
         {
-            return Math.Asin(x.FloatValue);
+            return Math.Asin(x);
         }
 
-        public static Value ACosR(Value x)
+        public static JFloat ACosR(JFloat x)
         {
-            return Math.Acos(x.FloatValue);
+            return Math.Acos(x);
         }
 
-        public static Value ATanR(Value x)
+        public static JFloat ATanR(JFloat x)
         {
-            return Math.Atan(x.FloatValue);
+            return Math.Atan(x);
         }
 
-        public static Value ATan2R(Value y, Value x)
+        public static JFloat ATan2R(JFloat y, JFloat x)
         {
-            return Math.Atan2(y.FloatValue, x.FloatValue);
+            return Math.Atan2(y, x);
         }
 
-        public static Value Log(Value base10)
+        public static JFloat Log(JFloat base10)
         {
-            return Math.Log10(base10.FloatValue);
+            return Math.Log10(base10);
         }
 
-        public static Value Log(Value val, Value baseN)
+        public static JFloat Log(JFloat val, JFloat baseN)
         {
-            return Math.Log(val.FloatValue, baseN.FloatValue);
+            return Math.Log(val, baseN);
         }
 
-        public static Value Ln(Value baseE)
+        public static JFloat Ln(JFloat baseE)
         {
-            return Math.Log(baseE.FloatValue);
+            return Math.Log(baseE);
         }
     }
 }

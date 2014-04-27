@@ -11,6 +11,23 @@ namespace KerboScriptEngine
 {
     partial class ScriptProcess
     {
+        private void ExecuteLine(LineInfo line, out string[] err)
+        {
+            ExecuteBlock(new LineInfo[] { line }, out err);
+        }
+
+        private void ExecuteBlock(LineInfo[] lines, out string[] err)
+        {
+            Tuple<int, int> position = new Tuple<int, int>(0, 0);
+            err = new string[0];
+            while ((position.Item1 != lines.Length - 1) && (position.Item2 != lines.Last().Tokens.Length - 1))
+            {
+                position = Execute(position.Item1, position.Item2, lines, out err);
+                if (err.Length > 0)
+                    break;
+            }
+        }
+
         /// <summary>
         /// Executes a single statement in the given lines starting at the given index, and returns the location it stopped at.
         /// </summary>
@@ -628,6 +645,49 @@ namespace KerboScriptEngine
                         {
                             errors.AddRange(e);
                             AdvanceToEndOfScope();
+                        }
+                    }
+                    break;
+
+                case "input":
+                    {
+                        string[] ex;
+                        string s = GetNextExpression(new string[] { "to" });
+                        if (s == null)
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Missing expression terminator \"at\" or \".\".");
+                            break;
+                        }
+                        if (s == "")
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "No expression provided. Cannot run PRINT.");
+                            break;
+                        }
+
+                        // Evaluate expression
+                        Value output = Evaluator.Evaluate(s, line, out ex);
+                        errors.AddRange(ex);
+                        if (ex.Length > 0)
+                            break;
+
+                        s = GetNextExpression(new string[] { "." });
+                        if (s == "")
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "No input variable provided. Cannot INPUT.");
+                            break;
+                        }
+                        if (s == null)
+                        {
+                            ThrowError(ErrorBuilder.ErrorType.SyntaxError, "\".\" expected.");
+                            break;
+                        }
+                        Value location = Evaluator.Evaluate(s, line, out ex);
+                        errors.AddRange(ex);
+                        if (ex.Length > 0)
+                            break;
+                        else
+                        {
+                            Halt();
                         }
                     }
                     break;

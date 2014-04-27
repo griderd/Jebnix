@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jebnix.Types;
+using Jebnix.Types.BasicTypes;
+using Jebnix.Types.Structures;
 using Jebnix;
 
 namespace KerboScriptEngine
@@ -22,15 +24,15 @@ namespace KerboScriptEngine
         /// <param name="errors"></param>
         /// <param name="process"></param>
         /// <returns></returns>
-        public static Value Evaluate(string expression, LineInfo source, out string[] errors)
+        public static JObject Evaluate(string expression, LineInfo source, out string[] errors)
         {
             return Evaluate(new LineInfo(expression, source.Filename, source.LineNumber, source.ColumnOffset, source.Process), out errors);
         }
 
-        public static Value Evaluate(LineInfo line, out string[] errors)
+        public static JObject Evaluate(LineInfo line, out string[] errors)
         {
             List<string> err = new List<string>();
-            Stack<Value> result = new Stack<Value>();
+            Stack<JObject> result = new Stack<JObject>();
             string[] e;
             Queue<string> postfix = ConvertToPostfix(line.Tokens, line.Process, out e);
             err.AddRange(e);
@@ -42,7 +44,7 @@ namespace KerboScriptEngine
                 string token = postfix.Dequeue();
                 if (ReservedWords.Operators.Contains(token))
                 {
-                    Value a, b;
+                    JObject a, b;
                     if (result.Count > 0)
                         b = result.Pop();
                     else
@@ -65,14 +67,6 @@ namespace KerboScriptEngine
 
                                 case "~":
                                     result.Push(~b);
-                                    break;
-
-                                case "++":
-                                    result.Push(b++);
-                                    break;
-
-                                case "--":
-                                    result.Push(b--);
                                     break;
                             }
                         }
@@ -168,9 +162,9 @@ namespace KerboScriptEngine
                 {
                     token = token.Substring(0, token.Length - 1);
 
-                    Value returnVal = null;
+                    JObject returnVal = null;
                     object temp = null;
-                    Stack<Value> paramList = new Stack<Value>();
+                    Stack<JObject> paramList = new Stack<JObject>();
 
                     string namespc, name;
                     string[] parts;
@@ -233,13 +227,13 @@ namespace KerboScriptEngine
             }
         }
 
-        private static Value ConvertToValue(string token, ScriptProcess process)
+        private static JObject ConvertToValue(string token, ScriptProcess process)
         {
-            int itemp;
-            double ftemp;
-            bool btemp;
-            OrderedPair optemp; 
-            Value v;
+            JInteger i;
+            JFloat f;
+            JBoolean b;
+            JObject v;
+            OrderedPair op;
 
             if (process.TryGetVariable(token, out v))
             {
@@ -247,23 +241,23 @@ namespace KerboScriptEngine
             }
             else if (ReservedWords.IsString(token))
             {
-                return token.Trim('\"');
+                return new JString(token.Trim('\"'));
             }
-            else if (int.TryParse(token, out itemp))
+            else if (JInteger.TryParse(token, out i))
             {
-                return itemp;
+                return i;
             }
-            else if (double.TryParse(token, out ftemp))
+            else if (JFloat.TryParse(token, out f))
             {
-                return ftemp;
+                return f;
             }
-            else if (bool.TryParse(token, out btemp))
+            else if (JBoolean.TryParse(token, out b))
             {
-                return btemp;
+                return b;
             }
-            else if (OrderedPair.TryParse(token, out optemp))
+            else if (OrderedPair.TryParse(token, out op))
             {
-                return new Value(optemp);
+                return op;
             }
             else
             {

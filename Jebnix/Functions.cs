@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Jebnix.stdlib;
 using Jebnix.Types;
+using Jebnix.Types.BasicTypes;
 
 namespace Jebnix
 {
@@ -346,8 +347,8 @@ namespace Jebnix
 
         private static void RegisterIOFunctions()
         {
-            RegisterFunction(STDIO, "print", 1, new Action<Value, bool>(stdio.Print));
-            RegisterFunction(STDIO, "println", 1, new Action<Value, bool>(stdio.PrintLine));
+            RegisterFunction(STDIO, "print", 1, new Action<JString, bool>(stdio.Print));
+            RegisterFunction(STDIO, "println", 1, new Action<JString, bool>(stdio.PrintLine));
             RegisterFunction(STDIO, "println", 0, new Action<bool>(stdio.PrintLine));
             RegisterFunction(STDIO, "clearscreen", 0, new Action(stdio.ClearScreen));
             RegisterFunction(STDIO, "getjebnixversion", 0, new Func<string>(stdio.GetJebnixVersion));
@@ -359,20 +360,19 @@ namespace Jebnix
                                            "sinr", "asin", "asinr", "cos", "cosr", "acos", "acosr", "tan", "tanr", "atan", "atanr",
                                            "atan2", "atan2r", "log", "log", "ln" };
             int[] param = new int[] { 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 1 };
-            Delegate[] dels = new Delegate[] { new Func<Value, Value>(stdmath.Abs), new Func<Value, Value, Value>(stdmath.Mod), 
-                                               new Func<Value, Value>(stdmath.Floor), new Func<Value, Value>(stdmath.Ceiling), 
-                                               new Func<Value, Value>(stdmath.Round), new Func<Value, Value, Value>(stdmath.Round),
-                                               new Func<Value, Value>(stdmath.Sqrt), new Func<Value, Value>(stdmath.RadToDeg), 
-                                               new Func<Value, Value>(stdmath.DegToRad), new Func<Value, Value>(stdmath.RadToDeg),
-                                               new Func<Value, Value>(stdmath.DegToRad), new Func<Value, Value>(stdmath.Sin),
-                                               new Func<Value, Value>(stdmath.SinR), new Func<Value, Value>(stdmath.ASin), 
-                                               new Func<Value, Value>(stdmath.ASinR), new Func<Value, Value>(stdmath.Cos), 
-                                               new Func<Value, Value>(stdmath.CosR), new Func<Value, Value>(stdmath.ACos),
-                                               new Func<Value, Value>(stdmath.ACosR), new Func<Value, Value>(stdmath.Tan), 
-                                               new Func<Value, Value>(stdmath.TanR), new Func<Value, Value>(stdmath.ATan), 
-                                               new Func<Value, Value>(stdmath.ATanR), new Func<Value, Value, Value>(stdmath.ATan2),
-                                               new Func<Value, Value, Value>(stdmath.ATan2R), new Func<Value, Value>(stdmath.Log), 
-                                               new Func<Value, Value, Value>(stdmath.Log), new Func<Value, Value>(stdmath.Ln) };
+            Delegate[] dels = new Delegate[] { new Func<JFloat, JFloat>(stdmath.Abs), new Func<JInteger, JInteger, JInteger>(stdmath.Mod), 
+                                               new Func<JFloat, JFloat>(stdmath.Floor), new Func<JFloat, JFloat>(stdmath.Ceiling), 
+                                               new Func<JFloat, JFloat>(stdmath.Round), new Func<JFloat, JInteger, JFloat>(stdmath.Round),
+                                               new Func<JFloat, JFloat>(stdmath.Sqrt), new Func<JFloat, JFloat>(stdmath.RadToDeg), 
+                                               new Func<JFloat, JFloat>(stdmath.DegToRad), new Func<JFloat, JFloat>(stdmath.Sin),
+                                               new Func<JFloat, JFloat>(stdmath.SinR), new Func<JFloat, JFloat>(stdmath.ASin), 
+                                               new Func<JFloat, JFloat>(stdmath.ASinR), new Func<JFloat, JFloat>(stdmath.Cos), 
+                                               new Func<JFloat, JFloat>(stdmath.CosR), new Func<JFloat, JFloat>(stdmath.ACos),
+                                               new Func<JFloat, JFloat>(stdmath.ACosR), new Func<JFloat, JFloat>(stdmath.Tan), 
+                                               new Func<JFloat, JFloat>(stdmath.TanR), new Func<JFloat, JFloat>(stdmath.ATan), 
+                                               new Func<JFloat, JFloat>(stdmath.ATanR), new Func<JFloat, JFloat, JFloat>(stdmath.ATan2),
+                                               new Func<JFloat, JFloat, JFloat>(stdmath.ATan2R), new Func<JFloat, JFloat>(stdmath.Log), 
+                                               new Func<JFloat, JFloat, JFloat>(stdmath.Log), new Func<JFloat, JFloat>(stdmath.Ln) };
 
             for (int i = 0; i < func.Length; i++)
             {

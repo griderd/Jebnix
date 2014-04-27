@@ -80,6 +80,8 @@ namespace KerboScriptEngine
                     case ')':
                     case '[':
                     case ']':
+                    case '+':
+                    case '-':
                         if (inString)
                             token.Append(c);
                         else
@@ -87,12 +89,9 @@ namespace KerboScriptEngine
                             tokens.Add(token.ToString());
                             token.Clear();
                             tokens.Add(c.ToString());
-                        
                         }
                         continue;
 
-                    case '+':
-                    case '-':
                     case '=':
                         if (inString)
                             token.Append(c);
