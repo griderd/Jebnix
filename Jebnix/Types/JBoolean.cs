@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jebnix.Types.BasicTypes
+namespace Jebnix.Types
 {
     public class JBoolean : JInteger
     {
@@ -18,6 +18,22 @@ namespace Jebnix.Types.BasicTypes
             : base(value)
         {
             
+        }
+
+        public static JBoolean True
+        {
+            get
+            {
+                return new JBoolean(true);
+            }
+        }
+
+        public static JBoolean False
+        {
+            get
+            {
+                return new JBoolean(false);
+            }
         }
 
         public new bool Value

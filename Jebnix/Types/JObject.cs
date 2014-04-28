@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
-using Jebnix.Types.BasicTypes;
 using Jebnix.Types.Structures;
 
 namespace Jebnix.Types

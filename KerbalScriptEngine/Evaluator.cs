@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jebnix.Types;
-using Jebnix.Types.BasicTypes;
+
 using Jebnix.Types.Structures;
 using Jebnix;
 
@@ -44,14 +44,14 @@ namespace KerboScriptEngine
                 string token = postfix.Dequeue();
                 if (ReservedWords.Operators.Contains(token))
                 {
-                    JObject a, b;
+                    JObject b, a = null;
                     if (result.Count > 0)
                         b = result.Pop();
                     else
                     {
                         ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "Invalid expression.", ref err);
                         errors = err.ToArray();
-                        return 0;
+                        return new JInteger(0);
                     }
 
                     try
@@ -97,7 +97,7 @@ namespace KerboScriptEngine
                                     break;
 
                                 case "^":
-                                    result.Push(Value.RaiseToPower(a, b));
+                                    result.Push(JObject.RaiseToPower(a, b));
                                     break;
 
                                 case "|":
@@ -112,11 +112,11 @@ namespace KerboScriptEngine
 
                                 case "=":
                                 case "==":
-                                    result.Push(a == b);
+                                    result.Push(new JBoolean(a == b));
                                     break;
 
                                 case "!=":
-                                    result.Push(a != b);
+                                    result.Push(new JBoolean(a != b));
                                     break;
 
                                 case "<":
@@ -148,14 +148,43 @@ namespace KerboScriptEngine
                         {
                             ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "Invalid expression.", ref err);
                             errors = err.ToArray();
-                            return 0;
+                            return new JInteger(0);
                         }
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        StringBuilder operation = new StringBuilder();
+                        operation.Append("(");
+                        if (unaryOperators.Contains(token))
+                        {
+                            operation.Append(token);
+                            if (b.ObjectType == JString.TYPENAME)
+                                operation.Append("\"" + b.ToString() + "\"");
+                            else
+                                operation.Append(b.ToString());
+                        }
+                        else
+                        {
+                            if (a.ObjectType == JString.TYPENAME)
+                                operation.Append("\"" + a.ToString() + "\"");
+                            else
+                                operation.Append(a.ToString());
+                            operation.Append(token);
+                            if (b.ObjectType == JString.TYPENAME)
+                                operation.Append("\"" + b.ToString() + "\"");
+                            else
+                                operation.Append(b.ToString());
+                        }
+                        operation.Append(")");
+                        ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "Invalid operation. Cannot perform operation " + operation.ToString() + "." , ref err);
+                        errors = err.ToArray();
+                        return new JInteger(0);
                     }
                     catch (Exception ex)
                     {
                         err.Add(ex.Message);
                         errors = err.ToArray();
-                        return 0;
+                        return new JInteger(0);
                     }
                 }
                 else if (token.EndsWith("$"))
@@ -190,9 +219,13 @@ namespace KerboScriptEngine
                         if (Functions.InvokeFunction(namespc, name, out temp, paramList.ToArray()))
                         {
                             if (temp == null)
-                                returnVal = 0;
+                                returnVal = new JInteger(0);
                             else
-                                returnVal = Value.Parse(Convert.ToString(temp));
+                            {
+                                JInteger rv;
+                                JInteger.TryParse(Convert.ToString(temp), out rv);
+                                returnVal = rv;
+                            }
                         }
                         else
                         {
@@ -200,12 +233,12 @@ namespace KerboScriptEngine
                         }
                     }
 
-                    if (!Value.IsNull(returnVal))
+                    if (!returnVal.IsNull)
                         result.Push(returnVal);
                     else
                     {
                         errors = err.ToArray();
-                        return 0;
+                        return new JInteger(0);
                     }
                 }
                 else
@@ -223,7 +256,7 @@ namespace KerboScriptEngine
             {
                 ErrorBuilder.BuildError(line, ErrorBuilder.ErrorType.SyntaxError, "Invalid expression.", ref err);
                 errors = err.ToArray();
-                return 0;
+                return new JInteger(0);
             }
         }
 

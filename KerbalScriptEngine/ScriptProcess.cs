@@ -6,6 +6,7 @@ using System.Diagnostics;
 using Jebnix.stdlib;
 using Jebnix.Types;
 
+
 namespace KerboScriptEngine
 {
     partial class ScriptProcess
@@ -57,7 +58,7 @@ namespace KerboScriptEngine
                     }
                 }
 
-                foreach (KeyValuePair<string, Value> kvp in globalScope)
+                foreach (KeyValuePair<string, JObject> kvp in globalScope)
                 {
                     if (!vars.ContainsKey(kvp.Key))
                         vars.Add(kvp.Key, kvp.Value);
@@ -72,7 +73,7 @@ namespace KerboScriptEngine
 #if DEBUG
             Debug.Print("Entering scope " + status.ToString());
 #endif
-            CurrentState.scopeStack.Push(new Dictionary<string, Value>());
+            CurrentState.scopeStack.Push(new Dictionary<string, JObject>());
             CurrentState.statusStack.Push(status);
         }
 
@@ -120,7 +121,7 @@ namespace KerboScriptEngine
             return false;
         }
 
-        Stack<Value> argumentStack;
+        Stack<JObject> argumentStack;
 
         bool CanAddParameters { get; set; }
 
@@ -144,9 +145,9 @@ namespace KerboScriptEngine
                 l[i].Process = this;
             }
             stateStack.Push(new ExecutionState(lines));
-            argumentStack = new Stack<Value>();
+            argumentStack = new Stack<JObject>();
             globalLocked = new Dictionary<string, string>();
-            globalScope = new Dictionary<string, Value>();
+            globalScope = new Dictionary<string, JObject>();
 
             IsRunning = true;
             stdint.OnInterrupt += new EventHandler<InterruptEventArgs>(stdint_OnInterrupt);
@@ -247,7 +248,7 @@ namespace KerboScriptEngine
             string[] err;
             foreach (LineInfo when in CurrentState.whenBlocks.Keys)
             {
-                if (Evaluator.Evaluate(when, out err).BooleanValue && err.Length == 0)
+                if ((JBoolean)(Evaluator.Evaluate(when, out err)) && err.Length == 0)
                 {
                     Interrupt(CurrentState.whenBlocks[when].Item1, CurrentState.whenBlocks[when].Item2); 
                     CurrentState.whenBlocks.Remove(when);
@@ -278,7 +279,7 @@ namespace KerboScriptEngine
         /// <param name="name"></param>
         /// <param name="val"></param>
         /// <returns></returns>
-        public bool SetVariable(string name, Value val)
+        public bool SetVariable(string name, JObject val)
         {
             if (CurrentState.parameters.ContainsKey(name))
             {
@@ -288,7 +289,7 @@ namespace KerboScriptEngine
             else
             {
                 // Go through the scope stack looking for the variable
-                foreach (Dictionary<string, Value> scope in CurrentState.scopeStack)
+                foreach (Dictionary<string, JObject> scope in CurrentState.scopeStack)
                 {
                     if (scope.ContainsKey(name))
                     {
@@ -312,7 +313,7 @@ namespace KerboScriptEngine
         /// </summary>
         /// <param name="name"></param>
         /// <param name="val"></param>
-        public void SetGlobalVariable(string name, Value val)
+        public void SetGlobalVariable(string name, JObject val)
         {
             if (globalScope.ContainsKey(name))
                 globalScope[name] = val;

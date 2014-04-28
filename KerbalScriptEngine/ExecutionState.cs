@@ -5,6 +5,7 @@ using System.Text;
 using System.Diagnostics;
 using Jebnix.Types;
 
+
 namespace KerboScriptEngine
 {
     /// <summary>
@@ -118,7 +119,7 @@ namespace KerboScriptEngine
 #if DEBUG
                 Debug.Print("Popped from call stack: \"" + call.Line + "\" at " + call.LineNumber + ", " + call.ColumnOffset);
 #endif
-                if (Evaluator.Evaluate(call, out errors).BooleanValue)
+                if ((JBoolean)Evaluator.Evaluate(call, out errors))
                 {
 #if DEBUG
                     Debug.Print("Condition TRUE");

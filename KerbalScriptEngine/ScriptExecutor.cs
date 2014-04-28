@@ -5,6 +5,8 @@ using System.Text;
 using System.Diagnostics;
 using Jebnix.stdlib;
 using Jebnix.Types;
+
+using Jebnix.Types.Structures;
 using KSP;
 
 namespace KerboScriptEngine
@@ -200,9 +202,9 @@ namespace KerboScriptEngine
                         string name = GetNextExpression(new string[] { "to", "=" });
                         string[] ex1 = new string[0];
 
-                        Value nameptr;
+                        JString nameptr;
                         if (name.Contains('[') && name.Contains(']'))
-                            nameptr = Evaluator.Evaluate(name, line, out ex1);
+                            nameptr = (JString)Evaluator.Evaluate(name, line, out ex1);
                         else
                             nameptr = name;
 
@@ -211,7 +213,7 @@ namespace KerboScriptEngine
                             errors.AddRange(ex1);
                             break;
                         }
-                        if (!ReservedWords.IsValidIdentifier(nameptr.StringValue))
+                        if (!ReservedWords.IsValidIdentifier(nameptr))
                         {
                             ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Identifier not valid.");
                             break;
@@ -219,22 +221,22 @@ namespace KerboScriptEngine
 
                         string expression = GetNextExpression(new string[] { "." });
                         string[] ex;
-                        Value var = Evaluator.Evaluate(expression, line, out ex);
+                        JObject var = Evaluator.Evaluate(expression, line, out ex);
                         errors.AddRange(ex);
 
                         if (ex.Length == 0)
                         {
-                            if (HasVariable(nameptr.StringValue))
+                            if (HasVariable(nameptr))
                             {
-                                SetVariable(nameptr.StringValue, var);
+                                SetVariable(nameptr, var);
                             }
                             else if (local)
                             {
-                                SetLocalVariable(nameptr.StringValue, var);
+                                SetLocalVariable(nameptr, var);
                             }
                             else
                             {
-                                SetGlobalVariable(nameptr.StringValue, var);
+                                SetGlobalVariable(nameptr, var);
                             }
                         }
                         else
@@ -299,7 +301,7 @@ namespace KerboScriptEngine
                         GetNextToken();
                         if (!ReservedWords.IsReserved(token))
                         {
-                            Value var = null;
+                            JObject var = null;
                             if (local)
                                 SetVariable(token, var);
                             else if (parameter)
@@ -355,7 +357,7 @@ namespace KerboScriptEngine
                         }
                         
                         // Evaluate expression
-                        Value output = Evaluator.Evaluate(s, line, out ex);
+                        JString output = Evaluator.Evaluate(s, line, out ex).ToString();
                         errors.AddRange(ex);
                         if (ex.Length > 0)
                             break;
@@ -373,7 +375,7 @@ namespace KerboScriptEngine
                                 ThrowError(ErrorBuilder.ErrorType.SyntaxError, "\".\" expected.");
                                 break;
                             }
-                            Value location = Evaluator.Evaluate(s, line, out ex);
+                            OrderedPair location = (OrderedPair)Evaluator.Evaluate(s, line, out ex);
                             errors.AddRange(ex);
                             if (ex.Length > 0)
                                 break;
@@ -382,7 +384,7 @@ namespace KerboScriptEngine
                         }
                         else
                         {
-                            stdio.PrintLine(output.StringValue);        
+                            stdio.PrintLine(output);        
                         }
                         break;
                     }
@@ -415,12 +417,12 @@ namespace KerboScriptEngine
                         else
                         {
                             string[] ex;
-                            Value v = Evaluator.Evaluate(s, line, out ex);
+                            JBoolean v = (JBoolean)Evaluator.Evaluate(s, line, out ex);
                             errors.AddRange(ex);
                             if (ex.Length > 0)
                                 break;
 
-                            if (v.BooleanValue)
+                            if (v)
                             {
                                 NewScope(ExecutionState.Status.IfStatement);
                             }
@@ -573,19 +575,19 @@ namespace KerboScriptEngine
                                 ThrowError(ErrorBuilder.ErrorType.SyntaxError, "Expression expected.");
                                 break;
                             }
-                            Value v = Evaluator.Evaluate(s, line, out e);
+                            JString v = (JString)Evaluator.Evaluate(s, line, out e);
                             if (e.Length > 0)
                             {
                                 errors.AddRange(e);
                                 break;
                             }
-                            else if (Parent.CurrentFolder.ContainsFile(v.StringValue + ".txt"))
+                            else if (Parent.CurrentFolder.ContainsFile(v + ".txt"))
                             {
-                                Parent.CreateProcess(Parent.CurrentFolder.GetFile(v.StringValue + ".txt").Lines, v.StringValue);
+                                Parent.CreateProcess(Parent.CurrentFolder.GetFile(v + ".txt").Lines, v);
                             }
                             else
                             {
-                                ThrowError(ErrorBuilder.ErrorType.SyntaxError, "File \"" + v.StringValue + "\" does not exist.");
+                                ThrowError(ErrorBuilder.ErrorType.SyntaxError, "File \"" + v + "\" does not exist.");
                             }
                         }
                         break;
@@ -606,8 +608,8 @@ namespace KerboScriptEngine
                         }
                         
                         string[] e;
-                        Value v = Evaluator.Evaluate(s, line, out e);
-                        if ((v.BooleanValue) && (e.Length == 0))
+                        JBoolean v = (JBoolean)Evaluator.Evaluate(s, line, out e);
+                        if ((v) && (e.Length == 0))
                         {
                             CurrentState.PushCall(s, line.Filename, this);
                             NewScope(ExecutionState.Status.WhileLoop);
@@ -635,8 +637,8 @@ namespace KerboScriptEngine
                         }
 
                         string[] e;
-                        Value v = Evaluator.Evaluate(s, line, out e);
-                        if ((!v.BooleanValue) && (e.Length == 0))
+                        JBoolean v = (JBoolean)Evaluator.Evaluate(s, line, out e);
+                        if ((!v) && (e.Length == 0))
                         {
                             CurrentState.PushCall(s, line.Filename, this);
                             NewScope(ExecutionState.Status.UntilLoop);
@@ -665,7 +667,7 @@ namespace KerboScriptEngine
                         }
 
                         // Evaluate expression
-                        Value output = Evaluator.Evaluate(s, line, out ex);
+                        JString output = (JString)Evaluator.Evaluate(s, line, out ex);
                         errors.AddRange(ex);
                         if (ex.Length > 0)
                             break;
@@ -681,7 +683,7 @@ namespace KerboScriptEngine
                             ThrowError(ErrorBuilder.ErrorType.SyntaxError, "\".\" expected.");
                             break;
                         }
-                        Value location = Evaluator.Evaluate(s, line, out ex);
+                        JString location = (JString)Evaluator.Evaluate(s, line, out ex);
                         errors.AddRange(ex);
                         if (ex.Length > 0)
                             break;

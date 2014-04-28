@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jebnix.Types.BasicTypes;
+
 
 namespace Jebnix.Types.Structures
 {
@@ -25,18 +25,6 @@ namespace Jebnix.Types.Structures
         {
             X = x;
             Y = y;
-        }
-
-        public override bool IsNull
-        {
-            get
-            {
-                return false;
-            }
-            protected set
-            {
-                throw new NotImplementedException();
-            }
         }
 
         public static OrderedPair Parse(string value)

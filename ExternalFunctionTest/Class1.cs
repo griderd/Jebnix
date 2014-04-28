@@ -6,6 +6,7 @@ using Jebnix;
 using Jebnix.stdlib;
 using Jebnix.Types;
 
+
 namespace ExternalFunctionTest
 {
     public class Class1
@@ -15,7 +16,7 @@ namespace ExternalFunctionTest
         public Class1()
         {
             Functions.RegisterFunction("test", 0, new Func<string>(TestFunction));
-            Functions.RegisterFunction("librarytest", 1, new Action<Value>(LibraryPrintTest));
+            Functions.RegisterFunction("librarytest", 1, new Action<JString>(LibraryPrintTest));
             Functions.RegisterFunction("getnumber", 0, new Func<double>(GetNumber));
             Functions.RegisterFunction("externaltest", 0, new Action(ExternalCallTest));
         }
@@ -32,9 +33,9 @@ namespace ExternalFunctionTest
         /// <summary>
         /// Prints "This is a library test." to the screen via stdio, along with the string value given.
         /// </summary>
-        public void LibraryPrintTest(Value value)
+        public void LibraryPrintTest(JString value)
         {
-            stdio.PrintLine("This is a library test. " + value.StringValue);
+            stdio.PrintLine("This is a library test. " + value);
         }
 
         /// <summary>

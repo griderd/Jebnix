@@ -77,10 +77,10 @@
     <Compile Include="stdlib\stdmath.cs" />
     <Compile Include="stdlib\stdtime.cs" />
     <Compile Include="stdlib\stdvessel.cs" />
-    <Compile Include="Types\BasicTypes\JBoolean.cs" />
-    <Compile Include="Types\BasicTypes\JFloat.cs" />
-    <Compile Include="Types\BasicTypes\JInteger.cs" />
-    <Compile Include="Types\BasicTypes\JString.cs" />
+    <Compile Include="Types\JBoolean.cs" />
+    <Compile Include="Types\JFloat.cs" />
+    <Compile Include="Types\JInteger.cs" />
+    <Compile Include="Types\JString.cs" />
     <Compile Include="Types\GenericValue.cs" />
     <Compile Include="Types\JObject.cs" />
     <Compile Include="Types\NullJObjectException.cs" />

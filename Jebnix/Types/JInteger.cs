@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jebnix.Types.BasicTypes
+namespace Jebnix.Types
 {
     public class JInteger : JObject<int>
     {
@@ -162,97 +162,141 @@ namespace Jebnix.Types.BasicTypes
 
         protected override bool IsEqual(JObject a)
         {
-            throw new NotImplementedException();
+            if ((IsSameType(a)) | (a.ObjectType == JFloat.TYPENAME))
+                return (this == ((JInteger)a));
+
+            return false;
         }
 
         protected override bool IsNotEqual(JObject a)
         {
-            throw new NotImplementedException();
+            if ((IsSameType(a)) | (a.ObjectType == JFloat.TYPENAME))
+                return (this != ((JInteger)a));
+
+            return false;
         }
 
         protected override JObject IsLessThan(JObject a)
         {
-            throw new NotImplementedException();
+            if ((IsSameType(a)) | (a.ObjectType == JFloat.TYPENAME))
+                return (this < ((JInteger)a));
+
+            return JBoolean.False;
         }
 
         protected override JObject IsLessThanOrEqual(JObject a)
         {
-            throw new NotImplementedException();
+            if ((IsSameType(a)) | (a.ObjectType == JFloat.TYPENAME))
+                return (this <= ((JInteger)a));
+
+            return JBoolean.False;
         }
 
         protected override JObject IsGreaterThan(JObject a)
         {
-            throw new NotImplementedException();
+            if ((IsSameType(a)) | (a.ObjectType == JFloat.TYPENAME))
+                return (this > ((JInteger)a));
+
+            return JBoolean.False;
         }
 
         protected override JObject IsGreaterThanOrEqual(JObject a)
         {
-            throw new NotImplementedException();
+            if ((IsSameType(a)) | (a.ObjectType == JFloat.TYPENAME))
+                return (this >= ((JInteger)a));
+
+            return JBoolean.False;
         }
 
         protected override JObject Addition(JObject a)
         {
-            throw new NotImplementedException();
+            if ((IsSameType(a)) | (a.ObjectType == JFloat.TYPENAME) | (a.ObjectType == JBoolean.TYPENAME))
+                return (this + ((JInteger)a));
+            else if (a.ObjectType == JString.TYPENAME)
+                return new JString(this.ToString() + a.ToString());
+
+            throw new InvalidOperationException();
         }
 
         protected override JObject Subtract(JObject a)
         {
-            throw new NotImplementedException();
+            if ((IsSameType(a)) | (a.ObjectType == JFloat.TYPENAME))
+                return (this - ((JInteger)a));
+
+            throw new InvalidOperationException();
         }
 
         protected override JObject Multiply(JObject a)
         {
-            throw new NotImplementedException();
+            if ((IsSameType(a)) | (a.ObjectType == JFloat.TYPENAME))
+                return (this * ((JInteger)a));
+
+            throw new InvalidOperationException();
         }
 
         protected override JObject Divide(JObject a)
         {
-            throw new NotImplementedException();
+            if ((IsSameType(a)) | (a.ObjectType == JFloat.TYPENAME))
+                return (this / ((JInteger)a));
+
+            throw new InvalidOperationException();
         }
 
         protected override JObject Modulus(JObject a)
         {
-            throw new NotImplementedException();
+            if ((IsSameType(a)) | (a.ObjectType == JFloat.TYPENAME))
+                return (this % ((JInteger)a));
+
+            throw new InvalidOperationException();
         }
 
         protected override JObject Pow(JObject a)
         {
-            throw new NotImplementedException();
+            if ((IsSameType(a)) | (a.ObjectType == JFloat.TYPENAME))
+                return (JInteger)(Math.Pow((JFloat)this, (JFloat)a));
+
+            throw new InvalidOperationException();
         }
 
         protected override JObject And(JObject a)
         {
-            throw new NotImplementedException();
+            if ((IsSameType(a)) | (a.ObjectType == JFloat.TYPENAME))
+                return (this & ((JInteger)a));
+
+            throw new InvalidOperationException();
         }
 
         protected override JObject Or(JObject a)
         {
-            throw new NotImplementedException();
+            if ((IsSameType(a)) | (a.ObjectType == JFloat.TYPENAME))
+                return (this | ((JInteger)a));
+
+            throw new InvalidOperationException();
         }
 
         protected override JObject Positive()
         {
-            throw new NotImplementedException();
+            return this;
         }
 
         protected override JObject Negative()
         {
-            throw new NotImplementedException();
+            return -this;
         }
 
         protected override JObject Not()
         {
-            throw new NotImplementedException();
+            return !this;
         }
 
         protected override JObject Increment()
         {
-            throw new NotImplementedException();
+            return this + 1;
         }
 
         protected override JObject Decrement()
         {
-            throw new NotImplementedException();
+            return this - 1;
         }
     }
 }

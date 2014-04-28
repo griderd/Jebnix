@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jebnix.Types.BasicTypes
+namespace Jebnix.Types
 {
     public class JString : JObject<string>
     {
@@ -57,6 +57,16 @@ namespace Jebnix.Types.BasicTypes
         public static implicit operator string(JString s)
         {
             return s.value;
+        }
+
+        public static explicit operator JString(JInteger x)
+        {
+            return new JString(x.ToString());
+        }
+
+        public static explicit operator JString(JFloat x)
+        {
+            return new JString(x.ToString());
         }
 
         public override string ToString()

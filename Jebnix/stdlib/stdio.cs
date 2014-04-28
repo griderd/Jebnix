@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.Diagnostics;
-using Jebnix.Types.BasicTypes;
+using Jebnix.Types;
 
 namespace Jebnix.stdlib
 {
@@ -122,7 +122,7 @@ namespace Jebnix.stdlib
 
         public static void PrintLine(JString s, bool userEntered = false)
         {
-            PrintLine(s, !userEntered);
+            PrintLine(s.Value, !userEntered);
         }
 
         public static void PrintLine(bool userEntered = false)
