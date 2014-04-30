@@ -22,3 +22,72 @@ THIS DOES NOT WORK RIGHT NOW
 JebnixRPM - A plugin for RasterPropMod to give interaction with Jebnix. THIS DOES NOT WORK RIGHT NOW
 
 KerboScriptEngine - The language engine of KerboScript++.
+
+# KerboScript
+
+## Command Reference
+
+### CLEARSCREEN
+Clears the screen and places the cursor in the upper left. Example:
+    CLEARSCREEN.
+
+### IF, IF-ELSE, IF-ELSE-IF-ELSE
+Checks if the expression supplied is true. If it is, the block is executed. Example:
+    SET X TO 1.
+    IF X = 1
+    {
+        PRINT "X equals one".
+    }
+    
+You can also use IF-ELSE statements. When the condition associated with the IF is false, the ELSE block executes instead.
+    SET X TO 1.
+    IF X = 1
+    {
+        PRINT "X equals one".
+    }
+    ELSE
+    {
+        PRINT "X does not equal one".
+    }
+
+Alternatively, you can use IF-ELSE-IF-ELSE statements, with as many ELSE-IF statements as you'd like.
+    SET X TO 1.
+    IF X = 1
+    {
+        PRINT "X equals one".
+    }
+    ELSE IF X > 1
+    {
+        PRINT "X is greater than one".
+    }
+    ELSE
+    {
+        PRINT "X is less than one".
+    }
+
+### UNTIL
+Executes the block until the condition supplied is true.
+    SET X TO 1.
+    UNTIL X > 10
+    {
+        PRINT X.
+        SET X TO X + 1.
+    }
+    
+### WHILE
+Executes the block while the condition supplied is true.
+    SET X TO 1.
+    WHILE X < 10
+    {
+        PRINT X.
+        SET X TO X + 1.
+    }
+
+### DO-WHILE
+Executes the block at least once, and continues executing the block while the condition supplied is true. If the condition is false on the first pass, the block still executes once.
+    SET X TO 1.
+    DO
+    {
+        PRINT X.
+        SET X TO X + 1.
+    } WHILE X < 10.
