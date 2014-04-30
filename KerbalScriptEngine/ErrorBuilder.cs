@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KerboScriptEngine.Compiler;
 
 namespace KerboScriptEngine
 {
@@ -13,8 +14,13 @@ namespace KerboScriptEngine
             SyntaxError,
             InternalError
         }
+
+        public static void BuildError(Token token, string message, ref List<string> errList)
+        {
+            BuildError(token.FileName, token.LineNumber, ErrorType.SyntaxError, message, ref errList);
+        }
         
-        public static void BuildError(LineInfo line, ErrorType type, string message, ref List<string> errlist)
+        public static void BuildError(string filename, int lineNumber, ErrorType type, string message, ref List<string> errlist)
         {
             StringBuilder s = new StringBuilder();
 
@@ -31,18 +37,18 @@ namespace KerboScriptEngine
             }
 
             s.Append(" (");
-            s.Append(line.Filename);
+            s.Append(filename);
             s.Append(":");
-            s.Append(line.LineNumber);
+            s.Append(lineNumber);
             s.Append("): ");
             s.Append(message);
 
             errlist.Add(s.ToString());
         }
 
-        public static void BuildError(LineInfo line, ErrorType type, Exception ex, ref List<string> errlist)
+        public static void BuildError(string filename, int lineNumber, ErrorType type, Exception ex, ref List<string> errlist)
         {
-            BuildError(line, type, "(" + ex.ToString() + ") " + ex.Message, ref errlist);
+            BuildError(filename, lineNumber, type, "(" + ex.ToString() + ") " + ex.Message, ref errlist);
         }
     }
 }

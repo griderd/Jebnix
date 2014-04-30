@@ -3,20 +3,43 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KerboScriptEngine
+namespace KerboScriptEngine.Compiler
 {
     /// <summary>
     /// Tokenizer helper class. Tokenizes Kerboscript++.
     /// </summary>
     class Tokenizer
     {
+        public static Token[] Tokenize(string[] lines, string filename, out string[] err)
+        {
+            List<Token> tokens = new List<Token>();
+            List<string> errors = new List<string>();
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string[] e;
+                string[] t = Tokenize(lines[i], out e);
+                foreach (string token in t)
+                {
+                    tokens.Add(new Token(token, filename, i + 1));
+                }
+                foreach (string error in e)
+                {
+                    ErrorBuilder.BuildError(filename, i, ErrorBuilder.ErrorType.SyntaxError, error, ref errors);
+                }
+            }
+
+            err = errors.ToArray();
+            return tokens.ToArray();
+        }
+
         /// <summary>
         /// Splits the line into parsable tokens.
         /// </summary>
         /// <param name="line">Line to tokenize</param>
         /// <param name="err">A list of errors that occured while tokenizing.</param>
         /// <returns>Returns a string array containing extracted tokens.</returns>
-        public static string[] Tokenize(LineInfo line, out string[] err)
+        private static string[] Tokenize(string line, out string[] err)
         {
             List<string> errors = new List<string>();
             List<string> tokens = new List<string>();
@@ -25,7 +48,7 @@ namespace KerboScriptEngine
             bool inString = false;
             bool ctrlChar = false;
 
-            string s = line.Line;
+            string s = line;
 
             for (int i = 0; i < s.Length; i++)
             {
@@ -165,7 +188,7 @@ namespace KerboScriptEngine
                         }
                         else
                         {
-                            errors.Add("Syntax error (" + line.Filename + ":" + line.LineNumber.ToString() + "," + (i + 1 + line.ColumnOffset).ToString() + ") - Escape character '\\' invalid outside string literal."); 
+                            errors.Add("Escape character '\\' invalid outside string literal."); 
                         }
                         continue;
 

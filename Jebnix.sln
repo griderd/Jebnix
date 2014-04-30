@@ -20,6 +20,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JebnixDebugger", "JebnixDeb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JebnixModule", "JebnixPart\JebnixModule.csproj", "{96377BF5-EF14-4744-B066-E1E95EA831B4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assembly Notes", "Assembly Notes", "{DEE8487A-80F3-4761-B0BA-78CF7B32FCBE}"
+	ProjectSection(SolutionItems) = preProject
+		IfStatements.txt = IfStatements.txt
+		Loops.txt = Loops.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,9 +110,12 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DEE8487A-80F3-4761-B0BA-78CF7B32FCBE} = {158F6A07-FDC6-43B7-BFE4-00C3DC1412A2}
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		BuildVersion_UseGlobalSettings = True
-		BuildVersion_BuildVersioningStyle = None.None.None.Increment
 		BuildVersion_DetectChanges = True
+		BuildVersion_BuildVersioningStyle = None.None.None.Increment
+		BuildVersion_UseGlobalSettings = True
 	EndGlobalSection
 EndGlobal

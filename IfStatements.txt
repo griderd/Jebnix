@@ -1,0 +1,87 @@
+if [condition]
+{
+	[code]
+}
+[mode code]
+
+----------------------------------------
+
+_main:
+	[condition]
+	jmpt code_if_0
+	jmpf code_else_0
+	pop
+	hop code_endif_0
+code_if_0:
+	[code]
+	ret
+code_else_0:
+	ret
+code_endif_0:
+	[mode code]
+	
+----------------------------------------
+if [condition]
+{
+	[code 1]
+}
+else
+{
+	[code 2]
+}
+[more code]
+----------------------------------------
+main:
+	[condition]
+	jmpt code_if_0
+	jmpf code_else_0
+	pop
+	hop code_endif_0
+code_if_0:
+	[code 1]
+	ret
+code_else_0:
+	[code 2]
+	ret
+code_endif_0:
+	[more code]
+----------------------------------------
+if [condition 1]
+{
+	[code 1]
+}
+else if [condition 2]
+{
+	[code 2]
+}
+else
+{
+	[code 3]
+}
+[more code]
+----------------------------------------
+main:
+	[condition 1]
+	jmpt code_if_0
+	jmpf code_else_0
+	pop
+	hop code_endif_0
+code_if_0:
+	[code 1]
+	ret
+code_else_0:
+	[condition 2]
+	jmpt code_if_1
+	jmpf code_else_1
+	pop
+	hop code_endif_1
+code_if_1:
+	[code 2]
+	ret
+code_else_1:
+	[code 3]
+	ret
+code_endif_1:
+	ret
+code_endif_0:
+	[more code]

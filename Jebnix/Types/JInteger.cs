@@ -68,6 +68,14 @@ namespace Jebnix.Types
             result = b ? x : 0;
             return b;
         }
+
+        public static JInteger Parse(string value)
+        {
+            int x;
+            if (!int.TryParse(value, out x))
+                throw new InvalidCastException();
+            return x;
+        }
         
         public override string ToString()
         {

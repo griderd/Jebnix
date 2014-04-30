@@ -61,14 +61,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CompiledScript.cs" />
+    <Compile Include="Compiler\AssemblyGenerator.cs" />
+    <Compile Include="Compiler\FunctionPointer.cs" />
+    <Compile Include="Compiler\Instruction.cs" />
+    <Compile Include="Compiler\Instructions.cs" />
+    <Compile Include="Compiler\LanguageTree.cs" />
+    <Compile Include="Compiler\ParseInstructions.cs" />
+    <Compile Include="Compiler\Parser.cs" />
+    <Compile Include="Compiler\ParserOutput.cs" />
+    <Compile Include="Compiler\Pointer.cs" />
+    <Compile Include="Compiler\Pseudopointer.cs" />
+    <Compile Include="Compiler\Token.cs" />
+    <Compile Include="Debugger\DebugInfo.cs" />
+    <Compile Include="KSRuntimeException.cs" />
+    <Compile Include="Process.cs" />
+    <Compile Include="Script.cs" />
     <Compile Include="Compiler\Compiler.cs" />
     <Compile Include="Enums\ActionGroups.cs" />
     <Compile Include="ScriptAPI\Physics.cs" />
     <Compile Include="ErrorBuilder.cs" />
-    <Compile Include="Evaluator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tokenizer.cs" />
+    <Compile Include="Compiler\Tokenizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

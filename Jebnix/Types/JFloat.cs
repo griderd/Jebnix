@@ -94,6 +94,14 @@ namespace Jebnix.Types
             return b;
         }
 
+        public static JFloat Parse(string value)
+        {
+            double x;
+            if (!double.TryParse(value, out x))
+                throw new InvalidCastException();
+            return x;
+        }
+
         public override string ToString()
         {
             return value.ToString();

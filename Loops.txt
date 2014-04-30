@@ -1,0 +1,56 @@
+until [condition]
+{
+	[code]
+}
+[more code]
+
+_main:
+	hop code_untilbody_0
+code_until_0:
+	pop
+code_untilbody_0:
+	[condition]
+	hopt code_untilend_0
+	[code]
+	hopf code_until_0:
+code_untilend_0:
+	pop
+	[more code]
+	
+	
+while [condition]
+{
+	[code]
+}
+[more code]
+
+_main:
+	hop code_untilbody_0
+code_while_0:
+	pop
+code_whilebody_0:
+	[condition]
+	hopf code_whileend_0
+	[code]
+	hopt code_while_0
+code_whileend_0:
+	pop
+	[more code]
+
+	
+do
+{
+	[code]
+}
+while [condition]
+
+_main:
+	hop code_whilebody_0
+code_while_0:
+	pop
+code_whilebody_0:
+	[code]
+	[condition]
+	hopt code_while_0:
+	pop
+	
