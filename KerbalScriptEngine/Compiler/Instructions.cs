@@ -82,6 +82,10 @@ namespace KerboScriptEngine.Compiler
         /// <summary>
         /// Removes the given pointer from the lock list
         /// </summary>
-        ulok
+        ulok,
+        /// <summary>
+        /// Calls the given script.
+        /// </summary>
+        scr
     }
 }

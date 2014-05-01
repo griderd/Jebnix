@@ -126,6 +126,25 @@ namespace KerboScriptEngine.Compiler
                         UntilBlock();
                     break;
 
+                case "break":
+                    Break();
+                    break;
+
+                case "run":
+                    Run();
+                    break;
+
+                case "copy":
+                    Copy();
+                    break;
+
+                case "delete":
+
+
+                case "rename":
+
+                case "switch":
+
                 case "}":
                     if (blockStack.Count == 0)
                         ErrorBuilder.BuildError(currentToken, "'}' without '{'.", ref errors);

@@ -23,6 +23,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assembly Notes", "Assembly Notes", "{DEE8487A-80F3-4761-B0BA-78CF7B32FCBE}"
 	ProjectSection(SolutionItems) = preProject
 		IfStatements.txt = IfStatements.txt
+		Linking Procedure.txt = Linking Procedure.txt
 		Loops.txt = Loops.txt
 	EndProjectSection
 EndProject

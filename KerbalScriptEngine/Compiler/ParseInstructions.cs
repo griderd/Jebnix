@@ -11,6 +11,7 @@ namespace KerboScriptEngine.Compiler
         private void Push(Pseudopointer variable, Segment segment = Segment.Code)
         {
             AddTo(Segment.Code, Instructions.push);
+            // TODO: Check that variable exists in scope
             AddTo(Segment.Code, variable);
         }
 

@@ -1,0 +1,6 @@
+- Check CALL pseudopointer for internal script function
+	- If pseudopointer is internal script function, change CALL to JUMP
+	  and change pseudopointer to Pointer from label dictionary
+	- If pseudopointer is NOT an internal script function, change
+	  pseudopointer to a FunctionPointer.
+- Change pseudopointers to pointers from variable list.

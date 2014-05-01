@@ -30,8 +30,17 @@ namespace Jebnix
         public abstract void MemoryDump();
         public abstract string GetInterpreterVersion();
 
+        /// <summary>
+        /// Represents the remote archive at KSC. The Archive is folder 0.
+        /// </summary>
         public Folder Archive;
+        /// <summary>
+        /// The root local folder on the craft. This folder is folder 1.
+        /// </summary>
         public Folder RootFolder;
+        /// <summary>
+        /// The current folder selected.
+        /// </summary>
         public Folder CurrentFolder;
     }
 }

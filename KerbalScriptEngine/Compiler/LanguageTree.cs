@@ -9,40 +9,19 @@ namespace KerboScriptEngine.Compiler
 {
     partial class Parser
     {
-
-
-        private void Clearscreen()
-        {
-            Token t = currentToken;
-            GetToken();
-            if (!HasToken())
-            {
-                ErrorBuilder.BuildError(t, "Expected '.'", ref errors);
-                return;
-            }
-
-            if (currentToken.Text == ".")
-            {
-                Call(new Pseudopointer(Functions.GenerateUniqueName("stdio", "clearscreen", 0)));
-            }
-        }
-
         private void SetLock(bool set = true)
         {
-            Token t = currentToken;
-            GetToken();
-            if (!HasToken())
-            {                
-                ErrorBuilder.BuildError(t, "Expected variable.", ref errors);
+            if (!ExpectToken("variable name."))
                 return;
-            }
+
             Pseudopointer var = new Pseudopointer(currentToken.Text);
-            GetToken();
-            if (!HasToken())
+            if (!variableNames.Contains(currentToken.Text))
             {
-                ErrorBuilder.BuildError(t, "Expected '=' or 'to'.", ref errors);
-                return;
+                variableNames.Add(currentToken.Text);
             }
+
+            if (!ExpectToken("'=' or 'to'."))
+                return;
 
             if (currentToken.Text == "=" | currentToken.Text == "to")
             {
@@ -131,9 +110,9 @@ namespace KerboScriptEngine.Compiler
         {
             loopStack.Push(loopCount);
             loopCount++;
-            string untilLabel = MakeLabel("until_" + loopStack.Peek().ToString(), Segment.Code);
-            string bodyLabel = MakeLabel("untilbody_" + loopStack.Peek().ToString(), Segment.Code);
-            string endLabel = MakeLabel("enduntil_" + loopStack.Peek().ToString(), Segment.Code);
+            string untilLabel = MakeLabel("loop_" + loopStack.Peek().ToString(), Segment.Code);
+            string bodyLabel = MakeLabel("loopbody_" + loopStack.Peek().ToString(), Segment.Code);
+            string endLabel = MakeLabel("endloop_" + loopStack.Peek().ToString(), Segment.Code);
 
             Pseudopointer until = new Pseudopointer(untilLabel);
             Pseudopointer body = new Pseudopointer(bodyLabel);
@@ -153,8 +132,8 @@ namespace KerboScriptEngine.Compiler
 
         private void EndUntilBlock()
         {
-            string untilLabel = MakeLabel("until_" + loopStack.Peek().ToString(), Segment.Code);
-            string endLabel = MakeLabel("enduntil_" + loopStack.Peek().ToString(), Segment.Code);
+            string untilLabel = MakeLabel("loop_" + loopStack.Peek().ToString(), Segment.Code);
+            string endLabel = MakeLabel("endloop_" + loopStack.Peek().ToString(), Segment.Code);
             Hopf(new Pseudopointer(untilLabel));
             AddLabel(endLabel, Segment.Code);
             Pop();
@@ -165,9 +144,9 @@ namespace KerboScriptEngine.Compiler
         {
             loopStack.Push(loopCount);
             loopCount++;
-            string whileLabel = MakeLabel("while_" + loopStack.Peek().ToString(), Segment.Code);
-            string bodyLabel = MakeLabel("whilebody_" + loopStack.Peek().ToString(), Segment.Code);
-            string endLabel = MakeLabel("endwhile_" + loopStack.Peek().ToString(), Segment.Code);
+            string whileLabel = MakeLabel("loop_" + loopStack.Peek().ToString(), Segment.Code);
+            string bodyLabel = MakeLabel("loopbody_" + loopStack.Peek().ToString(), Segment.Code);
+            string endLabel = MakeLabel("endloop_" + loopStack.Peek().ToString(), Segment.Code);
 
             Pseudopointer whilel = new Pseudopointer(whileLabel);
             Pseudopointer body = new Pseudopointer(bodyLabel);
@@ -187,8 +166,8 @@ namespace KerboScriptEngine.Compiler
 
         private void EndWhileBlock()
         {
-            string whileLabel = MakeLabel("while_" + loopStack.Peek().ToString(), Segment.Code);
-            string endLabel = MakeLabel("endwhile_" + loopStack.Peek().ToString(), Segment.Code);
+            string whileLabel = MakeLabel("loop_" + loopStack.Peek().ToString(), Segment.Code);
+            string endLabel = MakeLabel("endloop_" + loopStack.Peek().ToString(), Segment.Code);
             Hopt(new Pseudopointer(whileLabel));
             AddLabel(endLabel, Segment.Code);
             Pop();
@@ -199,8 +178,8 @@ namespace KerboScriptEngine.Compiler
         {
             loopStack.Push(loopCount);
             loopCount++;
-            string whileLabel = MakeLabel("while_" + loopStack.Peek().ToString(), Segment.Code);
-            string bodyLabel = MakeLabel("whilebody_" + loopStack.Peek().ToString(), Segment.Code);
+            string whileLabel = MakeLabel("loop_" + loopStack.Peek().ToString(), Segment.Code);
+            string bodyLabel = MakeLabel("loopbody_" + loopStack.Peek().ToString(), Segment.Code);
 
             Hop(new Pseudopointer(bodyLabel));
             AddLabel(whileLabel, Segment.Code);
@@ -213,9 +192,39 @@ namespace KerboScriptEngine.Compiler
             ParseExpression(Segment.Code, ".");
             string whileLabel = MakeLabel("while_" + loopStack.Peek().ToString(), Segment.Code);
             Hopt(new Pseudopointer(whileLabel));
+            string endLabel = MakeLabel("endloop_" + loopStack.Peek().ToString(), Segment.Code);
+            AddLabel(endLabel, Segment.Code);
             Pop();
 
             loopStack.Pop();
         }
+
+        private void Break()
+        {
+            Token t = currentToken;
+            GetToken();
+            if (!HasToken())
+            {
+                ErrorBuilder.BuildError(t, "Expected '.'", ref errors);
+                return;
+            }
+            if (currentToken.Text != ".")
+            {
+                ErrorBuilder.BuildError(t, "Expected '.'", ref errors);
+                return;
+            }
+
+            if (loopStack.Count > 0)
+            {
+                string endLabel = MakeLabel("endloop_" + loopStack.Peek().ToString(), Segment.Code);
+                Hop(new Pseudopointer(endLabel), Segment.Code);
+            }
+            else
+            {
+                ErrorBuilder.BuildError(currentToken, "Warning - No loops to break out of!", ref errors);
+            }
+        }
+
+
     }
 }
