@@ -10,11 +10,10 @@ using Jebnix.stdlib;
 
 namespace JebnixConsoleDebugger
 {
-    class Program
+    partial class Program
     {
-        static KerboScriptEngine.Interpreter interpreter;
+        static KerboScriptEngine.Processor interpreter;
         static System.Timers.Timer clock;
-        static int consoleProc;
 
         static int clockFreq = 100;
 
@@ -36,14 +35,14 @@ namespace JebnixConsoleDebugger
             Console.ForegroundColor = ConsoleColor.Green;
 
             clock = new System.Timers.Timer(1000 / clockFreq);
-            interpreter = new KerboScriptEngine.Interpreter(new System.IO.DirectoryInfo("Archive"));
+            interpreter = new KerboScriptEngine.Processor(new System.IO.DirectoryInfo("Archive"));
             Graphics.Mode = Graphics.GraphicsMode.Text;
             clock.Elapsed += new System.Timers.ElapsedEventHandler(clock_Elapsed);
             stdio.PrintLine("Welcome to Jebnix");
             stdio.PrintLine(interpreter.GetInterpreterVersion());
             stdio.PrintLine(stdio.GetJebnixVersion());
             stdio.PrintLine();
-            consoleProc = interpreter.CreateProcess(new string[0], "Console");
+            //consoleProc = interpreter.CreateProcess(new string[0], "Console");
 
             Console.SetWindowSize(40, 21);
 
@@ -66,7 +65,8 @@ namespace JebnixConsoleDebugger
                     stdio.ProcessChar('\n');
                     if (Mode == ConsoleMode.Intermediate)
                     {
-                        interpreter.AddCodeToProcess(consoleProc, new string[] { input.ToString() }, "Console");
+                        //interpreter.AddCodeToProcess(consoleProc, new string[] { input.ToString() }, "Console");
+                        InterpretCommand(input.ToString());
                         input.Clear();
                     }
                     break;
@@ -129,7 +129,7 @@ namespace JebnixConsoleDebugger
 
             string inp = Console.ReadLine();
             stdio.PrintLine(inp);
-            interpreter.AddCodeToProcess(consoleProc, new string[] { inp }, "Console");
+            //interpreter.AddCodeToProcess(consoleProc, new string[] { inp }, "Console");
 
             for (int i = 0; i < count; i++)
             {
@@ -139,8 +139,8 @@ namespace JebnixConsoleDebugger
 
         static void clock_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (!interpreter.Busy)
-                interpreter.ExecuteProcess();
+            //if (!interpreter.Busy)
+            interpreter.ExecuteProcess();
 
             if (Graphics.TextChanged)
             {

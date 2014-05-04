@@ -7,7 +7,7 @@ using KerboScriptEngine.Debugger;
 
 namespace KerboScriptEngine
 {
-    class Script
+    public class Script
     {
         string name;
         JObject[] bytecode;

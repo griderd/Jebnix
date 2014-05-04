@@ -14,7 +14,13 @@ namespace KerboScriptEngine.Compiler
 
         }
 
-        public const Pointer NullPointer = new Pointer(0);
+        public static Pointer NullPointer
+        {
+            get
+            {
+                return new Pointer(0);
+            }
+        }
 
         public override int Value
         {

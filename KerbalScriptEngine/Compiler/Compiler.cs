@@ -27,7 +27,7 @@ namespace KerboScriptEngine.Compiler
             err = p.GetErrors();
             JObject[] objects = p.GetObjectCode();
 
-            Script script = new Script(filename, objects);
+            Script script = new Script(filename, objects, new Debugger.DebugInfo(lines));
             return script;
         }
 

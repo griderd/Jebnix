@@ -6,7 +6,7 @@ using Jebnix;
 
 namespace KerboScriptEngine.UtilityModules
 {
-    class SystemAPI
+    public class SystemAPI
     {
         static Processor processor;
         static Process caller;
@@ -18,7 +18,7 @@ namespace KerboScriptEngine.UtilityModules
             Functions.RegisterFunction("system", "copyfrom", 2, new Action<string, string>(CopyFrom));
         }
 
-        public void SetCaller(Process process)
+        public static void SetCaller(Process process)
         {
             caller = process;
         }

@@ -287,7 +287,7 @@ namespace KerboScriptEngine.Compiler
                     }
                 });
 
-            Token token;
+            Token token = new Token();
             while (HasToken())
             {
                 token = GetToken();

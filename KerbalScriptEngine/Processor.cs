@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 using Jebnix;
 using System.IO;
 using KerboScriptEngine.Compiler;
@@ -9,7 +10,7 @@ using Jebnix.stdlib;
 
 namespace KerboScriptEngine
 {
-    class Processor : Interpreter
+    public class Processor : Interpreter
     {
         Queue<Process> processes;
 
@@ -86,7 +87,8 @@ namespace KerboScriptEngine
 
         public override string GetInterpreterVersion()
         {
-            throw new NotImplementedException();
+            System.Version v = Assembly.GetExecutingAssembly().GetName().Version;
+            return "KerboScript++ " + v.Major + "." + v.Minor + " Build " + v.Revision;
         }
     }
 }

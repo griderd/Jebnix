@@ -9,11 +9,11 @@ namespace JebnixRPM
 {
     public class Monitor : InternalModule  
     {
-        Interpreter kos;
+        Processor kos;
 
         public override void OnLoad(ConfigNode node)
         {
-            kos = new Interpreter(vessel, new System.IO.DirectoryInfo("PluginData\\Archive"));
+            kos = new Processor(new System.IO.DirectoryInfo("PluginData\\Archive"));
 
             base.OnLoad(node);
         }

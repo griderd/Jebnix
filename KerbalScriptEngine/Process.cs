@@ -9,7 +9,7 @@ using KerboScriptEngine.Compiler;
 
 namespace KerboScriptEngine
 {
-    class Process
+    public class Process
     {
         string name;
         JObject[] memory;
