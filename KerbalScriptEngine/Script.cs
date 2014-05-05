@@ -45,9 +45,14 @@ namespace KerboScriptEngine
             this.debugInfo = debugInfo;
         }
 
-        public Process ToProcess()
+        public Process ToProcess(Processor p)
         {
-            return new Process(this);
+            return new Process(this, p);
+        }
+
+        public Process ToProcess(Processor p, Process parent)
+        {
+
         }
     }
 }

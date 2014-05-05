@@ -7,19 +7,84 @@ using Jebnix;
 using System.IO;
 using KerboScriptEngine.Compiler;
 using Jebnix.stdlib;
+using Jebnix.Types;
+using Jebnix.Types.Structures;
 
 namespace KerboScriptEngine
 {
     public class Processor : Interpreter
     {
         Queue<Process> processes;
+        Queue<Process> inputQueue;
 
+        internal List<JObject> globalHeap;
+        internal List<string> globalSymbols;
+
+        public Process CurrentProcess
+        {
+            get;
+            private set;
+        }
+
+        public Processor(Vessel vessel, DirectoryInfo archiveFolder)
+            : base(vessel, archiveFolder)
+        {
+            processes = new Queue<Process>();
+            UtilityModules.SystemAPI.Initialize(this);
+
+            InitializeHeap();
+        }
 
         public Processor(DirectoryInfo archiveFolder)
             : base(archiveFolder)
         {
             processes = new Queue<Process>();
             UtilityModules.SystemAPI.Initialize(this);
+
+            InitializeHeap();
+        }
+
+        private void InitializeHeap()
+        {
+            globalHeap = new List<JObject>();
+            globalSymbols = new List<string>();
+
+            if (vessel != null)
+            {
+                AddToHeap("vesselname", new JString(vessel.vesselName));
+                AddToHeap("altitude", new JFloat(vessel.altitude));
+                // TODO: Add ALT structure
+                // TODO: Add BODY structure
+                AddToHeap("missiontime", new JFloat(vessel.missionTime));
+                AddToHeap("velocity", new Vector(FlightGlobals.ship_obtVelocity);
+                AddToHeap("verticalspeed", new JFloat(vessel.verticalSpeed));
+                AddToHeap("surfacespeed", new JFloat(vessel.horizontalSrfSpeed));
+                AddToHeap("latitude", new JFloat(vessel.latitude));     // TODO: fix latitude/longitude bug
+                AddToHeap("longitude", new JFloat(vessel.longitude));
+                // TODO: Add STATUS enum
+                // TODO: Add INLIGHT
+                // TODO: Add INCOMMRANGE
+                // TODO: Add COMMRANGE
+                AddToHeap("mass", new JFloat(vessel.GetTotalMass()));
+                // TODO: Add MAXTHRUST
+                // TODO: Add TIME structure
+                // TODO: Add PROGRADE vector
+                // TODO: Add RETROGRADE vector
+                // TODO: Add UP vector
+                
+            }
+        }
+
+        internal void AddToHeap(string symbol, JObject value)
+        {
+            globalHeap.Add(value);
+            globalSymbols.Add(symbol);
+        }
+
+        internal void AddToHeap(string symbol)
+        {
+            globalSymbols.Add(symbol);
+            globalHeap.Add(new JValue());
         }
 
         public override int CreateProcess(string file)
@@ -37,7 +102,7 @@ namespace KerboScriptEngine
                 }
                 else
                 {
-                    processes.Enqueue(s.ToProcess());
+                    processes.Enqueue(s.ToProcess(this));
                 }
             }
             else
@@ -60,7 +125,7 @@ namespace KerboScriptEngine
             }
             else
             {
-                processes.Enqueue(s.ToProcess());
+                processes.Enqueue(s.ToProcess(this));
             }
             return 0;
         }
@@ -69,9 +134,10 @@ namespace KerboScriptEngine
         {
             if (processes.Count > 0)
             {
-                Process currentProcess = processes.Dequeue();
-                currentProcess.RunCycle();
-                processes.Enqueue(currentProcess);
+                CurrentProcess = processes.Dequeue();
+                CurrentProcess.RunCycle();
+                if (!inputQueue.Contains(CurrentProcess))
+                    processes.Enqueue(CurrentProcess);
             }
         }
 
@@ -89,6 +155,21 @@ namespace KerboScriptEngine
         {
             System.Version v = Assembly.GetExecutingAssembly().GetName().Version;
             return "KerboScript++ " + v.Major + "." + v.Minor + " Build " + v.Revision;
+        }
+
+        internal void WaitForInput(Process p)
+        {
+            inputQueue.Enqueue(p);
+        }
+
+        public void SendInput(Jebnix.Types.JObject value)
+        {
+            if (inputQueue.Count > 0)
+            {
+                Process p = inputQueue.Dequeue();
+                p.PushToDataStack(value);
+                processes.Enqueue(p);
+            }
         }
     }
 }

@@ -139,7 +139,8 @@ namespace KerboScriptEngine.Compiler
                     break;
 
                 case "delete":
-
+                    Delete();
+                    break;
 
                 case "rename":
 

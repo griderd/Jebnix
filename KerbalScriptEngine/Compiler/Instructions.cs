@@ -16,9 +16,13 @@ namespace KerboScriptEngine.Compiler
         /// </summary>
         pushl,
         /// <summary>
-        /// Pops the top value off the data stack and assigns it to the given variable.
+        /// Pops the top value off the data stack and assigns it to the given global variable.
         /// </summary>
         popv,
+        /// <summary>
+        /// Pops the top value off the data stack and assigns it to the given local variable.
+        /// </summary>
+        popl,
         /// <summary>
         /// Pops the top value off the data stack. Does not get assigned.
         /// </summary>
@@ -86,6 +90,10 @@ namespace KerboScriptEngine.Compiler
         /// <summary>
         /// Calls the given script.
         /// </summary>
-        scr
+        scr,
+        /// <summary>
+        /// Halt and wait for input.
+        /// </summary>
+        inp
     }
 }

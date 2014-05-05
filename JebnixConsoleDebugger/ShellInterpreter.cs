@@ -16,65 +16,91 @@ namespace JebnixConsoleDebugger
             if (parts.Length == 0)
                 return;
 
-            switch (parts[0])
+            try
             {
-                case "cls":
-                    if (parts.Length == 1)
-                        stdio.ClearScreen();
-                    else if ((parts[1] == "?") | (parts[1] == "-help"))
-                        ShowMan("cls");
-                    break;
+                switch (parts[0])
+                {
+                    case "cls":
+                        if (parts.Length == 1)
+                            stdio.ClearScreen();
+                        else if ((parts[1] == "?") | (parts[1] == "-help"))
+                            ShowMan("cls");
+                        break;
 
 
-                case "man":
-                    if (parts.Length == 1)
-                        ShowMan();
-                    else
-                        ShowMan(parts[1]);
-                    break;
-
-                case "run":
-                    if (parts.Length == 2)
-                    {
-                        if ((parts[1] == "?") | (parts[1] == "-help"))
-                            ShowMan("run");
+                    case "help":
+                    case "man":
+                        if (parts.Length == 1)
+                            ShowMan();
                         else
-                            interpreter.CreateProcess(parts[1] + ".txt");
-                    }
-                    else
-                    {
-                        stdio.PrintLine("Expected script name.");
-                    }
-                    break;
+                            ShowMan(parts[1]);
+                        break;
 
-                case "cd":
-                    if (parts.Length == 2)
-                    {
-                        
-                    }
-                    else
-                    {
-                        stdio.PrintLine("Expected directory name.");
-                    }
-                    break;
-
-                case "copy":
-                    if (parts.Length == 3)
-                    {
-                        SystemAPI.CopyTo(parts[1], parts[2]);
-                    }
-                    else if (parts.Length == 2)
-                    {
-                        if ((parts[1] == "?") | (parts[1] == "-help"))
-                            ShowMan("run");
+                    case "run":
+                        if (parts.Length == 2)
+                        {
+                            if ((parts[1] == "?") | (parts[1] == "-help"))
+                                ShowMan("run");
+                            else
+                                interpreter.CreateProcess(parts[1] + ".txt");
+                        }
                         else
-                            stdio.PrintLine("Expected destination.");
-                    }
-                    else
-                    {
-                        stdio.PrintLine("Expected source and destination.");
-                    }
-                    break;
+                        {
+                            stdio.PrintLine("Expected script name.");
+                        }
+                        break;
+
+                    case "cd":
+                        if (parts.Length == 2)
+                        {
+
+                        }
+                        else
+                        {
+                            stdio.PrintLine("Expected directory name.");
+                        }
+                        break;
+
+                    case "copy":
+                        if (parts.Length == 3)
+                        {
+                            SystemAPI.CopyTo(parts[1], parts[2]);
+                        }
+                        else if (parts.Length == 2)
+                        {
+                            if ((parts[1] == "?") | (parts[1] == "-help"))
+                                ShowMan("run");
+                            else
+                                stdio.PrintLine("Expected destination.");
+                        }
+                        else
+                        {
+                            stdio.PrintLine("Expected source and destination.");
+                        }
+                        break;
+
+                    case "del":
+                        if (parts.Length == 2)
+                        {
+                            if ((parts[1] == "?") | (parts[1] == "-help"))
+                                ShowMan("run");
+                            else
+                                SystemAPI.Delete(parts[1]);
+                        }
+                        else
+                        {
+                            stdio.PrintLine("Expected filename.");
+                        }
+                        break;
+
+                    default:
+                        stdio.PrintLine("Unknown command. Enter MAN for help.");
+                        break;
+                }
+            }
+            catch (KerboScriptEngine.KSRuntimeException ex)
+            {
+                stdio.PrintLine(ex.Message);
             }
         }
     }

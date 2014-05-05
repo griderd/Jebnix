@@ -11,6 +11,9 @@ namespace KerboScriptEngine
 {
     public class Process
     {
+        Processor processor;
+        Process parentProcess;
+
         string name;
         JObject[] memory;
         int programCounter;
@@ -47,9 +50,11 @@ namespace KerboScriptEngine
             }
         }
 
-        public Process(Script s)
+        public Process(Script s, Processor p, Process parent)
         {
             script = s;
+            processor = p;
+            parentProcess = parent;
             programCounter = 0;
             memory = s.Bytecode;
             name = s.Name;
@@ -57,6 +62,17 @@ namespace KerboScriptEngine
             dataStack = new Stack<JObject>();
             running = true;
             lockedVars = new List<int>();
+
+            if (parent != null)
+            {
+                
+            }
+        }
+
+        public Process(Script s, Processor p)
+            : this(s, p, null)
+        {
+            
         }
 
         public void RunCycle()
@@ -165,6 +181,9 @@ namespace KerboScriptEngine
 
                 case Instructions.call:
                     // TODO: Call function
+                    JString functionName = (JString)dataStack.Pop();
+                    JString namespc = (JString)dataStack.Pop();
+
                     break;
 
                 case Instructions.lok:
@@ -174,8 +193,16 @@ namespace KerboScriptEngine
                 case Instructions.ulok:
                     lockedVars.Remove(GetPointer().Value);
                     break;
+
+                case Instructions.inp:
+                    
                         
             }
+        }
+
+        internal void PushToDataStack(JObject value)
+        {
+            dataStack.Push(value);
         }
 
         /// <summary>

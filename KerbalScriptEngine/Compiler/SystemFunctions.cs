@@ -83,11 +83,28 @@ namespace KerboScriptEngine.Compiler
             Pushl(new JString(filename));
             Pushl(new JString(folder));
 
+            if (!ExpectToken("'.'"))
+                return;
+
             if (to)
                 Call(new Pseudopointer("system.copyto"));
             else
                 Call(new Pseudopointer("system.copyfrom"));
                 
+        }
+
+        public void Delete()
+        {
+            if (!ExpectToken("file name"))
+                return;
+
+            string filename = currentToken.Text;
+
+            if (!ExpectToken("'.'"))
+                return;
+
+            Pushl(new JString(filename));
+            Call(new Pseudopointer("system.delete"));
         }
     }
 }
