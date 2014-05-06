@@ -87,6 +87,7 @@
     <Compile Include="Types\JValue.cs" />
     <Compile Include="Types\Structures\Body.cs" />
     <Compile Include="Types\Structures\OrderedPair.cs" />
+    <Compile Include="Types\Structures\Orientation.cs" />
     <Compile Include="Types\Structures\Vector.cs" />
     <Compile Include="Types\ValueArray.cs" />
   </ItemGroup>
@@ -116,7 +117,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

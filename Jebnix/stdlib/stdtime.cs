@@ -32,9 +32,12 @@ namespace Jebnix.stdlib
         /// Gets the number of seconds that have elapsed since the beginning of the common epoch.
         /// </summary>
         /// <returns></returns>
-        public static double GetUniversalTime()
+        public static double Now
         {
-            return Planetarium.GetUniversalTime();
+            get
+            {
+                return Planetarium.GetUniversalTime();
+            }
         }
 
         /// <summary>
@@ -55,7 +58,7 @@ namespace Jebnix.stdlib
 
         public static int GetYearsElapsed()
         {
-            int seconds = Convert.ToInt32(Math.Round(GetUniversalTime()));
+            int seconds = Convert.ToInt32(Math.Round(Now()));
 
             return seconds / YEAR;
         }
@@ -67,7 +70,7 @@ namespace Jebnix.stdlib
 
         public static int GetDaysElapsed()
         {
-            int seconds = Convert.ToInt32(Math.Round(GetUniversalTime()));
+            int seconds = Convert.ToInt32(Math.Round(Now()));
 
             return seconds / DAY;
         }
@@ -79,7 +82,7 @@ namespace Jebnix.stdlib
 
         public static int GetHoursElapsed()
         {
-            int seconds = Convert.ToInt32(Math.Round(GetUniversalTime()));
+            int seconds = Convert.ToInt32(Math.Round(Now()));
 
             return seconds / HOUR;
         }
@@ -91,7 +94,7 @@ namespace Jebnix.stdlib
 
         public static int GetMinutesElapsed()
         {
-            int seconds = Convert.ToInt32(Math.Round(GetUniversalTime()));
+            int seconds = Convert.ToInt32(Math.Round(Now()));
 
             return seconds / MINUTE;
         }
@@ -108,7 +111,7 @@ namespace Jebnix.stdlib
                                 GetHoursElapsed() * HOUR +
                                 GetMinutesElapsed() * MINUTE;
 
-            return GetUniversalTime() - integralTime;
+            return Now() - integralTime;
         }
     }
 }
