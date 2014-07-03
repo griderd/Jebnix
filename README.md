@@ -17,7 +17,6 @@ environment and KSP.
 JebnixConsoleDebugger - Displays an interactive Jebnix console in your OS. Useful for basic testing. Uses the terminal.
 
 JebnixDebugger - Displays an interactive Jebnix console in your OS. Useful for basic testing. Uses WinForms. 
-THIS DOES NOT WORK RIGHT NOW
 
 JebnixRPM - A plugin for RasterPropMod to give interaction with Jebnix. THIS DOES NOT WORK RIGHT NOW
 
