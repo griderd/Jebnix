@@ -35,6 +35,14 @@ namespace Jebnix.Graphics
             }
         }
 
+        public static char[][] Cells
+        {
+            get
+            {
+                return TextMode.Cells;
+            }
+        }
+
         public static bool TextChanged
         {
             get
@@ -61,6 +69,22 @@ namespace Jebnix.Graphics
             get
             {
                 return TextMode.Row;
+            }
+        }
+
+        public static int TextWidth
+        {
+            get
+            {
+                return TextMode.Width;
+            }
+        }
+
+        public static int TextHeight
+        {
+            get
+            {
+                return TextMode.Height;
             }
         }
 

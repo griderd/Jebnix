@@ -49,29 +49,36 @@ namespace KerboScriptEngine
             globalHeap = new List<JObject>();
             globalSymbols = new List<string>();
 
-            if (vessel != null)
+            try
             {
-                AddToHeap("vesselname", new JString(vessel.vesselName));
-                AddToHeap("altitude", new JFloat(vessel.altitude));
-                // TODO: Add ALT structure
-                // TODO: Add BODY structure
-                AddToHeap("missiontime", new JFloat(vessel.missionTime));
-                AddToHeap("velocity", new Vector(FlightGlobals.ship_obtVelocity);
-                AddToHeap("verticalspeed", new JFloat(vessel.verticalSpeed));
-                AddToHeap("surfacespeed", new JFloat(vessel.horizontalSrfSpeed));
-                AddToHeap("latitude", new JFloat(vessel.latitude));     // TODO: fix latitude/longitude bug
-                AddToHeap("longitude", new JFloat(vessel.longitude));
-                // TODO: Add STATUS enum
-                // TODO: Add INLIGHT
-                // TODO: Add INCOMMRANGE
-                // TODO: Add COMMRANGE
-                AddToHeap("mass", new JFloat(vessel.GetTotalMass()));
-                // TODO: Add MAXTHRUST
-                // TODO: Add TIME structure
-                // TODO: Add PROGRADE vector
-                // TODO: Add RETROGRADE vector
-                // TODO: Add UP vector
-                
+                if (vessel != null)
+                {
+                    AddToHeap("vesselname", new JString(vessel.vesselName));
+                    AddToHeap("altitude", new JFloat(vessel.altitude));
+                    // TODO: Add ALT structure
+                    // TODO: Add BODY structure
+                    AddToHeap("missiontime", new JFloat(vessel.missionTime));
+                    AddToHeap("velocity", new Vector(FlightGlobals.ship_obtVelocity));
+                    AddToHeap("verticalspeed", new JFloat(vessel.verticalSpeed));
+                    AddToHeap("surfacespeed", new JFloat(vessel.horizontalSrfSpeed));
+                    AddToHeap("latitude", new JFloat(vessel.latitude));     // TODO: fix latitude/longitude bug
+                    AddToHeap("longitude", new JFloat(vessel.longitude));
+                    // TODO: Add STATUS enum
+                    // TODO: Add INLIGHT
+                    // TODO: Add INCOMMRANGE
+                    // TODO: Add COMMRANGE
+                    AddToHeap("mass", new JFloat(vessel.GetTotalMass()));
+                    // TODO: Add MAXTHRUST
+                    // TODO: Add TIME structure
+                    // TODO: Add PROGRADE vector
+                    // TODO: Add RETROGRADE vector
+                    // TODO: Add UP vector
+
+                }
+            }
+            catch (System.Security.SecurityException)
+            {
+                stdio.PrintLine("This instance is being run outside of KSP.");
             }
         }
 

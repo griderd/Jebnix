@@ -61,6 +61,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="frmVideoMemory.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmVideoMemory.Designer.cs">
+      <DependentUpon>frmVideoMemory.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -69,6 +75,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="frmVideoMemory.resx">
+      <DependentUpon>frmVideoMemory.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>
@@ -118,11 +127,15 @@
       <Project>{DACBE0FD-8F8C-40EC-8D6C-02AD3DAE2254}</Project>
       <Name>Jebnix</Name>
     </ProjectReference>
+    <ProjectReference Include="..\KerbalScriptEngine\KerboScriptEngine.csproj">
+      <Project>{45E8DD3D-0621-49D3-A09F-0203E8802105}</Project>
+      <Name>KerboScriptEngine</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

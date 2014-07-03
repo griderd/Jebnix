@@ -34,6 +34,7 @@
             this.characterMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.redrawToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clock = new System.Windows.Forms.Timer(this.components);
             this.mnuShowGrid.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -45,7 +46,7 @@
             this.resetToolStripMenuItem,
             this.redrawToolStripMenuItem});
             this.mnuShowGrid.Name = "mnuShowGrid";
-            this.mnuShowGrid.Size = new System.Drawing.Size(153, 114);
+            this.mnuShowGrid.Size = new System.Drawing.Size(153, 92);
             // 
             // showGridToolStripMenuItem
             // 
@@ -89,6 +90,7 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Shown += new System.EventHandler(this.Form1_Shown);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmMain_KeyDown);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Form1_KeyPress);
             this.mnuShowGrid.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -102,6 +104,7 @@
         private System.Windows.Forms.ToolStripMenuItem characterMapToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem redrawToolStripMenuItem;
+        private System.Windows.Forms.Timer clock;
     }
 }
 

@@ -22,6 +22,14 @@ namespace Jebnix.Graphics
         public int Height { get; private set; }
         public int Width { get; private set; }
 
+        public char[][] Cells
+        {
+            get
+            {
+                return cells;
+            }
+        }
+
         public int LastColumn
         {
             get
@@ -133,8 +141,11 @@ namespace Jebnix.Graphics
         {
             for (int y = 0; y < Height - 1; y++)
             {
-                cells[y] = cells[y + 1];
-                locked[y] = locked[y + 1];
+                for (int x = 0; x < Width; x++)
+                {
+                    cells[y][x] = cells[y + 1][x];
+                    locked[y][x] = locked[y + 1][x];
+                }
                 lastChar[y] = lastChar[y + 1];
             }
             Row--;

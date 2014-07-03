@@ -33,18 +33,17 @@ namespace JebnixConsoleDebugger
 
             Console.Title = "Jebnix Debug Console";
             Console.ForegroundColor = ConsoleColor.Green;
+            Graphics.Mode = Graphics.GraphicsMode.Text;
+            Console.SetWindowSize(40, 21);
 
             clock = new System.Timers.Timer(1000 / clockFreq);
             interpreter = new KerboScriptEngine.Processor(new System.IO.DirectoryInfo("Archive"));
-            Graphics.Mode = Graphics.GraphicsMode.Text;
             clock.Elapsed += new System.Timers.ElapsedEventHandler(clock_Elapsed);
             stdio.PrintLine("Welcome to Jebnix");
             stdio.PrintLine(interpreter.GetInterpreterVersion());
             stdio.PrintLine(stdio.GetJebnixVersion());
             stdio.PrintLine();
             //consoleProc = interpreter.CreateProcess(new string[0], "Console");
-
-            Console.SetWindowSize(40, 21);
 
             stdint.OnKeyPress += new EventHandler<InterruptEventArgs<KeyData>>(stdint_OnKeyPress);
             input = new StringBuilder();
@@ -111,8 +110,6 @@ namespace JebnixConsoleDebugger
                 {
                     ConsoleKeyInfo key = Console.ReadKey(true);
                     RaiseOnKeyPress(key);
-                    
-                    
                 }
 
                 //Debug.Print("Waiting for user input.");
@@ -142,13 +139,16 @@ namespace JebnixConsoleDebugger
             //if (!interpreter.Busy)
             interpreter.ExecuteProcess();
 
-            if (Graphics.TextChanged)
-            {
-                Console.Clear();
-                Console.Write(Graphics.Text);
-                Console.SetCursorPosition(Graphics.TextColumn, Graphics.TextRow);
-                Graphics.ClearTextChangedFlag();
-            }
+            //if (Graphics.TextChanged)
+            //{
+            //    Console.Clear();
+            //    Console.Write(Graphics.Text);
+            //    Console.SetCursorPosition(Graphics.TextColumn, Graphics.TextRow);
+            //    Graphics.ClearTextChangedFlag();
+            //}
+            Console.Clear();
+            Console.Write(Graphics.Text);
+            Console.SetCursorPosition(Graphics.TextColumn, Graphics.TextRow);
 
         }
     }

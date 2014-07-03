@@ -90,7 +90,7 @@ namespace KerboScriptEngine
 
             switch (inst.Value)
             {
-                case Instructions.push:
+                case Instructions.pushg:
                     ptr = GetPointer();
                     dataStack.Push(Dereference(ptr));
                     break;
@@ -194,7 +194,7 @@ namespace KerboScriptEngine
                     lockedVars.Remove(GetPointer().Value);
                     break;
 
-                case Instructions.inp:
+                //case Instructions.inp:
                     
                         
             }

@@ -13,17 +13,36 @@ namespace Jebnix.stdlib
     /// </summary>
     public class stdio
     {
+        /// <summary>
+        /// Represents a TLI screen
+        /// </summary>
         static Jebnix.Graphics.TextMemory screen = Jebnix.Graphics.Graphics.TextMode;
 
+        /// <summary>
+        /// Number of spaces in a horizontal tab
+        /// </summary>
         static int tabLength = 5;
-        public static int TabLength { get; private set; }
 
-        public static void SetTabLength(int length)
+        /// <summary>
+        /// Gets or sets the number of spaces in a horizontal tab.
+        /// </summary>
+        public static int TabLength
         {
-            if (length > 0)
-                tabLength = length;
+            get
+            {
+                return tabLength;
+            }
+            set
+            {
+                if (value > 0)
+                    tabLength = value;
+            }
         }
 
+        /// <summary>
+        /// Prints the string to the screen.
+        /// </summary>
+        /// <param name="s">String to print</param>
         public static void Print(string s)
         {
             Debug.Print("stdio.Print(\"" + s + "\");");
@@ -34,7 +53,7 @@ namespace Jebnix.stdlib
         }
 
         /// <summary>
-        /// Processes the character and updates the screen appropriately. 
+        /// Processes the character and updates the screen appropriately.
         /// If the character is a printable character, prints it to the screen.
         /// </summary>
         /// <param name="c">Character to process</param>
@@ -95,16 +114,28 @@ namespace Jebnix.stdlib
                     break;
 
                 default:
-                    Print(c, userEntered);
+                    if ((c >= ' ') & (c <= '~'))
+                        Print(c, userEntered);
                     break;
             }
         }
 
+        /// <summary>
+        /// Prints the given string to the screen.
+        /// </summary>
+        /// <param name="s">String to print.</param>
+        /// <param name="userEntered">Determines if the string was entered by the user. False by default.</param>
         public static void Print(JString s, bool userEntered = false)
         {
             //Print(s, !userEntered);
+            Print(s.ToString(), userEntered);
         }
 
+        /// <summary>
+        /// Prints the given character to the screen.
+        /// </summary>
+        /// <param name="c">Character to print.</param>
+        /// <param name="userEntered"></param>
         public static void Print(char c, bool userEntered = false)
         {
             screen.Put(c, !userEntered);

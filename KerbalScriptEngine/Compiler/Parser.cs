@@ -284,7 +284,7 @@ namespace KerboScriptEngine.Compiler
                     }
                     else if (ContainsVariable(t.Text))
                     {
-                        Push(new Pseudopointer(t.Text), segment);
+                        Pushg(new Pseudopointer(t.Text), segment);
                     }
                 });
 

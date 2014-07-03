@@ -8,9 +8,9 @@ namespace KerboScriptEngine.Compiler
 {
     partial class Parser
     {
-        private void Push(Pseudopointer variable, Segment segment = Segment.Code)
+        private void Pushg(Pseudopointer variable, Segment segment = Segment.Code)
         {
-            AddTo(Segment.Code, Instructions.push);
+            AddTo(Segment.Code, Instructions.pushg);
             // TODO: Check that variable exists in scope
             AddTo(Segment.Code, variable);
         }

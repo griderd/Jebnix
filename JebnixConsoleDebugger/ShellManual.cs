@@ -15,13 +15,13 @@ namespace JebnixConsoleDebugger
             stdio.PrintLine();
             stdio.PrintLine("RUN - Compiles and executes a script.");
             stdio.PrintLine("CD - Changes directories.");
-            stdio.PrintLine("COPY - Copies a file between directories");
+            stdio.Print("COPY - Copies a file between directories");
             stdio.PrintLine("DEL - Deletes a file.");
             stdio.PrintLine("EDIT - Starts the editor.");
             stdio.PrintLine("DEBUG - Starts the debugger.");
             stdio.PrintLine("CLS - Clears the screen.");
             stdio.PrintLine();
-            stdio.PrintLine("You can get more information by entering");
+            stdio.Print("You can get more information by entering");
             stdio.PrintLine("the name of the command followed by a");
             stdio.PrintLine("question mark, or MAN followed by the");
             stdio.PrintLine("command.");

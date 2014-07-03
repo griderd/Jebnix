@@ -52,7 +52,7 @@ namespace KerboScriptEngine
 
         public Process ToProcess(Processor p, Process parent)
         {
-
+            return new Process(this, p, parent);
         }
     }
 }

@@ -58,7 +58,7 @@ namespace Jebnix.stdlib
 
         public static int GetYearsElapsed()
         {
-            int seconds = Convert.ToInt32(Math.Round(Now()));
+            int seconds = Convert.ToInt32(Math.Round(Now));
 
             return seconds / YEAR;
         }
@@ -70,7 +70,7 @@ namespace Jebnix.stdlib
 
         public static int GetDaysElapsed()
         {
-            int seconds = Convert.ToInt32(Math.Round(Now()));
+            int seconds = Convert.ToInt32(Math.Round(Now));
 
             return seconds / DAY;
         }
@@ -82,7 +82,7 @@ namespace Jebnix.stdlib
 
         public static int GetHoursElapsed()
         {
-            int seconds = Convert.ToInt32(Math.Round(Now()));
+            int seconds = Convert.ToInt32(Math.Round(Now));
 
             return seconds / HOUR;
         }
@@ -94,7 +94,7 @@ namespace Jebnix.stdlib
 
         public static int GetMinutesElapsed()
         {
-            int seconds = Convert.ToInt32(Math.Round(Now()));
+            int seconds = Convert.ToInt32(Math.Round(Now));
 
             return seconds / MINUTE;
         }
@@ -111,7 +111,7 @@ namespace Jebnix.stdlib
                                 GetHoursElapsed() * HOUR +
                                 GetMinutesElapsed() * MINUTE;
 
-            return Now() - integralTime;
+            return Now - integralTime;
         }
     }
 }

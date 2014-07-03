@@ -7,6 +7,17 @@ namespace Jebnix.Types
 {
     public class JValue : JObject<object>
     {
+        public new const string TYPENAME = "Value";
+
+        public JValue(object value)
+            : base(value, value == null, TYPENAME)
+        {
+        }
+
+        public JValue()
+            : this(null)
+        {
+        }
 
         public override object Value
         {
