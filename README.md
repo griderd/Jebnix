@@ -6,7 +6,7 @@ kOS Alternative for KSP
 **NOTE:** This is a work in progress, and the code is not complete. If you try running it, it probably won't work.
 
 Compilation instructions:
-At the moment, Jebnix compiles, but the only running system is the Jebnix Console Debugger. If you wish to run tests,
+At the moment, Jebnix compiles, but the only running system is the Jebnix Console Debugger and Jebnix Debugger (WinForms). If you wish to run tests,
 do so there. Keep in mind that Jebnix IS NOT feature-complete, and many language features have not been written or
 are only partially complete. You can expect that many are still buggy.
 
