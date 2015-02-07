@@ -24,6 +24,8 @@ namespace KerboScriptEngine
         Stack<int> callStack;
         Stack<JObject> dataStack;
 
+        List<JObject> heap;
+
         bool running;
 
         public bool Running
@@ -78,6 +80,7 @@ namespace KerboScriptEngine
             dataStack = new Stack<JObject>();
             running = true;
             lockedVars = new List<int>();
+            heap = new List<JObject>();
 
             if (parent != null)
             {
@@ -270,6 +273,7 @@ namespace KerboScriptEngine
                         dataStack.Push(JObject.RaiseToPower(a, b));
                     }
                     break;
+
                 case Instructions.jmp:
                     ptr = GetPointer();
                     Jump(ptr);
@@ -311,6 +315,10 @@ namespace KerboScriptEngine
 
                 case Instructions.ulok:
                     lockedVars.Remove(GetPointer().Value);
+                    break;
+
+                case Instructions.set:
+                    processor.globalHeap.Add(dataStack.Pop());
                     break;
 
                 //case Instructions.inp:

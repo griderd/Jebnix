@@ -146,6 +146,14 @@ namespace KerboScriptEngine.Compiler
         /// <summary>
         /// Halt and wait for input.
         /// </summary>
-        inp
+        inp,
+        /// <summary>
+        /// Allocates a variable in the heap and sets a value to it.
+        /// </summary>
+        set,
+        /// <summary>
+        /// Deallocates a variable
+        /// </summary>
+        uset
     }
 }

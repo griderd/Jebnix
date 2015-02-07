@@ -47,6 +47,11 @@ namespace KerboScriptEngine.Compiler
             AddTo(segment, Instructions.ret);
         }
 
+        private void Set(Segment segment = Segment.Code)
+        {
+            AddTo(segment, Instructions.set);
+        }
+
         private void Lok(Pseudopointer pointer, Segment segment = Segment.Code)
         {
             if (lockLabels.ContainsKey(pointer.Value))
