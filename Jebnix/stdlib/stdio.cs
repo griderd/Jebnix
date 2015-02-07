@@ -161,6 +161,11 @@ namespace Jebnix.stdlib
             screen.NewLine();
         }
 
+        public static void PrintLn(JString s)
+        {
+            PrintLine(s.Value, true);
+        }
+
         public static void PrintAt(string s, int column, int row, bool userEntered = false)
         {
             int c = screen.Column;

@@ -78,7 +78,7 @@ namespace KerboScriptEngine
             }
             catch (System.Security.SecurityException)
             {
-                stdio.PrintLine("This instance is being run outside of KSP.");
+                stdio.PrintLine("Instance running outside of KSP.");
             }
         }
 
@@ -143,7 +143,9 @@ namespace KerboScriptEngine
             {
                 CurrentProcess = processes.Dequeue();
                 CurrentProcess.RunCycle();
-                if (!inputQueue.Contains(CurrentProcess))
+                //if (!inputQueue.Contains(CurrentProcess))
+                //    processes.Enqueue(CurrentProcess);
+                if (CurrentProcess.Running)
                     processes.Enqueue(CurrentProcess);
             }
         }

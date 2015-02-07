@@ -61,6 +61,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="frmStack.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmStack.Designer.cs">
+      <DependentUpon>frmStack.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmVideoMemory.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -75,6 +81,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="frmStack.resx">
+      <DependentUpon>frmStack.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmVideoMemory.resx">
       <DependentUpon>frmVideoMemory.cs</DependentUpon>
     </EmbeddedResource>
@@ -135,7 +144,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

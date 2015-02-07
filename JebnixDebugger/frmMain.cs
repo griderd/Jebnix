@@ -21,6 +21,7 @@ namespace kOSDebugger
         Processor interpreter;
 
         frmVideoMemory vmem;
+        frmStack dataStack;
 
         const int CellHeight = 14;
         const int CellWidth = 10;
@@ -69,6 +70,7 @@ namespace kOSDebugger
             input = new StringBuilder();
             clock.Enabled = true;
             vmem = new frmVideoMemory();
+            dataStack = new frmStack();
         }
 
         void clock_Tick(object sender, EventArgs e)
@@ -78,6 +80,7 @@ namespace kOSDebugger
             if (Jebnix.Graphics.Graphics.TextChanged)
             {
                 vmem.RefreshText();
+                dataStack.RefreshStack(interpreter);
                 for (int y = 0; y < HEIGHT; y++)
                 {
                     for (int x = 0; x < WIDTH; x++)
@@ -112,6 +115,7 @@ namespace kOSDebugger
         private void Form1_Shown(object sender, EventArgs e)
         {
             vmem.Show();
+            dataStack.Show();
 
             // Print welcome message
             stdio.PrintLine("Welcome to Jebnix");
@@ -159,22 +163,14 @@ namespace kOSDebugger
 
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
         {
-            //char c;
+            bool alt = (Control.ModifierKeys & Keys.Alt) == Keys.Alt;
+            bool shift = (Control.ModifierKeys & Keys.Shift) == Keys.Shift;
+            bool ctrl = (Control.ModifierKeys & Keys.Control) == Keys.Control;
+            bool capsLock = (Control.IsKeyLocked(Keys.CapsLock));
+            char c = e.KeyChar;
 
-            //switch (e.KeyChar)
-            //{
-            //    case ((char)Keys.Return):
-            //        c = '\n'; break;
-                    
-            //    case ((char)Keys.Back):
-            //        c = '\b'; break;
-
-            //    default:
-            //        c = e.KeyChar; break;
-            //}
-            
-            //stdio.Print(c);
-            ////stdio.Input(c);
+            KeyData data = new KeyData(alt, ctrl, shift, capsLock, c);
+            stdint.RaiseOnKeyPress(this, data);
         }
 
         private void showGridToolStripMenuItem_Click(object sender, EventArgs e)
@@ -220,17 +216,18 @@ namespace kOSDebugger
             if (shift ^ capsLock)
                 c = char.ToUpper(c);
 
-            KeyData data = new KeyData(alt, ctrl, shift, capsLock, e.KeyCode, c);
-            stdint.RaiseOnKeyPress(this, data);
+            KeyData data = new KeyData(alt, ctrl, shift, capsLock, c);
+            //stdint.RaiseOnKeyPress(this, data);
         }
 
         void stdint_OnKeyPress(object sender, InterruptEventArgs<KeyData> e)
         {
             if (!e.Data.IsFormsKey) return;
 
-            switch (e.Data.KeyCode)
+            switch (e.Data.Character)
             {
-                case Keys.Enter:
+                case '\r':
+                case '\n':
                     stdio.ProcessChar('\n');
                     if (Mode == ConsoleMode.Intermediate)
                     {
@@ -240,13 +237,13 @@ namespace kOSDebugger
                     }
                     break;
 
-                case Keys.Back:
+                case '\b':
                     stdio.ProcessChar('\b');
                     if (input.Length > 0)
                         input.Remove(input.Length - 1, 1);
                     break;
 
-                case Keys.Tab:
+                case '\t':
                     stdio.ProcessChar('\t');
                     input.Append('\t');
                     break;

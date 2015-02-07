@@ -6,13 +6,12 @@ using UnityEngine;
 
 namespace Jebnix.Drivers
 {
-    public class KSPKeyboardDriver : IKeyboardDriver 
+    public class KSPKeyboardDriver : IKeyboardDriver<KeyCode>
     {
-        public void ProcessKeyboard()
+
+        public char ProcessKeyboard(KeyCode keycode, bool alt, bool ctrl, bool shift, bool capsLock)
         {
-            
+            throw new NotImplementedException();
         }
-        
-        
     }
 }

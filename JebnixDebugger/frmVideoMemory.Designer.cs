@@ -41,7 +41,6 @@
             this.txtMemory.Name = "txtMemory";
             this.txtMemory.Size = new System.Drawing.Size(392, 428);
             this.txtMemory.TabIndex = 0;
-            this.txtMemory.Text = "This isntance is being run outside of KSP.";
             // 
             // txtHexView
             // 

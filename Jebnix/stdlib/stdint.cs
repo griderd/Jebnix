@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
 namespace Jebnix.stdlib
 {
@@ -100,15 +101,13 @@ namespace Jebnix.stdlib
 
     public struct KeyData
     {
-        public KeyData(bool alt, bool ctrl, bool shift, bool capsLock, System.Windows.Forms.Keys keyCode, char c)
+        public KeyData(bool alt, bool ctrl, bool shift, bool capsLock, char c)
             : this()
         {
             Alt = alt;
             Ctrl = ctrl;
             Shift = shift;
             CapsLock = capsLock;
-            KeyCode = keyCode;
-            ConsKey = 0;
             IsFormsKey = true;
             Character = c;
         }
@@ -120,8 +119,6 @@ namespace Jebnix.stdlib
             Ctrl = ctrl;
             Shift = shift;
             CapsLock = capsLock;
-            ConsKey = keyCode;
-            KeyCode = 0;
             IsFormsKey = false;
             Character = c;
         }
@@ -131,8 +128,6 @@ namespace Jebnix.stdlib
         public bool Shift { get; private set; }
         public bool CapsLock { get; private set; }
         public bool IsFormsKey { get; private set; }
-        public System.Windows.Forms.Keys KeyCode { get; private set; }
-        public System.ConsoleKey ConsKey { get; private set; }
         public char Character { get; private set; }
     }
 }

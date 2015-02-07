@@ -76,6 +76,30 @@ namespace KerboScriptEngine.Compiler
         /// </summary>
         pow,
         /// <summary>
+        /// Pops the top two values off the stack, determines if they are equal, and pushes the result.
+        /// </summary>
+        eq,
+        /// <summary>
+        /// Pops the top two values off the stack, determines if they are inequal, and pushes the result.
+        /// </summary>
+        neq,
+        /// <summary>
+        /// Pops the top two values off the stack, determines if the second is greater than the first, and pushes the result.
+        /// </summary>
+        gt,
+        /// <summary>
+        /// Pops the top two values off the stack, determines if the second is less than the first, and pushes the result.
+        /// </summary>
+        lt,
+        /// <summary>
+        /// Pops the top two values off the stack, determines if the second is greater than or equal to the first, and pushes the result.
+        /// </summary>
+        gte,
+        /// <summary>
+        /// Pops the top two values off the stack, determines if the second is less than or equal to the first, and pushes the result.
+        /// </summary>
+        lte,
+        /// <summary>
         /// Unconditional jump. Jumps to the given location, leaving a return location in the call stack.
         /// </summary>
         jmp,

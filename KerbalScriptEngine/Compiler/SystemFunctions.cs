@@ -9,13 +9,27 @@ namespace KerboScriptEngine.Compiler
 {
     partial class Parser
     {
+        /// <summary>
+        /// Determines if there is a token. If there is no token, an error is reported to the ErrorBuilder with the provided string.
+        /// </summary>
+        /// <param name="expected"></param>
+        /// <returns></returns>
+        //private bool ExpectToken(string expected)
+        //{
+        //    Token t = currentToken;
+        //    GetToken();
+        //    if (!HasToken())
+        //    {
+        //        ErrorBuilder.BuildError(t, "Expected " + expected, ref errors);
+        //        return false;
+        //    }
+        //    return true;
+        //}
         private bool ExpectToken(string expected)
         {
-            Token t = currentToken;
-            GetToken();
-            if (!HasToken())
+            if (currentTokenIndex + 1 == tokens.Count)
             {
-                ErrorBuilder.BuildError(t, "Expected " + expected, ref errors);
+                ErrorBuilder.BuildError(currentToken, "Expected " + expected, ref errors);
                 return false;
             }
             return true;
@@ -30,6 +44,15 @@ namespace KerboScriptEngine.Compiler
             {
                 Call(new Pseudopointer(Functions.GenerateUniqueName("stdio", "clearscreen", 0)));
             }
+        }
+
+        private void Print()
+        {
+            if (!ExpectToken("string."))
+                return;
+
+            ParseExpression(Segment.Code, ".");
+            Call(new Pseudopointer(Functions.GenerateUniqueName("stdio", "println", 1)));
         }
 
         private void Run()

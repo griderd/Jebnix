@@ -86,92 +86,100 @@ namespace KerboScriptEngine.Compiler
         private void Parse()
         {
             GetToken();
-            if (!HasToken())
-                return;
-
-            switch (currentToken.Text)
+            while (HasToken())
             {
-                case "clearscreen":
-                    Clearscreen();
-                    break;
+                switch (currentToken.Text)
+                {
+                    case "clearscreen":
+                        Clearscreen();
+                        break;
 
-                case "set":
-                    SetLock();
-                    break;
+                    case "set":
+                        SetLock();
+                        break;
 
-                case "lock":
-                    SetLock(false);
-                    break;
+                    case "lock":
+                        SetLock(false);
+                        break;
 
-                case "unlock":
-                    Unlock();
-                    break;
-                    
-                case "if":
-                    IfBlock();
-                    break;
+                    case "unlock":
+                        Unlock();
+                        break;
 
-                case "else":
-                    blockStack.Push(Blocks.Else);
-                    break;
+                    case "if":
+                        IfBlock();
+                        break;
 
-                case "do":
-                    DoWhileBlock();
-                    break;
+                    case "else":
+                        blockStack.Push(Blocks.Else);
+                        break;
 
-                case "until":
-                    if ((blockStack.Count > 0) && (blockStack.Peek() == Blocks.DoWhile))
-                        EndDoWhileBlock();
-                    else
-                        UntilBlock();
-                    break;
+                    case "do":
+                        DoWhileBlock();
+                        break;
 
-                case "break":
-                    Break();
-                    break;
+                    case "until":
+                        if ((blockStack.Count > 0) && (blockStack.Peek() == Blocks.DoWhile))
+                            EndDoWhileBlock();
+                        else
+                            UntilBlock();
+                        break;
 
-                case "run":
-                    Run();
-                    break;
+                    case "break":
+                        Break();
+                        break;
 
-                case "copy":
-                    Copy();
-                    break;
+                    case "run":
+                        Run();
+                        break;
 
-                case "delete":
-                    Delete();
-                    break;
+                    case "copy":
+                        Copy();
+                        break;
 
-                case "rename":
+                    case "delete":
+                        Delete();
+                        break;
 
-                case "switch":
+                    case "rename":
+                        break;
 
-                case "}":
-                    if (blockStack.Count == 0)
-                        ErrorBuilder.BuildError(currentToken, "'}' without '{'.", ref errors);
-                    else
-                    {
-                        Blocks b = blockStack.Pop();
-                        if (b == Blocks.Else)
+                    case "switch":
+                        break;
+
+                    case "print":
+                        Print();
+                        break;
+
+                    case "}":
+                        if (blockStack.Count == 0)
+                            ErrorBuilder.BuildError(currentToken, "'}' without '{'.", ref errors);
+                        else
                         {
-                            blockStack.Pop();
-                            Ret();
+                            Blocks b = blockStack.Pop();
+                            if (b == Blocks.Else)
+                            {
+                                blockStack.Pop();
+                                Ret();
+                            }
+                            else if (b == Blocks.If)
+                            {
+                                Ret();
+                                ElseBlock();
+                            }
+                            else if (b == Blocks.DoWhile)
+                            {
+                                blockStack.Push(b);
+                            }
                         }
-                        else if (b == Blocks.If)
-                        {
-                            Ret();
-                            ElseBlock();
-                        }
-                        else if (b == Blocks.DoWhile)
-                        {
-                            blockStack.Push(b);
-                        }
-                    }
-                    break;
+                        break;
 
-                case "{":
-                    blockStack.Push(Blocks.General);
-                    break;
+                    case "{":
+                        blockStack.Push(Blocks.General);
+                        break;
+                }
+
+                GetToken();
             }
         }
 
@@ -187,8 +195,12 @@ namespace KerboScriptEngine.Compiler
 
         private Token GetToken()
         {
-            currentToken = tokens[currentTokenIndex];
-            return tokens[currentTokenIndex++];
+            if (currentTokenIndex < tokens.Count)
+            {
+                currentToken = tokens[currentTokenIndex];
+                return tokens[currentTokenIndex++];
+            }
+            return new Token();
         }
 
         private bool IsFloat()
@@ -298,8 +310,16 @@ namespace KerboScriptEngine.Compiler
                     if (t == token.Text)
                     {
                         // Check that there aren't values on the stack. If there are, the expression is invalid.
-                        if (s.Count > 0)
-                            ErrorBuilder.BuildError(token, "Invalid expression.", ref errors);
+                        while (s.Count > 0)
+                        {
+                            if (s.Peek().Text == "(")
+                            {
+                                ErrorBuilder.BuildError(token, "Parentheses mismatch. '(' without ')'.", ref errors);
+                                return;
+                            }
+
+                            AddTo(Segment.Code, (new Operator(s.Pop().Text)).OperatorInstruction);
+                        }
 
                         // Then exit the function
                         return;
@@ -309,6 +329,7 @@ namespace KerboScriptEngine.Compiler
                 if (CanPush())
                 {
                     PushToken(currentToken);
+                    //output.Enqueue(currentToken);
                 }
                 else if (token.Text == ",")
                 {
@@ -343,6 +364,20 @@ namespace KerboScriptEngine.Compiler
                 }
                 else
                 {
+                    //s.Push(token);
+
+                    Operator op1 = new Operator(token.Text);
+                    while (s.Count > 0)
+                    {
+                        Operator op2 = new Operator(s.Peek().Text);
+
+                        if (((op1.Associativity == OperatorAssociativity.LeftAssociative) & (op1.Presidence <= op2.Presidence)) |
+                            ((op1.Associativity == OperatorAssociativity.RightAssociative) & (op1.Presidence < op2.Presidence)))
+                        {
+                            AddTo(Segment.Code, op2.OperatorInstruction);
+                            s.Pop();
+                        }
+                    }
                     s.Push(token);
                 }
             }
@@ -355,7 +390,9 @@ namespace KerboScriptEngine.Compiler
                     return;
                 }
 
-                PushToken(s.Pop());
+                //DoOperator(s.Pop());
+                //AddTo(Segment.Code, (new Operator(s.Pop().Text)).OperatorInstruction);
+                ErrorBuilder.BuildError(token, "Invalid expression.", ref errors);
             }
         }
     }

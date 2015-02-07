@@ -66,6 +66,7 @@
     <Compile Include="Compiler\Instruction.cs" />
     <Compile Include="Compiler\Instructions.cs" />
     <Compile Include="Compiler\LanguageTree.cs" />
+    <Compile Include="Compiler\Operator.cs" />
     <Compile Include="Compiler\ParseInstructions.cs" />
     <Compile Include="Compiler\Parser.cs" />
     <Compile Include="Compiler\ParserOutput.cs" />
@@ -118,7 +119,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

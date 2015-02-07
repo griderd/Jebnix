@@ -58,9 +58,10 @@ namespace JebnixConsoleDebugger
         {
             if (e.Data.IsFormsKey) return;
 
-            switch (e.Data.ConsKey)
+            switch (e.Data.Character)
             {
-                case ConsoleKey.Enter:
+                case '\r':
+                case '\n':
                     stdio.ProcessChar('\n');
                     if (Mode == ConsoleMode.Intermediate)
                     {
@@ -70,13 +71,13 @@ namespace JebnixConsoleDebugger
                     }
                     break;
 
-                case ConsoleKey.Backspace:
+                case '\b':
                     stdio.ProcessChar('\b');
                     if (input.Length > 0)
                         input.Remove(input.Length - 1, 1);
                     break;
 
-                case ConsoleKey.Tab:
+                case '\t':
                     stdio.ProcessChar('\t');
                     input.Append('\t');
                     break;

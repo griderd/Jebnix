@@ -26,6 +26,14 @@ namespace KerboScriptEngine
 
         bool running;
 
+        public bool Running
+        {
+            get
+            {
+                return running;
+            }
+        }
+
         public Script SourceScript
         {
             get
@@ -47,6 +55,14 @@ namespace KerboScriptEngine
             get
             {
                 return callStack;
+            }
+        }
+
+        public JObject[] DataStack
+        {
+            get
+            {
+                return dataStack.ToArray();
             }
         }
 
@@ -77,12 +93,13 @@ namespace KerboScriptEngine
 
         public void RunCycle()
         {
-            if (!running)
-                return;
-
             Instruction inst;
             Pointer ptr;
             JObject value = GetValue();
+
+            if (!running)
+                return;
+
             if (value.ObjectType != Instruction.TYPENAME)
                 throw new Exception("Expected instruction.");
 
@@ -149,6 +166,110 @@ namespace KerboScriptEngine
                     }
                     break;
 
+                case Instructions.and:
+                    {
+                        JObject a, b;
+                        b = dataStack.Pop();
+                        a = dataStack.Pop();
+                        dataStack.Push(a & b);
+                    }
+                    break;
+
+                case Instructions.or:
+                    {
+                        JObject a, b;
+                        b = dataStack.Pop();
+                        a = dataStack.Pop();
+                        dataStack.Push(a | b);
+                    }
+                    break;
+
+                case Instructions.not:
+                    {
+                        JObject a;
+                        a = dataStack.Pop();
+                        dataStack.Push(!a);
+                    }
+                    break;
+
+                case Instructions.pos:
+                    {
+                        JObject a;
+                        a = dataStack.Pop();
+                        dataStack.Push(+a);
+                    }
+                    break;
+
+                case Instructions.neg:
+                    {
+                        JObject a;
+                        a = dataStack.Pop();
+                        dataStack.Push(-a);
+                    }
+                    break;
+
+                case Instructions.eq:
+                    {
+                        JObject a, b;
+                        b = dataStack.Pop();
+                        a = dataStack.Pop();
+                        dataStack.Push(new JBoolean(a == b));
+                    }
+                    break;
+
+                case Instructions.neq:
+                    {
+                        JObject a, b;
+                        b = dataStack.Pop();
+                        a = dataStack.Pop();
+                        dataStack.Push(new JBoolean(a != b));
+                    }
+                    break;
+
+                case Instructions.gt:
+                    {
+                        JObject a, b;
+                        b = dataStack.Pop();
+                        a = dataStack.Pop();
+                        dataStack.Push(a > b);
+                    }
+                    break;
+                    
+                case Instructions.gte:
+                    {
+                        JObject a, b;
+                        b = dataStack.Pop();
+                        a = dataStack.Pop();
+                        dataStack.Push(a >= b);
+                    }
+                    break;
+
+                case Instructions.lt:
+                    {
+                        JObject a, b;
+                        b = dataStack.Pop();
+                        a = dataStack.Pop();
+                        dataStack.Push(a < b);
+                    }
+                    break;
+
+                case Instructions.lte:
+                    {
+                        JObject a, b;
+                        b = dataStack.Pop();
+                        a = dataStack.Pop();
+                        dataStack.Push(a <= b);
+                    }
+                    break;
+
+                case Instructions.pow:
+                    {
+                        JObject a, b;
+                        b = dataStack.Pop();
+                        a = dataStack.Pop();
+                        dataStack.Push(JObject.RaiseToPower(a, b));
+                    }
+                    break;
                 case Instructions.jmp:
                     ptr = GetPointer();
                     Jump(ptr);
@@ -181,9 +302,7 @@ namespace KerboScriptEngine
 
                 case Instructions.call:
                     // TODO: Call function
-                    JString functionName = (JString)dataStack.Pop();
-                    JString namespc = (JString)dataStack.Pop();
-
+                    Call();
                     break;
 
                 case Instructions.lok:
@@ -211,6 +330,11 @@ namespace KerboScriptEngine
         /// <returns></returns>
         private JObject GetValue()
         {
+            if (programCounter == memory.Length)
+            {
+                running = false;
+                return new JInteger(0);
+            }
             return memory[programCounter++];
         }
 
@@ -251,6 +375,42 @@ namespace KerboScriptEngine
         private void Jump(Pointer location)
         {
             Jump(location.Value);
+        }
+
+        private void Call()
+        {
+            Pseudopointer ptr = (Pseudopointer)GetValue();
+            
+            // Get parameter count
+            string[] ptrParts = ptr.Value.Split('_');
+            int paramCount = int.Parse(ptrParts.Last());
+
+            JObject[] parameters = new JObject[paramCount];
+            for (int i = paramCount - 1; i >= 0; i--)
+            {
+                parameters[i] = dataStack.Pop();
+            }
+
+            object returnVal = null;
+            JObject returnValue;
+            bool success;
+            try
+            {                
+                success = Functions.InvokeFunction(ptrParts[0], ptrParts[1], out returnVal, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Function \"" + ptr.Value + "\" threw an exception. See InnerException for details.", ex);
+            }
+
+            if (!success)
+                throw new Exception("The function \"" + ptr.Value + "\" does not exist.");
+
+            if (returnVal != null)
+            {
+                returnValue = (JObject)returnVal;
+                PushToDataStack(returnValue);
+            }
         }
 
         private void Ret()

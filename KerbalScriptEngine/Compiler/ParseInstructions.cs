@@ -101,6 +101,91 @@ namespace KerboScriptEngine.Compiler
             AddTo(segment, pointer);
         }
 
+        private void Add(Segment segment = Segment.Code)
+        {
+            AddTo(segment, Instructions.add);
+        }
+
+        private void Subtract(Segment segment = Segment.Code)
+        {
+            AddTo(Segment.Code, Instructions.sub);
+        }
+
+        private void Multiply(Segment segment = Segment.Code)
+        {
+            AddTo(Segment.Code, Instructions.mult);
+        }
+
+        private void Divide(Segment segment = Segment.Code)
+        {
+            AddTo(Segment.Code, Instructions.div);
+        }
+
+        private void Mod(Segment segment = Segment.Code)
+        {
+            AddTo(Segment.Code, Instructions.mod);
+        }
+
+        private void And(Segment segment = Segment.Code)
+        {
+            AddTo(Segment.Code, Instructions.and);
+        }
+
+        private void Or(Segment segment = Segment.Code)
+        {
+            AddTo(segment, Instructions.or);
+        }
+
+        private void Not(Segment segment = Segment.Code)
+        {
+            AddTo(segment, Instructions.not);
+        }
+
+        private void Equality(Segment segment = Segment.Code)
+        {
+            AddTo(segment, Instructions.eq);
+        }
+
+        private void Inequality(Segment segment = Segment.Code)
+        {
+            AddTo(segment, Instructions.neq);
+        }
+
+        private void GreaterThan(Segment segment = Segment.Code)
+        {
+            AddTo(segment, Instructions.gt);
+        }
+
+        private void LessThan(Segment segment = Segment.Code)
+        {
+            AddTo(segment, Instructions.lt);
+        }
+
+        private void GreaterThanEqualTo(Segment segment = Segment.Code)
+        {
+            AddTo(segment, Instructions.gte);
+        }
+
+        private void LessThanEqualTo(Segment segment = Segment.Code)
+        {
+            AddTo(segment, Instructions.lte);
+        }
+
+        private void Positive(Segment segment = Segment.Code)
+        {
+            AddTo(segment, Instructions.pos);
+        }
+
+        private void Negative(Segment segment = Segment.Code)
+        {
+            AddTo(segment, Instructions.neg);
+        }
+
+        private void Pow(Segment segment = Segment.Code)
+        {
+            AddTo(segment, Instructions.pow);
+        }
+
         /// <summary>
         /// Generates a label and returns it.
         /// </summary>
